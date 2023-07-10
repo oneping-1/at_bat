@@ -1,5 +1,4 @@
 import tkinter as tk
-import get.statsapi_plus as sp
 from get import game as gm, Game
 from typing import List
 import sys
@@ -39,7 +38,12 @@ class Scoreboard:
             if len(team_abv[1]) == 2:
                 team_abv[1] += ' '
 
-            if 'Preview' in game.gameData.status.abstractGameState or 'Warmup' in game.gameData.status.detailedState:
+            if 'Delay' in game.gameData.status.detailedState:
+                scorebox[0] = f'{game.liveData.linescore.teams.away.runs}'
+                scorebox[2] = f'{game.liveData.linescore.teams.home.runs}'
+                scorebox[1] = 'DL'
+                scorebox[3] = f'{game.liveData.linescore.currentInning}'
+            elif 'Preview' in game.gameData.status.abstractGameState or 'Warmup' in game.gameData.status.detailedState:
                 scorebox[0] = f'{game.gameData.datetime.startHour}'
                 scorebox[1] = f'{game.gameData.datetime.startMin}'
             elif 'Final' in game.gameData.status.abstractGameState:

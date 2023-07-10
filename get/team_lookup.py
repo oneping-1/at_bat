@@ -1,7 +1,7 @@
 import csv
 
 def abv_from_id(code):
-    with open('teams.csv') as file:
+    with open('csv/teams.csv') as file:
         reader = csv.reader(file)
         next(reader)
 
@@ -10,7 +10,7 @@ def abv_from_id(code):
                 return abv
             
 def div_from_id(code):
-    with open('teams.csv') as file:
+    with open('csv/teams.csv') as file:
         reader = csv.reader(file)
         next(reader)
 

@@ -1,9 +1,14 @@
 import datetime
 import pytz
 from typing import List
-from .statsapi_plus import get_gamePks
+from .statsapi_plus import get_daily_gamePks
 from tqdm import tqdm
 import statsapi
+import pandas as pd
+
+re_runners = pd.read_csv('csv/re_runners.csv', index_col=0)
+re_count = pd.read_csv('csv/re_count.csv', index_col=0)
+
 
 class Game:
     def __init__(self, data:dict):
@@ -22,17 +27,27 @@ class GameData:
         self.status = gameData['status']
         self.teams = gameData['teams']
         self.players = gameData['players']
-        self.weather = gameData['weather']
+        self.weather = gameData.get('weather', None)
+        self.gameInfo = gameData['gameInfo']
         self.flags = gameData['flags']
         self.probablePitchers = gameData['probablePitchers']
+        self.officialScorer = gameData.get('officialScorer', None)
+        self.primaryDatacaster = gameData.get('primaryDatacaster', None)
         self._children()
 
     def _children(self):
         self.datetime = Datetime(self.datetime)
         self.status = Status(self.status)
         self.teams = TeamsGameData(self.teams)
-        #self.weather = Weather(self.weather)
+        self.weather = Weather(self.weather)
+        self.gameInfo = GameInfo(self.gameInfo)
         self.flags = Flags(self.flags)
+
+        if self.officialScorer:
+          self.officialScorer = OfficialScorer(self.officialScorer)
+
+        if self.primaryDatacaster:
+            self.primaryDatacaster = PrimaryDatacaster(self.primaryDatacaster)
 
 class Datetime:
     def __init__(self, datetime):
@@ -69,14 +84,35 @@ class TeamGameData:
 class Weather:
     def __init__(self, weather):
         self.condition = weather.get('condition', None)
-        self.temp = weather['temp']
-        self.wind = weather['wind']
+        self.temp = weather.get('temp', None)
+        self.wind = weather.get('wind', None)
+        # no children
+
+class GameInfo:
+    def __init__(self, gameInfo):
+        self.attendance = gameInfo.get('attendance', None)
+        self.firstPitch = gameInfo.get('firstPitch', None)
+        self.gameDurationMinutes = gameInfo.get('gameDurationMinutes', None)
         # no children
 
 class Flags:
     def __init__(self, flags):
         self.noHitter = flags['noHitter']
         self.perfectGame = flags['perfectGame']
+        # no children
+
+class OfficialScorer:
+    def __init__(self, officialScorer):
+        self.id = officialScorer['id']
+        self.fullName = officialScorer['fullName']
+        self.link = officialScorer['link']
+        # no children
+
+class PrimaryDatacaster:
+    def __init__(self, primaryDatacaster):
+        self.id = primaryDatacaster['id']
+        self.fullName = primaryDatacaster['fullName']
+        self.link = primaryDatacaster['link']
         # no children
 
 class LiveData:
@@ -93,8 +129,482 @@ class LiveData:
 
 class Plays:
     def __init__(self, plays):
+        self._test = plays
+        self.allPlays: List[AllPlays] = [AllPlays(play) for play in plays['allPlays']]
         self.currentPlay = plays.get('currentPlay', None)
-        # children but dont care
+        
+class AllPlays:
+    """
+    Holds data for each at bat
+    """
+    def __init__(self, allPlays):
+        self._allPlays = allPlays
+        self.result = allPlays.get('result', None)
+        self.about = allPlays.get('about', None)
+        self.count = allPlays.get('count', None)
+        self.matchup = allPlays.get('matchup', None)
+        self.pitchIndex = allPlays.get('pitchIndex', None)
+        events = allPlays.get('playEvents', None)
+        self.playEvents: List[PlayEvents] = [PlayEvents(i) for i in events]
+        self.playEndTime = allPlays.get('playEndTime', None)
+        self.atBatIndex = allPlays.get('atBatIndex', None)
+        self._children()
+
+    def _children(self):
+        self.result = Result(self.result)
+        self.about = About(self.about)
+        self.count = Count(self.count)
+        self.matchup = Matchup(self.matchup)
+
+    def __eq__(self, other):
+        if self._allPlays == other._allPlays:
+            return True
+        return False
+
+class Result:
+    def __init__(self, result):
+        self.type = result['type']
+        self.event = result.get('event', None)
+        self.eventType = result.get('eventType')
+        self.description = result.get('description')
+        self.rbi = result.get('rbi', None)
+        self.awayScore = result.get('awayScore', None)
+        self.homeScore = result.get('homeScore', None)
+        self.isOut = result.get('isOut', None)
+        # no children
+
+class About:
+    def __init__(self, about):
+        self.atBatIndex = about['atBatIndex']
+        self.halfInning: str = about['halfInning']
+        self.isTopInning = bool(about['isTopInning'])
+        self.inning = int(about['inning'])
+        self.startTime = about['startTime']
+        self.endTime = about['endTime']
+        self.isComplete = about['isComplete']
+        self.isScoringPlay = about.get('isScoringPlay', None)
+        self.hasReview = about.get('hasReview', None)
+        self.hasOut = about.get('hasOut', None)
+        self.captivatingIndex = about.get('captivatingIndex', None)
+        # no children
+
+class Count:
+    def __init__(self, count):
+        self.balls = int(count.get('balls', None))
+        self.strikes = int(count.get('strikes', None))
+        self.outs = int(count.get('outs', None))
+        # no children
+
+class Matchup:
+    def __init__(self, matchup):
+        self.batter = matchup['batter']
+        self.batSide = matchup['batSide']
+        self.pitcher = matchup['pitcher']
+        self.pitchHand = matchup['pitchHand']
+        self.postOnFirst = matchup.get('postOnFirst', None)
+        self.postOnSecond = matchup.get('postOnSecond', None)
+        self.postOnThird = matchup.get('postOnThird', None)
+        self.splits = matchup.get('splits', None)
+        self._children()
+
+    def _children(self):
+        self.batter = Player(self.batter)
+        self.batSide = Side(self.batSide)
+        self.pitcher = Player(self.pitcher)
+        self.pitchHand = Side(self.pitchHand)
+
+        if self.postOnFirst is not None:
+            self.postOnFirst = Player(self.postOnFirst)
+
+        if self.postOnSecond is not None:
+            self.postOnSecond = Player(self.postOnSecond)
+
+        if self.postOnThird is not None:
+            self.postOnThird = Player(self.postOnThird)
+
+        if self.splits is not None:
+            self.splits = Splits(self.splits)
+
+class Side:
+    def __init__(self, side):
+        self.code = side.get('L', None)
+        self.description = side['description']
+
+class Splits:
+    def __init__(self, splits):
+        self.batter = splits.get('batter', None)
+        self.pitcher = splits.get('pitcher', None)
+        self.menOnBase = splits.get('menOnBase', None)
+
+class PlayEvents:
+    """
+    Holds data for each pitch in at bat
+    """
+    def __init__(self, playEvents: dict):
+        self._playEvents = playEvents
+        self.details = playEvents['details']
+        self.count = playEvents['count']
+        self.pitchData = playEvents.get('pitchData', None)
+        self.hitData = playEvents.get('hitData', None)
+        self.index = playEvents.get('index', None)
+        self.playId = playEvents.get('playId', None)
+        self.pitchNumber = playEvents.get('pitchNumber', None)
+        self.startTime = playEvents.get('startTime', None)
+        self.endTime = playEvents.get('endTime', None)
+        self.isPitch = bool(playEvents.get('isPitch', None))
+        self.type = playEvents.get('type', None)
+
+        if self.pitchNumber is not None:
+            self.pitchNumber = int(self.pitchNumber)
+
+        if self.index is not None:
+            self.index = int(self.index)
+
+        self._children()
+
+    def _children(self):
+        self.details = Details(self.details)
+        self.count = Count(self.count)
+
+        if self.hitData is not None:
+            self.hitData = HitData(self.hitData)
+
+        if self.pitchData is not None:
+            self.pitchData = PitchData(self.pitchData)
+       
+    def calculate_delta_home_favor(self, runners: List[bool], isTopInning: bool, moe: float = 0.035) -> float:
+        home_delta = 0
+
+        b = self.count.balls
+        s = self.count.strikes
+        o = self.count.outs
+
+        walk = self._move_runners_walk(runners.copy())
+        runners_str = self._get_runners_string(runners)
+        walk_str = self._get_runners_string(walk)
+        loaded = self._check_loaded(runners)
+
+        correct = self._is_correct_call(moe)
+
+        if correct is None:
+            return 0
+
+        if self.details.code == 'B' and not correct:
+            # Strike called ball
+            if b == 4 and s == 2:
+                # Walk instead of Strikeout
+                home_delta += re_runners.loc[o+1][runners_str] - re_runners.loc[o][walk_str]
+
+                if loaded is True:
+                    home_delta -= 1
+            elif s == 2:
+                # Missed Strikeout
+                home_delta += re_runners.loc[o+1][runners_str] - re_runners.loc[o][runners_str] - re_count.loc[b][s]
+            elif b == 4:
+                # Created Walk
+                home_delta += re_runners.loc[o][runners_str] + re_count.loc[b-1][s+1] - re_runners.loc[o][walk_str]
+
+                if loaded is True:
+                    home_delta -= 1
+            else:
+                home_delta +=  re_count.loc[b-1][s+1] - re_count.loc[b][s]
+
+        if self.details.code == 'C' and not correct:
+            # Ball called strike
+            if s == 3 and b == 3:
+                # Strikeout instead of Walk
+                home_delta += re_runners.loc[o][walk_str] - re_runners.loc[o+1][runners_str]
+
+                if loaded is True:
+                    home_delta += 1
+            elif s == 3:
+                # Created Strikeout
+                home_delta += re_runners.loc[o][runners_str] + re_count.loc[b+1][s-1] - re_runners.loc[o+1][runners_str]
+            elif b == 3:
+                # Missed Walk
+                home_delta += re_runners.loc[o][walk_str] - re_runners.loc[o][runners_str] - re_count.loc[b][s]
+
+                if loaded is True:
+                    home_delta += 1
+            else:
+                home_delta += re_count.loc[b+1][s-1] - re_count.loc[b][s]
+
+        if isTopInning is True:
+            return home_delta
+        return -home_delta
+
+    def _move_runners_walk(self, runners: List[bool]) -> List[bool]:
+        if runners[0] is True and runners[1] is True and runners[2] is True:
+            return runners
+        elif runners[0] is True and runners[1] is True and runners[2] is False:
+            runners[2] = True
+        elif runners[0] is True and runners[1] is False:
+            runners[1] = True
+        elif runners[0] is False:
+            runners[0] = True
+        return runners
+
+    def _get_runners_string(self, runners: List[bool]) -> str:
+        s = ''
+
+        for i, r in enumerate(runners):
+            if r is True:
+                s += str(i + 1)
+            else:
+                s += '_'
+
+        return s
+
+    def _check_loaded(self, runners: List[bool]):
+        for runner in runners:
+            if runner is False:
+                return False
+            
+        return True
+
+    def _is_correct_call(self, moe:float=0.035) -> bool:
+            """
+            Returns True or False whether the correct call was made
+            Returns None if no call was made (swing)
+            """
+            if self.details.code != 'C' and self.details.code != 'B':
+                return None
+            
+            pX_left = -0.83
+            pX_right = 0.83
+
+            coords = self.pitchData.coordinates
+
+            # Could probably check if pitch is within moe and return true without checking call
+            if self.details.code == 'C' and (coords.pX >= (pX_left - moe)) and (coords.pX <= (pX_right + moe)) and (coords.pZ >= (coords.pZ_bot - moe)) and (coords.pZ <= (coords.pZ_top + moe)):
+                return True
+            elif self.details.code == 'B' and ((coords.pX <= (pX_left + moe)) or (coords.pX >= (pX_right - moe)) or (coords.pZ <= (coords.pZ_bot + moe)) or (coords.pZ >= (coords.pZ_top - moe))):
+                return True
+            else:
+                return False
+
+    def pitch_in_the_zone_str(self, moe:float=0.035) -> str:
+        s = ''
+        
+        if self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
+            s += 'In Zone'
+        elif self.pitchData.zone > 10:
+            s += 'Out of Zone'
+
+        if (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_top - moe)) and (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_top + moe)) and (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)):
+            s += ' (moe)'
+        elif (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_bot - moe)) and (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_bot + moe)) and (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)):
+            s += ' (moe)'
+        elif (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (-.83 + moe)) and (self.pitchData.coordinates.pZ >= self.pitchData.coordinates.pZ_bot) and (self.pitchData.coordinates.pZ <= self.pitchData.coordinates.pZ_top):
+            s += ' (moe)'
+        elif (self.pitchData.coordinates.pX >= (.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)) and (self.pitchData.coordinates.pZ >= self.pitchData.coordinates.pZ_bot) and (self.pitchData.coordinates.pZ <= self.pitchData.coordinates.pZ_top):
+            s += ' (moe)'
+
+        return s
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        elif self._playEvents == other._playEvents:
+            return True
+        return False
+
+class Details:
+    def __init__(self, details):
+        self.call = details.get('call', None)
+        self.description = details.get('description', None)
+        self.event = details.get('event', None)
+        self.eventType = details.get('eventType', None)
+        #self.awayScore = int(details.get('awayScore', None))
+        #self.homeScore = int(details.get('homeScore', None))
+        self.code = details.get('code', None)
+        self.ballColor = details.get('ballColor', None)
+        self.trailColor = details.get('trailColor', None)
+        self.isInPlay = bool(details.get('isPitch', None))
+        self.isStrike = bool(details.get('isStrike', None))
+        self.isBall = bool(details.get('isBall', None))
+        self.type = details.get('type', None)
+        self.isOut = bool(details.get('isOut', None))
+        self.hasReview = bool(details.get('hasReview', None))
+        self._children()
+
+    def _children(self):
+        if self.type:
+            self.type = PitchType(self.type)
+
+class PitchType:
+    def __init__(self, type):
+        self.code = type.get('code', None)
+        self.description = type['description']
+        # no children
+
+class PitchData:
+    def __init__(self, pitchData):
+        self._pitchData = pitchData
+        self.startSpeed = pitchData.get('startSpeed', None)
+        self.endSpeed = pitchData.get('endSpeed', None)
+        self._sz_top = float(pitchData.get('strikeZoneTop', None))
+        self._sz_bot = float(pitchData.get('strikeZoneBottom', None))
+        self.coordinates = pitchData.get('coordinates')
+        self.breaks = pitchData.get('breaks', None)
+        self.zone = pitchData.get('zone', None)
+        self.typeConfindence = (pitchData.get('typeConfidence', None))
+        self.plateTime = pitchData.get('plateTime', None)
+        self.extension = (pitchData.get('extension', None))
+
+        if self.startSpeed is not None:
+            self.startSpeed = float(self.startSpeed)
+
+        if self.endSpeed is not None:
+            self.endSpeed = float(self.endSpeed)
+
+        if self.zone is not None:
+            self.zone = int(self.zone)
+
+        if self.plateTime is not None:
+            self.plateTime = float(self.plateTime)
+
+        self._children()
+
+    def _children(self):
+        if self.coordinates is not None:
+            self.coordinates = PitchCoordinates(self.coordinates, self._sz_top, self._sz_bot)
+
+        if self.breaks:
+            self.breaks = Breaks(self.breaks)
+
+class PitchCoordinates:
+    def __init__(self, coor, sz_top, sz_bot):
+
+        self.sZ_top = sz_top
+        self.sZ_bot = sz_bot
+
+        # Location of Center of Pitch for Ball/Strike
+        self.pZ_top = self.sZ_top + 0.12
+        self.pZ_bot = self.sZ_bot - 0.12
+
+        # Acceleration in X,Y,Z directions
+        self.aX = coor.get('aX', None)
+        self.aY = coor.get('aY', None)
+        self.aZ = coor.get('aZ', None)
+
+        if self.aX is not None:
+            self.aX = float(self.aX)
+
+        if self.aY is not None:
+            self.aY = float(self.aY)
+
+        if self.aZ is not None:
+            self.aZ = float(self.aZ)
+
+        # Movement of Pitch at y=40ft
+        self.pfxX = coor.get('pfxX', None)
+        self.pfxZ = coor.get('pfxZ', None)
+
+        if self.pfxX is not None:
+            self.pfxX = float(self.pfxX)
+
+        if self.pfxZ is not None:
+            self.pfxZ = float(self.pfxZ)
+        
+        # Pitch Location
+        self.pX = coor.get('pX', None)
+        self.pZ = coor.get('pZ', None)
+
+        if self.pX is not None:
+            self.pX = float(self.pX)
+
+        if self.pZ is not None:
+            self.pZ = float(self.pZ)
+
+        # Velocity of Pitch at Release in X,Y,Z directions
+        self.vX0 = coor.get('vX0', None)
+        self.vY0 = coor.get('vY0', None)
+        self.vZ0 = coor.get('vZ0', None)
+
+        if self.vX0 is not None:
+            self.vX0 = float(self.vX0)
+
+        if self.vY0 is not None:
+            self.vY0 = float(self.vY0)
+
+        if self.vZ0 is not None:
+            self.vZ0 = float(self.vZ0)
+
+        # Old Pitch Location Data
+        self.x = coor.get('x', None)
+        self.y = coor.get('y', None)
+
+        if self.x:
+            self.x = float(self.x)
+        if self.y:
+            self.y = float(self.y)
+
+        # Position of Pitch at Release in X,Y,Z directions
+        self.x0 = coor.get('x0', None)
+        self.y0 = coor.get('y0', None)
+        self.z0 = coor.get('z0', None)
+
+        if self.x0 is not None:
+            self.x0 = float(self.x0)
+
+        if self.y0 is not None:
+            self.y0 = float(self.y0)
+
+        if self.z0 is not None:
+            self.z0 = float(self.z0)
+
+        # no children
+
+    def is_correct_call(self, call_code:str, moe:float=0.035) -> bool:
+            if call_code == 'C' or call_code == 'B' or call_code is None:
+                raise ValueError('call_code not correct')
+            
+            pX_left = -0.83
+            pX_right = 0.83
+
+            # Could probably check if pitch is within moe and return true without checking call
+            if call_code == 'C' and (self.pX >= (pX_left - moe)) and (self.pX <= (pX_right + moe)) and (self.pZ >= (self.pZ_bot - moe)) and (self.pZ <= (self.pZ_top + moe)):
+                return True
+            elif call_code == 'B' and ((self.pX <= (pX_left + moe)) or (self.pX >= (pX_right - moe)) or (self.pZ <= (self.pZ_bot + moe)) or (self.pZ >= (self.pZ_top - moe))):
+                return True
+            else:
+                return False
+
+class Breaks:
+    def __init__(self, breaks):
+        self.breakAngle = breaks.get('breakAngle', None)
+        self.spinRate = breaks.get('spinRate', None)
+        self.spinDirection = breaks.get('spinDirection', None)
+        # no children
+
+class HitData:
+    def __init__(self, hitData):
+        self.launchSpeed = hitData.get('launchSpeed', None)
+        self.launchAngle = hitData.get('launchAngle', None)
+        self.totalDistance = hitData.get('totalDistance', None)
+        self.trajectory = hitData.get('trajectory', None)
+        self.hardness = hitData.get('hardness', None)
+        self.location = hitData.get('location', None)
+        self.coordinates = hitData.get('coordinates', None)
+
+        if self.launchSpeed:
+            self.launchSpeed = float(self.launchSpeed)
+
+        if self.launchAngle:
+            self.launchAngle = float(self.launchAngle)
+
+        if self.totalDistance:
+            self.totalDistance = float(self.totalDistance)
+        self._children()
+
+    def _children(self):
+        self.coordinates = HitCoordinates(self.coordinates)
+
+class HitCoordinates:
+    def __init__(self, coor):
+        self.coordX = coor.get('coordX', None)
+        self.coordY = coor.get('coordY', None)
 
 class Linescore:
     def __init__(self, linescore):
@@ -107,11 +617,11 @@ class Linescore:
         self.balls = linescore.get('balls', None)
         self.strikes = linescore.get('strikes', None)
         self.outs = linescore.get('outs', None)
-
         self._children()
 
     def _children(self):
         self.teams = TeamsLinescore(self.teams)
+        self.defense = Defense(self.defense)
         self.offense = Offense(self.offense)
 
 class TeamsLinescore:
@@ -130,6 +640,36 @@ class TeamLinescore:
         self.hits = team.get('hits', None)
         self.errors = team.get('errors', None)
         # no children
+
+class Defense:
+    def __init__(self, defense):
+        self.pitcher = defense.get('pitcher', None)
+        self.catcher = defense.get('catcher', None)
+        self.first = defense.get('first', None)
+        self.second = defense.get('second', None)
+        self.third = defense.get('third', None)
+        self.shortstop = defense.get('shortstop', None)
+        self.left = defense.get('left', None)
+        self.center = defense.get('center', None)
+        self.right = defense.get('right', None)
+        self.batter = defense.get('batter', None)
+        self.onDeck = defense.get('onDeck', None)
+        self.inHole = defense.get('inHole', None)
+        self.battingOrder = defense.get('battingOrder', None)
+        self.team = defense.get('team', None)
+        self._children()
+
+    def _children(self):
+        if self.pitcher:
+            self.pitcher = Player(self.pitcher)
+
+        if self.catcher:
+            self.catcher = Player(self.catcher)
+
+        if self.first:
+            self.first = Player(self.first)
+
+        # continue with other positions + batter,ondeck,inhole
 
 class Offense:
     def __init__(self, offense):
@@ -173,6 +713,7 @@ class Player:
     def __init__(self, player):
         self.id = player['id']
         self.fullName = player['fullName']
+        self.link = player['link']
         # no children
 
 class Decisions:
@@ -200,6 +741,13 @@ def _convert_zulu_to_local(zulu_time_str):
     t = f'{t[0:2]} {t[3:]}'
 
     return [t[0:2], t[3:]]
+
+def _get_delayed_timecode(delay_seconds):
+    now = datetime.datetime.now()
+    delay = datetime.timedelta(seconds=delay_seconds)
+
+    new_time = now - delay
+    return new_time.strftime('%m%d%Y_%H%M%S')
 
 def _get_division(code:int):
     match code:
@@ -265,7 +813,7 @@ def _get_division(code:int):
             return 'NC'
         
 def get_games() -> List[Game]:
-    gamePks = get_gamePks()
+    gamePks = get_daily_gamePks()
     games = []
 
     for Pk in tqdm(gamePks):
@@ -273,3 +821,6 @@ def get_games() -> List[Game]:
         games.append(Game(data))
 
     return games
+
+if __name__ == "__main__":
+    print(_get_delayed_timecode(5))

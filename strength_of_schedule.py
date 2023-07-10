@@ -8,6 +8,7 @@ from get.schedule import Schedule
 import sys
 from get.team import Team
 from colorama import Fore, just_fix_windows_console
+import json
 
 just_fix_windows_console
 
@@ -53,4 +54,4 @@ def sos(days_ahead=15):
 
 
 if __name__ == '__main__':
-    sos(days_ahead=1000)
+    sos(days_ahead=14)

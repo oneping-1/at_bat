@@ -3,7 +3,7 @@ from colorama import Fore
 from typing import List
 from .team import Team
 
-def get_gamePks():
+def get_daily_gamePks():
     gamePks = []
     data = statsapi.schedule()
     

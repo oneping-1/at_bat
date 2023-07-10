@@ -48,8 +48,8 @@ class Games:
         self.scheduledInnings = games['scheduledInnings']
         self.reverseHomeAwayStatus = games['reverseHomeAwayStatus']
         self.inningBreakLength = games['inningBreakLength']
-        self.gamesInSeries = games['gamesInSeries']
-        self.seriesGameNumber = games['seriesGameNumber']
+        self.gamesInSeries = games.get('gamesInSeries', None)
+        self.seriesGameNumber = games.get('seriesGameNumber', None)
         self.seriesDescription = games['seriesDescription']
         self.recordSource = games['recordSource']
         self.ifNecessary = games['ifNecessary']
@@ -87,7 +87,7 @@ class Team:
         self.leagueRecord = team['leagueRecord']
         self.team = team['team']
         self.splitSquad = team['splitSquad']
-        self.seriesNumber = team['seriesNumber']
+        self.seriesNumber = team.get('seriesNumber', None)
         self._children()
 
     def _children(self):

@@ -10,7 +10,7 @@ just_fix_windows_console
 def main():
     s = ''
 
-    gamePks = sp.get_gamePks()
+    gamePks = sp.get_daily_gamePks()
     games = []
     for Pk in gamePks:
         p = True
@@ -19,8 +19,6 @@ def main():
         games.append(game)
 
         away_color, home_color = sp.get_color_scoreboard(game)
-
-        #s += f'{Fore.WHITE}{Pk} | {game.gameData.status.abstractGameState} | {game.gameData.status.detailedState}\n'
 
         if 'Final' in game.gameData.status.abstractGameState:
            if game.liveData.linescore.currentInning == 9:
@@ -59,5 +57,3 @@ if __name__ == '__main__':
             main()
         except KeyboardInterrupt:
             sys.exit('Exited')
-        except:
-            pass

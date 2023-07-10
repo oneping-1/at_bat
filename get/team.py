@@ -21,7 +21,7 @@ class Opponent:
 def get_teams_list() -> List[Team]:
     teams = []
 
-    with open('teams.csv') as file:
+    with open('csv/teams.csv') as file:
         reader = csv.reader(file)
         next(reader)
 
