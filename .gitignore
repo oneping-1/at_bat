@@ -5,3 +5,5 @@ json.txt
 *.pyc
 *.pyc
 *.pyc
+*.pyc
+json.txt

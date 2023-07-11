@@ -8,15 +8,7 @@ import curses
 import sys
 import time
 
-gamePk = 717465
-
-data = statsapi.get('game', {'gamePk': gamePk})
-game = Game(data)
-
-re_runners = pd.read_csv('csv/re_runners.csv', index_col=0)
-re_count = pd.read_csv('csv/re_count.csv', index_col=0)
-
-def get_utc_time(delta_seconds=0):
+def _get_utc_time(delta_seconds=0):
     # Get the current time in UTC
     utc_time = datetime.utcnow()
 
@@ -28,19 +20,56 @@ def get_utc_time(delta_seconds=0):
 
     return formatted_time
 
-def get_game_dict(gamePk=None, delta_seconds=0) -> dict:
+def _get_game_dict(gamePk=None, delta_seconds=0) -> dict:
     if gamePk is None:
         raise ValueError('gamePk not given')
 
-    delay_time = get_utc_time(delta_seconds=delta_seconds)
+    delay_time = _get_utc_time(delta_seconds=delta_seconds)
     data = statsapi.get('game', {'gamePk': gamePk, 'timecode': delay_time}, force=True)
     return data
 
-def umpire(gamePk=None):
+def _missed_pitch_details(ab: get.game.AllPlays, pitch: get.game.PlayEvents, runners: List[bool], home_delta: float) -> str:
+    s = ''
+
+    s += f'{ab.about.halfInning.capitalize()} {ab.about.inning}\n'
+    s += f'{ab.matchup.pitcher.fullName} to {ab.matchup.batter.fullName}\n'
+
+    if pitch.count.outs == 1:
+        s += f'{pitch.count.outs} out, '
+    else:
+        s += f'{pitch.count.outs} outs, '
+
+    if runners == [False, False, False]:
+        s += f'bases empty\n'
+    elif runners == [True, False, False]:
+        s += f'runner on first\n'
+    elif runners == [False, True, False]:
+        s += f'runner on second\n'
+    elif runners == [True, True, False]:
+        s += f'runners on first and second\n'
+    elif runners == [False, False, True]:
+        s += f'runner on third\n'
+    elif runners == [True, False, True]:
+        s += f'runner on first and third\n'
+    elif runners == [False, True, True]:
+        s += f'runner on second and third\n'
+    elif runners == [True, True, True]:
+        s += f'bases loaded\n'
+
+    if pitch.details.code == 'C':
+        s += f'{pitch.count.balls}-{pitch.count.strikes-1}, ball called strike\n'
+    elif pitch.details.code == 'B':
+        s += f'{pitch.count.balls-1}-{pitch.count.strikes}, strike called ball\n'
+
+    s += f'{home_delta:5.3f}\n'
+
+    return s
+
+def umpire(gamePk=None) -> float:
     if gamePk is None:
         raise ValueError('gamePk not Provided')
 
-    game_dict = get_game_dict(gamePk=gamePk, delta_seconds=0)
+    game_dict = _get_game_dict(gamePk=gamePk, delta_seconds=0)
     game = Game(game_dict)
 
     at_bat_lists = game.liveData.plays.allPlays
@@ -60,14 +89,11 @@ def umpire(gamePk=None):
         for i in ab.pitchIndex:
             pitch: get.game.PlayEvents = ab.playEvents[i]
 
-            home_favor_delta = pitch.calculate_delta_home_favor(runners, isTopInning)
+            home_favor_delta = pitch.calculate_delta_home_favor(runners, isTopInning, moe=0)
             home_favor += home_favor_delta
 
             if home_favor_delta != 0:
-                print(f'{ab.about.halfInning.capitalize()} {ab.about.inning}')
-                print(f'{ab.matchup.pitcher.fullName} to {ab.matchup.batter.fullName}')
-                print(f'{home_favor_delta:>6.3f}')
-                print()
+                print(_missed_pitch_details(ab, pitch, runners, home_favor_delta))
 
         if ab.matchup.postOnFirst is not None:
             runners[0] = True
@@ -86,14 +112,14 @@ def umpire(gamePk=None):
 
     return home_favor
 
-def print_last_pitch(gamePk=None):
+def print_last_pitch(gamePk=None, delta_seconds=0):
     stdscr = curses.initscr()
 
     if gamePk is None:
         raise ValueError('gamePk not provided')
     
     spaces = '                                        '
-    game = Game(get_game_dict(gamePk))
+    game = Game(_get_game_dict(gamePk, delta_seconds=delta_seconds))
 
     isTopInning = True
     inning = 0
@@ -171,7 +197,7 @@ def print_every_pitch(gamePk=None):
         raise ValueError('gamePk not provided')
     
     spaces = '                                        '
-    game = Game(get_game_dict(gamePk))
+    game = Game(_get_game_dict(gamePk))
 
     isTopInning = True
     inning = 0

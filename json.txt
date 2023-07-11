@@ -3061,13 +3061,13 @@
                                 "description": "Foul",
                                 "code": "F",
                                 "ballColor": "rgba(170, 21, 11, 1.0)",
-                                "trailColor": "rgba(50, 0, 221, 1.0)",
+                                "trailColor": "rgba(188, 0, 33, 1.0)",
                                 "isInPlay": false,
                                 "isStrike": true,
                                 "isBall": false,
                                 "type": {
-                                    "code": "SI",
-                                    "description": "Sinker"
+                                    "code": "FF",
+                                    "description": "Four-Seam Fastball"
                                 },
                                 "isOut": false,
                                 "hasReview": false
@@ -3107,7 +3107,7 @@
                                     "spinDirection": 147
                                 },
                                 "zone": 6,
-                                "typeConfidence": 0.75,
+                                "typeConfidence": 2.0,
                                 "plateTime": 0.4086147634784356,
                                 "extension": 6.651511858464521
                             },
@@ -4236,8 +4236,8 @@
                             "pitchData": {
                                 "startSpeed": 88.1,
                                 "endSpeed": 81.3,
-                                "strikeZoneTop": 3.57320204881141,
-                                "strikeZoneBottom": 1.58963023399075,
+                                "strikeZoneTop": 3.38833013128747,
+                                "strikeZoneBottom": 1.58765689582636,
                                 "coordinates": {
                                     "aY": 24.53970827759142,
                                     "aZ": -23.444689432473602,
@@ -4262,7 +4262,7 @@
                                     "spinRate": 2244,
                                     "spinDirection": 192
                                 },
-                                "zone": 2,
+                                "zone": 11,
                                 "typeConfidence": 0.91,
                                 "plateTime": 0.4255636976930237,
                                 "extension": 6.719369852968925
@@ -6694,8 +6694,8 @@
                             "pitchData": {
                                 "startSpeed": 90.7,
                                 "endSpeed": 83.3,
-                                "strikeZoneTop": 3.62549808957494,
-                                "strikeZoneBottom": 1.6669411982983,
+                                "strikeZoneTop": 3.72571338925447,
+                                "strikeZoneBottom": 1.74002971042771,
                                 "coordinates": {
                                     "aY": 27.148514128562894,
                                     "aZ": -25.069930710355752,
@@ -8464,13 +8464,13 @@
                                 "description": "Foul",
                                 "code": "F",
                                 "ballColor": "rgba(170, 21, 11, 1.0)",
-                                "trailColor": "rgba(50, 0, 221, 1.0)",
+                                "trailColor": "rgba(188, 0, 33, 1.0)",
                                 "isInPlay": false,
                                 "isStrike": true,
                                 "isBall": false,
                                 "type": {
-                                    "code": "SI",
-                                    "description": "Sinker"
+                                    "code": "FF",
+                                    "description": "Four-Seam Fastball"
                                 },
                                 "isOut": false,
                                 "hasReview": false
@@ -8510,7 +8510,7 @@
                                     "spinDirection": 142
                                 },
                                 "zone": 8,
-                                "typeConfidence": 0.62,
+                                "typeConfidence": 2.0,
                                 "plateTime": 0.40883920331965173,
                                 "extension": 6.728960643063891
                             },
@@ -9298,8 +9298,8 @@
                             "pitchData": {
                                 "startSpeed": 85.6,
                                 "endSpeed": 79.1,
-                                "strikeZoneTop": 3.54706424962365,
-                                "strikeZoneBottom": 1.69272253556325,
+                                "strikeZoneTop": 3.6468644668292,
+                                "strikeZoneBottom": 1.7139260797686,
                                 "coordinates": {
                                     "aY": 23.495718805061095,
                                     "aZ": -29.585418292483205,
@@ -10297,13 +10297,13 @@
                                 "description": "Called Strike",
                                 "code": "C",
                                 "ballColor": "rgba(170, 21, 11, 1.0)",
-                                "trailColor": "rgba(152, 0, 101, 1.0)",
+                                "trailColor": "rgba(188, 0, 33, 1.0)",
                                 "isInPlay": false,
                                 "isStrike": true,
                                 "isBall": false,
                                 "type": {
-                                    "code": "FC",
-                                    "description": "Cutter"
+                                    "code": "FF",
+                                    "description": "Four-Seam Fastball"
                                 },
                                 "isOut": false,
                                 "hasReview": false,
@@ -10344,7 +10344,7 @@
                                     "spinDirection": 213
                                 },
                                 "zone": 6,
-                                "typeConfidence": 0.64,
+                                "typeConfidence": 2.0,
                                 "plateTime": 0.41270276386630034,
                                 "extension": 6.773737478309308
                             },
@@ -12127,7 +12127,7 @@
                                     "spinDirection": 138
                                 },
                                 "zone": 1,
-                                "typeConfidence": 0.91,
+                                "typeConfidence": 2.0,
                                 "plateTime": 0.40509044521899407,
                                 "extension": 6.839240500319707
                             },
@@ -14499,13 +14499,13 @@
                                 "description": "Foul",
                                 "code": "F",
                                 "ballColor": "rgba(170, 21, 11, 1.0)",
-                                "trailColor": "rgba(50, 0, 221, 1.0)",
+                                "trailColor": "rgba(188, 0, 33, 1.0)",
                                 "isInPlay": false,
                                 "isStrike": true,
                                 "isBall": false,
                                 "type": {
-                                    "code": "SI",
-                                    "description": "Sinker"
+                                    "code": "FF",
+                                    "description": "Four-Seam Fastball"
                                 },
                                 "isOut": false,
                                 "hasReview": false
@@ -14545,7 +14545,7 @@
                                     "spinDirection": 141
                                 },
                                 "zone": 5,
-                                "typeConfidence": 0.58,
+                                "typeConfidence": 2.0,
                                 "plateTime": 0.41334848161975346,
                                 "extension": 6.7076425432331215
                             },
@@ -19583,8 +19583,8 @@
                             "pitchData": {
                                 "startSpeed": 92.8,
                                 "endSpeed": 85.1,
-                                "strikeZoneTop": 3.59900543022962,
-                                "strikeZoneBottom": 1.56356332576161,
+                                "strikeZoneTop": 3.6227606437533,
+                                "strikeZoneBottom": 1.61280613989144,
                                 "coordinates": {
                                     "aY": 29.30079274095709,
                                     "aZ": -19.008107568676518,
@@ -21389,8 +21389,8 @@
                             "pitchData": {
                                 "startSpeed": 83.0,
                                 "endSpeed": 76.7,
-                                "strikeZoneTop": 3.59900543022962,
-                                "strikeZoneBottom": 1.71819886211188,
+                                "strikeZoneTop": 3.64995128295369,
+                                "strikeZoneBottom": 1.79423986006161,
                                 "coordinates": {
                                     "aY": 24.181467460401155,
                                     "aZ": -38.14659677661689,
@@ -24392,8 +24392,8 @@
                             "pitchData": {
                                 "startSpeed": 85.1,
                                 "endSpeed": 78.8,
-                                "strikeZoneTop": 3.49446996343011,
-                                "strikeZoneBottom": 1.74399079701437,
+                                "strikeZoneTop": 3.43985499066965,
+                                "strikeZoneBottom": 1.79329657734792,
                                 "coordinates": {
                                     "aY": 22.969013504319463,
                                     "aZ": -41.2076487187332,
@@ -26125,8 +26125,8 @@
                             "pitchData": {
                                 "startSpeed": 95.5,
                                 "endSpeed": 87.9,
-                                "strikeZoneTop": 3.36395198498364,
-                                "strikeZoneBottom": 1.58932219721666,
+                                "strikeZoneTop": 3.38799727267987,
+                                "strikeZoneBottom": 1.56158982243941,
                                 "coordinates": {
                                     "aY": 29.266627275604176,
                                     "aZ": -22.630027816787425,
@@ -28210,8 +28210,8 @@
                             "pitchData": {
                                 "startSpeed": 96.1,
                                 "endSpeed": 88.8,
-                                "strikeZoneTop": 3.41613915934551,
-                                "strikeZoneBottom": 1.53780989491861,
+                                "strikeZoneTop": 3.5182072732628,
+                                "strikeZoneBottom": 1.66435186515589,
                                 "coordinates": {
                                     "aY": 28.6822978453432,
                                     "aZ": -26.655094402736772,
@@ -28236,7 +28236,7 @@
                                     "spinRate": 2081,
                                     "spinDirection": 114
                                 },
-                                "zone": 8,
+                                "zone": 14,
                                 "typeConfidence": 0.91,
                                 "plateTime": 0.3911230893475057,
                                 "extension": 6.198035366244003
@@ -28547,8 +28547,8 @@
                             "pitchData": {
                                 "startSpeed": 96.6,
                                 "endSpeed": 89.4,
-                                "strikeZoneTop": 3.3900422514885,
-                                "strikeZoneBottom": 1.61508652918963,
+                                "strikeZoneTop": 3.43985897417424,
+                                "strikeZoneBottom": 1.69012748853753,
                                 "coordinates": {
                                     "aY": 27.417810121866047,
                                     "aZ": -21.70590277460202,
@@ -28573,7 +28573,7 @@
                                     "spinRate": 2087,
                                     "spinDirection": 114
                                 },
-                                "zone": 7,
+                                "zone": 13,
                                 "typeConfidence": 0.92,
                                 "plateTime": 0.38892530384928214,
                                 "extension": 6.16725189915959
@@ -29381,8 +29381,8 @@
                             "pitchData": {
                                 "startSpeed": 92.7,
                                 "endSpeed": 84.8,
-                                "strikeZoneTop": 3.52059366944538,
-                                "strikeZoneBottom": 1.61508652918963,
+                                "strikeZoneTop": 3.54433313148736,
+                                "strikeZoneBottom": 1.69012748853753,
                                 "coordinates": {
                                     "aY": 29.286631291908037,
                                     "aZ": -11.066183539363326,

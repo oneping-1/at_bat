@@ -2,6 +2,8 @@ import statsapi
 from colorama import Fore
 from typing import List
 from .team import Team
+import numpy as np
+import csv
 
 def get_daily_gamePks():
     gamePks = []
@@ -41,6 +43,24 @@ def get_color(team_abv:str, division:str):
         return Fore.LIGHTRED_EX
     else:
         return Fore.WHITE
+
+def get_run_expectency_numpy() -> np.ndarray:
+    renp = np.zeros((5,4,4,8))
+
+    with open('csv/re.csv', 'r') as file:
+        reader = csv.reader(file)
+        next(reader)
+
+        for row in reader:
+            b = int(row[0])
+            s = int(row[1])
+            o = int(row[2])
+            r = int(row[3])
+            re = float(row[4])
+
+            renp[b][s][o][r] = re
+
+    return renp
 
 if __name__ == '__main__':
     pass

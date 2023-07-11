@@ -1,14 +1,13 @@
 import datetime
 import pytz
 from typing import List
-from .statsapi_plus import get_daily_gamePks
+from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
 from tqdm import tqdm
 import statsapi
-import pandas as pd
+import numpy as np
+import csv
 
-re_runners = pd.read_csv('csv/re_runners.csv', index_col=0)
-re_count = pd.read_csv('csv/re_count.csv', index_col=0)
-
+renp = get_run_expectency_numpy()
 
 class Game:
     def __init__(self, data:dict):
@@ -272,118 +271,53 @@ class PlayEvents:
         if self.pitchData is not None:
             self.pitchData = PitchData(self.pitchData)
        
-    def calculate_delta_home_favor(self, runners: List[bool], isTopInning: bool, moe: float = 0.035) -> float:
+    def calculate_delta_home_favor(self, runners: List[bool], isTopInning: bool, moe: float = 0.083) -> float:
         home_delta = 0
 
         b = self.count.balls
         s = self.count.strikes
         o = self.count.outs
 
-        walk = self._move_runners_walk(runners.copy())
-        runners_str = self._get_runners_string(runners)
-        walk_str = self._get_runners_string(walk)
-        loaded = self._check_loaded(runners)
+        r = self._get_runners_int(runners)
 
-        correct = self._is_correct_call(moe)
+        correct = self._is_correct_call_zone()
 
-        if correct is None:
+        if correct is True:
             return 0
-
-        if self.details.code == 'B' and not correct:
-            # Strike called ball
-            if b == 4 and s == 2:
-                # Walk instead of Strikeout
-                home_delta += re_runners.loc[o+1][runners_str] - re_runners.loc[o][walk_str]
-
-                if loaded is True:
-                    home_delta -= 1
-            elif s == 2:
-                # Missed Strikeout
-                home_delta += re_runners.loc[o+1][runners_str] - re_runners.loc[o][runners_str] - re_count.loc[b][s]
-            elif b == 4:
-                # Created Walk
-                home_delta += re_runners.loc[o][runners_str] + re_count.loc[b-1][s+1] - re_runners.loc[o][walk_str]
-
-                if loaded is True:
-                    home_delta -= 1
-            else:
-                home_delta +=  re_count.loc[b-1][s+1] - re_count.loc[b][s]
-
-        if self.details.code == 'C' and not correct:
-            # Ball called strike
-            if s == 3 and b == 3:
-                # Strikeout instead of Walk
-                home_delta += re_runners.loc[o][walk_str] - re_runners.loc[o+1][runners_str]
-
-                if loaded is True:
-                    home_delta += 1
-            elif s == 3:
-                # Created Strikeout
-                home_delta += re_runners.loc[o][runners_str] + re_count.loc[b+1][s-1] - re_runners.loc[o+1][runners_str]
-            elif b == 3:
-                # Missed Walk
-                home_delta += re_runners.loc[o][walk_str] - re_runners.loc[o][runners_str] - re_count.loc[b][s]
-
-                if loaded is True:
-                    home_delta += 1
-            else:
-                home_delta += re_count.loc[b+1][s-1] - re_count.loc[b][s]
+        elif self.details.code == 'C':
+            # Ball called Strike
+            home_delta += renp[b+1][s-1][o][r] - renp[b][s][o][r]
+            ...
+        elif self.details.code == 'B':
+            # Strike called Ball
+            home_delta += renp[b-1][s+1][o][r] - renp[b][s][o][r]
+            ...
 
         if isTopInning is True:
             return home_delta
         return -home_delta
 
-    def _move_runners_walk(self, runners: List[bool]) -> List[bool]:
-        if runners[0] is True and runners[1] is True and runners[2] is True:
-            return runners
-        elif runners[0] is True and runners[1] is True and runners[2] is False:
-            runners[2] = True
-        elif runners[0] is True and runners[1] is False:
-            runners[1] = True
-        elif runners[0] is False:
-            runners[0] = True
-        return runners
+    def _is_correct_call_zone(self) -> bool:        
+        if self.details.code == 'C' and self.pitchData.zone > 10:
+            return False
+        elif self.details.code == 'B' and self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
+            return False
+        else:
+            return True
 
-    def _get_runners_string(self, runners: List[bool]) -> str:
-        s = ''
+    def _get_runners_int(self, runners) -> int:
+        r = 0
 
-        for i, r in enumerate(runners):
-            if r is True:
-                s += str(i + 1)
-            else:
-                s += '_'
+        if runners[0] is True:
+            r += 1
+        if runners[1] is True:
+            r += 2
+        if runners[2] is True:
+            r += 4
 
-        return s
+        return r
 
-    def _check_loaded(self, runners: List[bool]):
-        for runner in runners:
-            if runner is False:
-                return False
-            
-        return True
-
-    def _is_correct_call(self, moe:float=0.035) -> bool:
-            """
-            Returns True or False whether the correct call was made
-            Returns None if no call was made (swing)
-            """
-            if self.details.code != 'C' and self.details.code != 'B':
-                return None
-            
-            pX_left = -0.83
-            pX_right = 0.83
-
-            coords = self.pitchData.coordinates
-
-            # Could probably check if pitch is within moe and return true without checking call
-            if self.details.code == 'C' and (coords.pX >= (pX_left - moe)) and (coords.pX <= (pX_right + moe)) and (coords.pZ >= (coords.pZ_bot - moe)) and (coords.pZ <= (coords.pZ_top + moe)):
-                return True
-            elif self.details.code == 'B' and ((coords.pX <= (pX_left + moe)) or (coords.pX >= (pX_right - moe)) or (coords.pZ <= (coords.pZ_bot + moe)) or (coords.pZ >= (coords.pZ_top - moe))):
-                return True
-            else:
-                return False
-
-    def pitch_in_the_zone_str(self, moe:float=0.035) -> str:
+    def pitch_in_the_zone_str(self, moe:float=0.083) -> str:
         s = ''
         
         if self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
@@ -556,7 +490,7 @@ class PitchCoordinates:
 
         # no children
 
-    def is_correct_call(self, call_code:str, moe:float=0.035) -> bool:
+    def is_correct_call(self, call_code:str, moe:float=0.083) -> bool:
             if call_code == 'C' or call_code == 'B' or call_code is None:
                 raise ValueError('call_code not correct')
             
