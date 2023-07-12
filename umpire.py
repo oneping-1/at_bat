@@ -3,9 +3,7 @@ from get.game import Game
 import get
 from datetime import datetime, timedelta
 from typing import List
-import pandas as pd
 import curses
-import sys
 import time
 
 def _get_utc_time(delta_seconds=0):
@@ -61,11 +59,14 @@ def _missed_pitch_details(ab: get.game.AllPlays, pitch: get.game.PlayEvents, run
     elif pitch.details.code == 'B':
         s += f'{pitch.count.balls-1}-{pitch.count.strikes}, strike called ball\n'
 
+    s += f'pX = {pitch.pitchData.coordinates.pX:.3f} | pZ = {pitch.pitchData.coordinates.pZ:.3f}\n'
+    s += f'pZ_bot = {pitch.pitchData.coordinates.pZ_bot:.3f} | pZ_top = {pitch.pitchData.coordinates.pZ_top:.3f}\n'
+
     s += f'{home_delta:5.3f}\n'
 
     return s
 
-def umpire(gamePk=None) -> float:
+def umpire(gamePk=None, print_every_missed_call: bool = False) -> float:
     if gamePk is None:
         raise ValueError('gamePk not Provided')
 
@@ -74,11 +75,11 @@ def umpire(gamePk=None) -> float:
 
     at_bat_lists = game.liveData.plays.allPlays
 
-    isTopInning: bool = None
-    inning: int = None
-    runners: List[bool] = [None, None, None] # [First, Second, Third]
+    isTopInning: bool = True
+    inning: int = 0
+    runners: List[bool] = [False, False, False] # [First, Second, Third]
 
-    home_favor = 0 # >0 = home helped, away hurt
+    home_favor: float = float(0) # >0 = home helped, away hurt
 
     for ab in at_bat_lists:
         if (isTopInning != ab.about.isTopInning) or (inning != ab.about.inning):
@@ -92,7 +93,7 @@ def umpire(gamePk=None) -> float:
             home_favor_delta = pitch.calculate_delta_home_favor(runners, isTopInning, moe=0)
             home_favor += home_favor_delta
 
-            if home_favor_delta != 0:
+            if home_favor_delta != 0 and print_every_missed_call is True:
                 print(_missed_pitch_details(ab, pitch, runners, home_favor_delta))
 
         if ab.matchup.postOnFirst is not None:
@@ -118,7 +119,7 @@ def print_last_pitch(gamePk=None, delta_seconds=0):
     if gamePk is None:
         raise ValueError('gamePk not provided')
     
-    spaces = '                                        '
+    spaces = '                                                                                                                        '
     game = Game(_get_game_dict(gamePk, delta_seconds=delta_seconds))
 
     isTopInning = True
@@ -268,9 +269,10 @@ def print_every_pitch(gamePk=None):
             runners[2] = False
 
 if __name__ == '__main__':
-    home_favor = umpire(717432)
-    print()
-    print(f'{home_favor:>6.3f}')
-
-    #print_last_pitch(717432)
-    #time.sleep(100)
+    #home_favor = umpire(717432, print_every_missed_call=True)
+    #home_favor = umpire(717421, print_every_missed_call=True)
+    #print()
+    #print(f'{home_favor:>6.3f}')
+#
+    while True:
+        print_last_pitch(717421, delta_seconds=55)

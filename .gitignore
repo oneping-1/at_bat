@@ -7,3 +7,6 @@ json.txt
 *.pyc
 *.pyc
 json.txt
+get/__pycache__/__init__.cpython-311.pyc
+*.pyc
+test.py

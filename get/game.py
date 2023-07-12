@@ -4,8 +4,7 @@ from typing import List
 from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
 from tqdm import tqdm
 import statsapi
-import numpy as np
-import csv
+import random
 
 renp = get_run_expectency_numpy()
 
@@ -274,13 +273,16 @@ class PlayEvents:
     def calculate_delta_home_favor(self, runners: List[bool], isTopInning: bool, moe: float = 0.083) -> float:
         home_delta = 0
 
+        correct = True
+
         b = self.count.balls
         s = self.count.strikes
         o = self.count.outs
 
         r = self._get_runners_int(runners)
 
-        correct = self._is_correct_call_zone()
+        if self.details.code == 'C' or self.details.code == 'B':
+            correct = self._is_correct_call_ump_scorecards()
 
         if correct is True:
             return 0
@@ -297,10 +299,42 @@ class PlayEvents:
             return home_delta
         return -home_delta
 
-    def _is_correct_call_zone(self) -> bool:        
+    def _is_correct_call_zone_num(self) -> bool:        
         if self.details.code == 'C' and self.pitchData.zone > 10:
             return False
         elif self.details.code == 'B' and self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
+            return False
+        else:
+            return True
+        
+    def _is_correct_call_ump_scorecards(self) -> bool:
+        moe = 0.5
+
+        strike = 0
+        ball = 0
+
+        pz_left = -0.83
+        pz_right = 0.83
+        pZ_top = self.pitchData.coordinates.pZ_top
+        pZ_bot = self.pitchData.coordinates.pZ_bot
+
+        for _ in range(1, 501):
+            dx = random.uniform(-moe, moe) / 12
+            dz = random.uniform(-moe, moe) / 12
+
+            rand_x = self.pitchData.coordinates.pX + dx
+            rand_z = self.pitchData.coordinates.pZ + dz
+
+            if (rand_x >= pz_left) and (rand_x <= pz_right) and (rand_z >= pZ_bot) and (rand_z <= pZ_top):
+                strike += 1
+            else:
+                ball += 1
+        
+        total = ball + strike
+
+        if self.details.code == 'B' and ((strike / total) >= 0.90):
+            return False
+        elif self.details.code =='C' and ((ball / total) >= 0.90):
             return False
         else:
             return True

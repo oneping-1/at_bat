@@ -6,8 +6,7 @@ class Schedule:
         self.totalEvents = sch['totalEvents']
         self.totalGames = sch['totalGames']
         self.totalGamesInProgress = sch['totalGamesInProgress']
-        self.dates = []
-        self.dates: List[Dates]
+        self.dates: List[Dates] = []
 
         for date in sch['dates']:
             self.dates.append(Dates(date))   
