@@ -90,7 +90,7 @@ def umpire(gamePk=None, print_every_missed_call: bool = False) -> float:
         for i in ab.pitchIndex:
             pitch: get.game.PlayEvents = ab.playEvents[i]
 
-            home_favor_delta = pitch.calculate_delta_home_favor(runners, isTopInning, moe=0)
+            home_favor_delta = pitch.calculate_delta_home_favor_zone_num(runners, isTopInning, moe=0)
             home_favor += home_favor_delta
 
             if home_favor_delta != 0 and print_every_missed_call is True:
@@ -136,40 +136,41 @@ def print_last_pitch(gamePk=None, delta_seconds=0):
 
         if len(ab.playEvents) > 0:
             pitch = ab.playEvents[-1]
-            home_delta = pitch.calculate_delta_home_favor(runners, isTopInning)
+            home_delta = pitch.calculate_delta_home_favor_monte_carlo(runners, isTopInning)
             home_favor += home_delta
 
             stdscr.addstr(0, 0, f'{game.gameData.teams.away.teamName} ({ab.result.awayScore}) at {game.gameData.teams.home.teamName} ({ab.result.homeScore}) {spaces}')
             stdscr.addstr(1, 0, f'{ab.about.halfInning.capitalize()} {ab.about.inning} {spaces}')
             stdscr.addstr(2, 0, f'{pitch.count.balls}-{pitch.count.strikes} | {pitch.count.outs} Outs {spaces}')
             stdscr.addstr(3, 0, f'{ab.matchup.pitcher.fullName} to {ab.matchup.batter.fullName} {spaces}')
+            stdscr.addstr(4, 0, f'Expected Runs: {get.game.PlayEvents.renp[pitch.count.balls][pitch.count.strikes][pitch.count.outs][get.game.PlayEvents._get_runners_int(runners)]}')
             
             try:
                 if pitch.isPitch is True:
-                    stdscr.addstr(5, 0, f'Pitch Details: {spaces}')
-                    stdscr.addstr(6, 0, f'{pitch.details.description} {spaces}')
-                    stdscr.addstr(7, 0, f'{pitch.pitchData.startSpeed} {pitch.details.type.description} {spaces}')
-                    stdscr.addstr(8, 0, f'{pitch.pitchData.breaks.spinRate} RPM {spaces}')
-                    stdscr.addstr(9, 0, f'{pitch.pitch_in_the_zone_str()} {spaces}')
-                    stdscr.addstr(10, 0, f'{umpire(gamePk):.3f} [{home_delta:.3f}] {spaces}')
+                    stdscr.addstr(6, 0, f'Pitch Details: {spaces}')
+                    stdscr.addstr(7, 0, f'{pitch.details.description} {spaces}')
+                    stdscr.addstr(8, 0, f'{pitch.pitchData.startSpeed} {pitch.details.type.description} {spaces}')
+                    stdscr.addstr(9, 0, f'{pitch.pitchData.breaks.spinRate} RPM {spaces}')
+                    stdscr.addstr(10, 0, f'{pitch.pitch_in_the_zone_str()} {spaces}')
+                    stdscr.addstr(11, 0, f'{umpire(gamePk):.3f} [{home_delta:.3f}] {spaces}')
                 else:
-                    stdscr.addstr(5, 0, f'{spaces}')
                     stdscr.addstr(6, 0, f'{spaces}')
                     stdscr.addstr(7, 0, f'{spaces}')
                     stdscr.addstr(8, 0, f'{spaces}')
                     stdscr.addstr(9, 0, f'{spaces}')
                     stdscr.addstr(10, 0, f'{spaces}')
+                    stdscr.addstr(11, 0, f'{spaces}')
 
                 if pitch.hitData is not None:
-                    stdscr.addstr(12, 0, f'Hit Details: {spaces}')
-                    stdscr.addstr(13, 0, f'Exit Velo: {pitch.hitData.launchSpeed} {spaces}')
-                    stdscr.addstr(14, 0, f'Launch Angle: {pitch.hitData.launchAngle} {spaces}')
-                    stdscr.addstr(15, 0, f'Total Dist: {pitch.hitData.totalDistance} {spaces}')
+                    stdscr.addstr(13, 0, f'Hit Details: {spaces}')
+                    stdscr.addstr(14, 0, f'Exit Velo: {pitch.hitData.launchSpeed} {spaces}')
+                    stdscr.addstr(15, 0, f'Launch Angle: {pitch.hitData.launchAngle} {spaces}')
+                    stdscr.addstr(16, 0, f'Total Dist: {pitch.hitData.totalDistance} {spaces}')
                 else:
-                    stdscr.addstr(12, 0, f'{spaces}')
                     stdscr.addstr(13, 0, f'{spaces}')
                     stdscr.addstr(14, 0, f'{spaces}')
                     stdscr.addstr(15, 0, f'{spaces}')
+                    stdscr.addstr(16, 0, f'{spaces}')
             except AttributeError:
                 pass
 
@@ -214,40 +215,41 @@ def print_every_pitch(gamePk=None):
 
         if len(ab.playEvents) > 0:
             for pitch in ab.playEvents:
-                home_delta = pitch.calculate_delta_home_favor(runners, isTopInning)
+                home_delta = pitch.calculate_delta_home_favor_zone_num(runners, isTopInning)
                 home_favor += home_delta
 
                 stdscr.addstr(0, 0, f'{game.gameData.teams.away.teamName} ({ab.result.awayScore}) at {game.gameData.teams.home.teamName} ({ab.result.homeScore}) {spaces}')
                 stdscr.addstr(1, 0, f'{ab.about.halfInning.capitalize()} {ab.about.inning} {spaces}')
                 stdscr.addstr(2, 0, f'{pitch.count.balls}-{pitch.count.strikes} | {pitch.count.outs} Outs {spaces}')
                 stdscr.addstr(3, 0, f'{ab.matchup.pitcher.fullName} to {ab.matchup.batter.fullName} {spaces}')
+                stdscr.addstr(4, 0, f'Expected Runs: {get.game.PlayEvents.renp[pitch.count.balls][pitch.count.strikes][pitch.count.outs][get.game.PlayEvents._get_runners_int(runners)]}')
                 
                 try:
                     if pitch.isPitch is True:
-                        stdscr.addstr(5, 0, f'Pitch Details: {spaces}')
-                        stdscr.addstr(6, 0, f'{pitch.details.description} {spaces}')
-                        stdscr.addstr(7, 0, f'{pitch.pitchData.startSpeed} {pitch.details.type.description} {spaces}')
-                        stdscr.addstr(8, 0, f'{pitch.pitchData.breaks.spinRate} RPM {spaces}')
-                        stdscr.addstr(9, 0, f'{pitch.pitch_in_the_zone_str()} {spaces}')
-                        stdscr.addstr(10, 0, f'{home_favor:.3f} [{home_delta:.3f}] {spaces}')
+                        stdscr.addstr(6, 0, f'Pitch Details: {spaces}')
+                        stdscr.addstr(7, 0, f'{pitch.details.description} {spaces}')
+                        stdscr.addstr(8, 0, f'{pitch.pitchData.startSpeed} {pitch.details.type.description} {spaces}')
+                        stdscr.addstr(9, 0, f'{pitch.pitchData.breaks.spinRate} RPM {spaces}')
+                        stdscr.addstr(10, 0, f'{pitch.pitch_in_the_zone_str()} {spaces}')
+                        stdscr.addstr(11, 0, f'{home_favor:.3f} [{home_delta:.3f}] {spaces}')
                     else:
-                        stdscr.addstr(5, 0, f'{spaces}')
                         stdscr.addstr(6, 0, f'{spaces}')
                         stdscr.addstr(7, 0, f'{spaces}')
                         stdscr.addstr(8, 0, f'{spaces}')
                         stdscr.addstr(9, 0, f'{spaces}')
                         stdscr.addstr(10, 0, f'{spaces}')
+                        stdscr.addstr(11, 0, f'{spaces}')
 
                     if pitch.hitData is not None:
-                        stdscr.addstr(12, 0, f'Hit Details: {spaces}')
-                        stdscr.addstr(13, 0, f'Exit Velo: {pitch.hitData.launchSpeed} {spaces}')
-                        stdscr.addstr(14, 0, f'Launch Angle: {pitch.hitData.launchAngle} {spaces}')
-                        stdscr.addstr(15, 0, f'Total Dist: {pitch.hitData.totalDistance} {spaces}')
+                        stdscr.addstr(13, 0, f'Hit Details: {spaces}')
+                        stdscr.addstr(14, 0, f'Exit Velo: {pitch.hitData.launchSpeed} {spaces}')
+                        stdscr.addstr(15, 0, f'Launch Angle: {pitch.hitData.launchAngle} {spaces}')
+                        stdscr.addstr(16, 0, f'Total Dist: {pitch.hitData.totalDistance} {spaces}')
                     else:
-                        stdscr.addstr(12, 0, f'{spaces}')
                         stdscr.addstr(13, 0, f'{spaces}')
                         stdscr.addstr(14, 0, f'{spaces}')
                         stdscr.addstr(15, 0, f'{spaces}')
+                        stdscr.addstr(16, 0, f'{spaces}')
                 except AttributeError:
                     pass
 
@@ -269,10 +271,9 @@ def print_every_pitch(gamePk=None):
             runners[2] = False
 
 if __name__ == '__main__':
-    #home_favor = umpire(717432, print_every_missed_call=True)
-    #home_favor = umpire(717421, print_every_missed_call=True)
-    #print()
-    #print(f'{home_favor:>6.3f}')
-#
-    while True:
-        print_last_pitch(717421, delta_seconds=55)
+    home_favor = umpire(717421, print_every_missed_call=True)
+    print()
+    print(f'{home_favor:>6.3f}')
+
+    #while True:
+    #    print_every_pitch(717421)

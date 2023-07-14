@@ -1,12 +1,13 @@
 import datetime
 import pytz
-from typing import List
+from typing import List, Tuple
 from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
 from tqdm import tqdm
 import statsapi
 import random
+import math
 
-renp = get_run_expectency_numpy()
+margin_of_error = .75/12 # Margin of Error of hawkeye system (inches)
 
 class Game:
     def __init__(self, data:dict):
@@ -238,10 +239,13 @@ class PlayEvents:
     """
     Holds data for each pitch in at bat
     """
+    MOE = margin_of_error
+    renp = get_run_expectency_numpy()
+
     def __init__(self, playEvents: dict):
         self._playEvents = playEvents
-        self.details = playEvents['details']
-        self.count = playEvents['count']
+        self.details = playEvents.get('details', None)
+        self.count = playEvents.get('count', None)
         self.pitchData = playEvents.get('pitchData', None)
         self.hitData = playEvents.get('hitData', None)
         self.index = playEvents.get('index', None)
@@ -261,8 +265,11 @@ class PlayEvents:
         self._children()
 
     def _children(self):
-        self.details = Details(self.details)
-        self.count = Count(self.count)
+        if self.details is not None:
+            self.details = Details(self.details)
+
+        if self.count is not None:
+            self.count = Count(self.count)
 
         if self.hitData is not None:
             self.hitData = HitData(self.hitData)
@@ -270,7 +277,7 @@ class PlayEvents:
         if self.pitchData is not None:
             self.pitchData = PitchData(self.pitchData)
        
-    def calculate_delta_home_favor(self, runners: List[bool], isTopInning: bool, moe: float = 0.083) -> float:
+    def calculate_delta_home_favor_zone_num(self, runners: List[bool], isTopInning: bool, moe: float = 0.083) -> float:
         home_delta = 0
 
         correct = True
@@ -282,17 +289,46 @@ class PlayEvents:
         r = self._get_runners_int(runners)
 
         if self.details.code == 'C' or self.details.code == 'B':
-            correct = self._is_correct_call_ump_scorecards()
+            correct = self._is_correct_call_zone_num()
 
         if correct is True:
             return 0
         elif self.details.code == 'C':
             # Ball called Strike
-            home_delta += renp[b+1][s-1][o][r] - renp[b][s][o][r]
+            home_delta += PlayEvents.renp[b+1][s-1][o][r] - PlayEvents.renp[b][s][o][r]
             ...
         elif self.details.code == 'B':
             # Strike called Ball
-            home_delta += renp[b-1][s+1][o][r] - renp[b][s][o][r]
+            home_delta += PlayEvents.renp[b-1][s+1][o][r] - PlayEvents.renp[b][s][o][r]
+            ...
+
+        if isTopInning is True:
+            return home_delta
+        return -home_delta
+
+    def calculate_delta_home_favor_monte_carlo(self, runners: List[bool], isTopInning: bool, moe: float = 0.083) -> float:
+        home_delta = 0
+
+        correct = True
+
+        b = self.count.balls
+        s = self.count.strikes
+        o = self.count.outs
+
+        r = self._get_runners_int(runners)
+
+        if self.details.code == 'C' or self.details.code == 'B':
+            correct = self._is_correct_call_monte_carlo()
+
+        if correct is True:
+            return 0
+        elif self.details.code == 'C':
+            # Ball called Strike
+            home_delta += PlayEvents.renp[b+1][s-1][o][r] - PlayEvents.renp[b][s][o][r]
+            ...
+        elif self.details.code == 'B':
+            # Strike called Ball
+            home_delta += PlayEvents.renp[b-1][s+1][o][r] - PlayEvents.renp[b][s][o][r]
             ...
 
         if isTopInning is True:
@@ -307,9 +343,7 @@ class PlayEvents:
         else:
             return True
         
-    def _is_correct_call_ump_scorecards(self) -> bool:
-        moe = 0.5
-
+    def _is_correct_call_monte_carlo(self) -> bool:
         strike = 0
         ball = 0
 
@@ -319,11 +353,7 @@ class PlayEvents:
         pZ_bot = self.pitchData.coordinates.pZ_bot
 
         for _ in range(1, 501):
-            dx = random.uniform(-moe, moe) / 12
-            dz = random.uniform(-moe, moe) / 12
-
-            rand_x = self.pitchData.coordinates.pX + dx
-            rand_z = self.pitchData.coordinates.pZ + dz
+            rand_x, rand_z = self._generage_random_pitch_location()
 
             if (rand_x >= pz_left) and (rand_x <= pz_right) and (rand_z >= pZ_bot) and (rand_z <= pZ_top):
                 strike += 1
@@ -339,7 +369,21 @@ class PlayEvents:
         else:
             return True
 
-    def _get_runners_int(self, runners) -> int:
+    def _generage_random_pitch_location(self) -> Tuple[float, float]:
+            dr = random.uniform(-margin_of_error, margin_of_error)
+            dt = random.uniform(0, 360)
+            dt = math.radians(dt)
+
+            dx = dr * math.cos(dt)
+            dz = dr * math.sin(dt)
+
+            rand_x = self.pitchData.coordinates.pX + dx
+            rand_z = self.pitchData.coordinates.pZ + dz
+
+            return (rand_x, rand_z)
+
+    @classmethod
+    def _get_runners_int(cls, runners) -> int:
         r = 0
 
         if runners[0] is True:

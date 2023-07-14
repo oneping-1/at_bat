@@ -1,6 +1,7 @@
 # MLB Stat
 
 Live MLB (and potentially minor league) game stats.
+Umpire.py is an attempt to recreate Ump Scorecards (https://twitter.com/UmpScorecards). Has multiple functions that essentially do the same thing
 
 ## Table of Contents
 
@@ -15,6 +16,7 @@ Live MLB (and potentially minor league) game stats.
 - [X] Add readme
 - [X] Implement Ump Scorecards method to calculate if pitch was in the zone
 - [ ] Implement Margin of Error method to calculate if pitch was in the zone
-- [ ] Update and add more pytests
+- [X] Update and add more pytests
 - [ ] Add restructured text doc strings for functions, classes
-- [ ] Shows expected runs in the inning in umpire.show_last_pitch()
+- [X] Shows expected runs in the inning in umpire.show_last_pitch()
+- [ ] Fix Bug with umpire.print_every_pitch()
