@@ -6,7 +6,7 @@ from get.standings import Standing, get_color
 # 103 - American League
 # 104 - National League
 
-just_fix_windows_console
+just_fix_windows_console()
 
 standings_data = statsapi.get('standings', {'leagueId':103})
 s = Standing(standings_data)

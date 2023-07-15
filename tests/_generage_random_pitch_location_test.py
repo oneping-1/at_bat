@@ -1,7 +1,7 @@
 from ..get.game import PlayEvents
 import math
 
-def test_01():
+def test_random_MOE_01():
     pX = 0
     pZ = 0
 
@@ -26,7 +26,7 @@ def test_01():
 
     assert mag <= PlayEvents.MOE
 
-def test_02():
+def test_random_MOE_02():
     pX = 0
     pZ = 1
 
@@ -51,7 +51,7 @@ def test_02():
 
     assert mag <= PlayEvents.MOE
 
-def test_03():
+def test_random_MOE_03():
     pX = 1
     pZ = 0
 
@@ -76,7 +76,7 @@ def test_03():
 
     assert mag <= PlayEvents.MOE
 
-def test_04():
+def test_random_MOE_04():
     pX = 0
     pZ = 2
 
