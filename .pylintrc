@@ -1,0 +1,4 @@
+[BASIC]
+
+# List of good variable names
+good-names=gamePk,gamePks,i,isTopInning

@@ -6,13 +6,12 @@ Converts the Python dictionary returned by statsapi.get('game') into classes
 import datetime
 from typing import List, Tuple
 import math
-import pytz
-from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy, get_runners_int
-from tqdm import tqdm
-import statsapi
 import random
+import pytz
+import statsapi
+from tqdm import tqdm
+from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
 
-#margin_of_error = .75/12 # Margin of Error of hawkeye system (inches)
 margin_of_error = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 class Game:
@@ -242,9 +241,6 @@ class Splits:
         self.menOnBase = splits.get('menOnBase', None)
 
 class PlayEvents:
-    """
-    Holds data for each pitch in at bat
-    """
     MOE = margin_of_error
     renp = get_run_expectency_numpy()
 
@@ -283,7 +279,7 @@ class PlayEvents:
         if self.pitchData is not None:
             self.pitchData = PitchData(self.pitchData)
 
-    def get_delta_home_favor_zone_num(self, runners: List[bool], isTopInning: bool) -> float:
+    def delta_favor_zone(self, runners: int, isTopInning: bool) -> float:
         home_delta = 0
 
         correct = True
@@ -292,7 +288,7 @@ class PlayEvents:
         s = self.count.strikes
         o = self.count.outs
 
-        r = get_runners_int(runners)
+        r = runners
 
         if self.details.code == 'C' or self.details.code == 'B':
             correct = self._is_correct_call_zone_num()
@@ -312,7 +308,7 @@ class PlayEvents:
             return home_delta
         return -home_delta
 
-    def get_delta_home_favor_monte_carlo(self, runners: List[bool], isTopInning: bool) -> float:
+    def delta_favor_monte(self, runners: int, isTopInning: bool) -> float:
         home_delta = 0
 
         correct = True
@@ -321,7 +317,13 @@ class PlayEvents:
         s = self.count.strikes
         o = self.count.outs
 
-        r = get_runners_int(runners.copy())
+        r = runners
+
+        if self.pitchData is None:
+            return 0
+
+        if self.pitchData.coordinates.is_valid() is False:
+            return 0
 
         if self.details.code == 'C' or self.details.code == 'B':
             correct = self._is_correct_call_monte_carlo()
@@ -364,7 +366,7 @@ class PlayEvents:
                 strike += 1
             else:
                 ball += 1
-        
+
         total = ball + strike
 
         if self.details.code == 'B' and ((strike / total) >= 0.90):
@@ -386,25 +388,6 @@ class PlayEvents:
         rand_z = self.pitchData.coordinates.pZ + dz
 
         return (rand_x, rand_z)
-
-    def pitch_in_the_zone_str(self, moe:float=0.083) -> str:
-        return_str = ''
-        
-        if self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
-            return_str += 'In Zone'
-        elif self.pitchData.zone > 10:
-            return_str += 'Out of Zone'
-
-        if (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_top - moe)) and (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_top + moe)) and (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)):
-            return_str += ' (moe)'
-        elif (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_bot - moe)) and (self.pitchData.coordinates.pZ >= (self.pitchData.coordinates.pZ_bot + moe)) and (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)):
-            return_str += ' (moe)'
-        elif (self.pitchData.coordinates.pX >= (-.83 - moe)) and (self.pitchData.coordinates.pX <= (-.83 + moe)) and (self.pitchData.coordinates.pZ >= self.pitchData.coordinates.pZ_bot) and (self.pitchData.coordinates.pZ <= self.pitchData.coordinates.pZ_top):
-            return_str += ' (moe)'
-        elif (self.pitchData.coordinates.pX >= (.83 - moe)) and (self.pitchData.coordinates.pX <= (.83 + moe)) and (self.pitchData.coordinates.pZ >= self.pitchData.coordinates.pZ_bot) and (self.pitchData.coordinates.pZ <= self.pitchData.coordinates.pZ_top):
-            return_str += ' (moe)'
-
-        return return_str
 
     def __eq__(self, other):
         if other is None:
@@ -476,6 +459,13 @@ class PitchData:
 
         if self.breaks:
             self.breaks = Breaks(self.breaks)
+
+    def __str__(self):
+        # Bother with margin of error?
+        if self.zone >= 1 and self.zone <= 9:
+            return 'In Zone'
+        else:
+            return 'Out of Zone'
 
 class PitchCoordinates:
     def __init__(self, coor, sz_top, sz_bot):
@@ -562,6 +552,12 @@ class PitchCoordinates:
         #self.below_zone = self.pZ_bot - self.pZ
 
         # no children
+
+    def is_valid(self) -> bool:
+        if self.pX is not None and self.pZ is not None:
+            return True
+        elif self.pX is None or self.pZ is None:
+            return False
 
 class Breaks:
     def __init__(self, breaks):

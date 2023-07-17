@@ -1,5 +1,6 @@
 import pytest
 from ..get.game import PlayEvents
+from ..get.runners import Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
@@ -29,11 +30,11 @@ def test_calculate_delta_01():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
+    home_delta = pitch.delta_favor_zone(int(runners), isTopInning)
 
     assert home_delta == 0
 
@@ -63,11 +64,11 @@ def test_calculate_delta_02():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
+    home_delta = pitch.delta_favor_zone(int(runners), isTopInning)
 
     assert home_delta == 0
 
@@ -102,12 +103,12 @@ def test_calculate_delta_03():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards has -0.11
     assert home_delta_zone == pytest.approx(-.12, abs=1e-3)
@@ -144,12 +145,12 @@ def test_calculate_delta_04():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
     assert home_delta_zone == pytest.approx(-.09, abs=1e-3)
@@ -187,12 +188,12 @@ def test_calculate_delta_05():
         }
     }
 
-    runners = [True, False, False]
+    runners = Runners([True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards has -0.08
     assert home_delta_zone == pytest.approx(-0.09, abs=1e-3)
@@ -229,12 +230,12 @@ def test_calculate_delta_06():
         }
     }
 
-    runners = [True, False, False]
+    runners = Runners([True, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.28, abs=1e-3)
@@ -271,12 +272,12 @@ def test_calculate_delta_07():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.03, abs=1e-3)
@@ -313,12 +314,12 @@ def test_calculate_delta_08():
         }
     }
 
-    runners = [True, False, False]
+    runners = Runners([True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards had -0.141
     assert home_delta_zone == pytest.approx(-0.16, abs=1e-3)
@@ -355,12 +356,12 @@ def test_calculate_delta_09():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.03, abs=1e-3)
@@ -397,12 +398,12 @@ def test_calculate_delta_10():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards had +0.07
     assert home_delta_zone == pytest.approx(+0.07, abs=1e-3)
@@ -439,12 +440,12 @@ def test_calculate_delta_11():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
     assert home_delta_zone == pytest.approx(+0.03, abs=1e-3)
@@ -481,12 +482,12 @@ def test_calculate_delta_12():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards had -0.05
     assert home_delta_zone == pytest.approx(-0.06, abs=1e-3)
@@ -523,12 +524,12 @@ def test_calculate_delta_13():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on ump scorecards
     assert home_delta_zone == pytest.approx(-0.15, abs=1e-3)
@@ -565,12 +566,12 @@ def test_calculate_delta_14():
         }
     }
 
-    runners = [True, False, False]
+    runners = Runners([True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Was on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.19, abs=1e-3)
@@ -607,12 +608,12 @@ def test_calculate_delta_15():
         }
     }
 
-    runners = [True, False, False]
+    runners = Runners([True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Was on not Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.26, abs=1e-3)
@@ -649,12 +650,12 @@ def test_calculate_delta_16():
         }
     }
 
-    runners = [False, False, False]
+    runners = Runners([False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.get_delta_home_favor_zone_num(runners, isTopInning)
-    home_delta_monte = pitch.get_delta_home_favor_monte_carlo(runners, isTopInning)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Was on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.22, abs=1e-3)

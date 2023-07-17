@@ -1,19 +1,24 @@
 import sys
-import statsapi
 from colorama import just_fix_windows_console
 from get.game import Game
 import get.statsapi_plus as sp
+import argparse
 
 just_fix_windows_console()
 
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--delay', help='delay in seconds', type=float, default=0)
+    args = parser.parse_args()
+
     prnt = ''
 
     gamePks = sp.get_daily_gamePks()
     games = []
-    for Pk in gamePks:
-        p = True
-        data = statsapi.get('game', {'gamePk': Pk})
+    for game in gamePks:
+        prnt_bool = True
+        data = sp.get_game_dict(game, delay_seconds=args.delay)
         game = Game(data)
         games.append(game)
 
@@ -35,16 +40,14 @@ def main():
         elif 'Preview' in game.gameData.status.abstractGameState or 'Warmup' in game.gameData.status.detailedState:
             prnt += (f'{away_color}{game.gameData.teams.away.abbreviation:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{game.gameData.teams.home.abbreviation:4s}\n')
-        elif 'TEX' in game.gameData.teams.away.abbreviation or 'TEX' in game.gameData.teams.home.abbreviation:
-            p = False
-        elif 'Top' in game.liveData.linescore.inningState or 'Mid' in game.liveData.linescore.inningState:   
+        elif 'Top' in game.liveData.linescore.inningState or 'Mid' in game.liveData.linescore.inningState:
             prnt += (f'{away_color}{game.gameData.teams.away.abbreviation:3s}- {game.liveData.linescore.teams.away.runs:2d} o{game.liveData.linescore.outs:1d}\n')
             prnt += (f'{home_color}{game.gameData.teams.home.abbreviation:4s} {game.liveData.linescore.teams.home.runs:2d} {game.liveData.linescore.currentInning:2d}\n')
         elif 'Bot' in game.liveData.linescore.inningState or 'End' in game.liveData.linescore.inningState:
             prnt += (f'{away_color}{game.gameData.teams.away.abbreviation:4s} {game.liveData.linescore.teams.away.runs:2d} o{game.liveData.linescore.outs:1d}\n')
             prnt += (f'{home_color}{game.gameData.teams.home.abbreviation:3s}- {game.liveData.linescore.teams.home.runs:2d} {game.liveData.linescore.currentInning:2d}\n')
 
-        if p:
+        if prnt_bool:
             prnt += '\n'
 
     print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')

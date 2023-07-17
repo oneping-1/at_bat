@@ -3,14 +3,36 @@ from datetime import datetime, timedelta
 import statsapi
 from colorama import Fore
 import numpy as np
-from typing import List
 
 def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
     """
-    returns the game dictionary for given gamePk
+    Returns the game dictionary for given game
+
+    Essentially the same as statsapi.get('game') but with an extra
+    function argument. This argument will let the dictionary returned
+    to be from a given number of seconds ago. This is for when you are
+    watching a game which is delayed to the data
+
+    Args:
+        gamePk (int): The gamePk/id for the desired game. Can easily
+            be found on the MLB/MiLB websites
+        delay_seconds (float, optional): The number of seconds the data
+            should be delayed to match what you're seeing. Defaults to 0
+
+    Returns:
+        data (dict): The game dictionary recieved with the given delay.
+            Can be turned into a Game object by using this dict as the
+            only argument to Game. Example: 
+            data = get_game_dict(717404, delay_seconds=45)
+            game_class = Game(data)
+
+    Raises:
+        ValueError: If gamePk argument is not defined
+        HTTPError: If gamePk argument is not valid
+        TypeError: If delay_seconds is not valid 
     """
     if gamePk is None:
-        raise ValueError('gamePk not given')
+        raise ValueError('gamePk not provided')
 
     delay_time = get_utc_time(delay_seconds=delay_seconds)
     data = statsapi.get('game', {'gamePk': gamePk, 'timecode': delay_time}, force=True)
@@ -24,8 +46,8 @@ def get_utc_time(delay_seconds: int = 0):
     'delay_seconds' can also be type float as well
 
     Args:
-        delay_seconds (int, optional): Seconds behind present you want the output to be. 
-            Defaults to 0
+        delay_seconds (int, optional): Seconds behind present you want
+        the output to be. Defaults to 0
 
     Returns:
         str: The UTC time in the 'YYYYMMDD-HHMMSS' format
@@ -45,9 +67,13 @@ def get_utc_time(delay_seconds: int = 0):
     return formatted_time
 
 
-def get_daily_gamePks():
+def get_daily_gamePks(date: str = None):
     gamePks = []
-    data = statsapi.schedule()
+
+    if date is not None:
+        data = statsapi.schedule(date=date)
+    elif date is None:
+        data = statsapi.schedule()
 
     for game in data:
         gamePks.append(game['game_id'])
@@ -73,6 +99,12 @@ def get_color_scoreboard(game):
 
     if game.gameData.teams.home.abbreviation == 'TEX':
         home = Fore.LIGHTBLUE_EX
+
+    if game.gameData.teams.away.abbreviation in ('MIA', 'CWS', 'AZ', 'MIL', 'BOS', 'TB', 'LAD'):
+        away = Fore.LIGHTGREEN_EX
+
+    if game.gameData.teams.home.abbreviation in ('MIA', 'CWS', 'AZ', 'MIL', 'BOS', 'TB', 'LAD'):
+        home = Fore.LIGHTGREEN_EX
 
     return [away, home]
 
@@ -120,42 +152,6 @@ def get_run_expectency_numpy() -> np.ndarray:
             renp[balls][strikes][outs][runners] = run_expectency
 
     return renp
-
-def get_runners_int(runners: List[bool]) -> int:
-    """
-    Translates a list of runners into an int so it can be used as an indexed.
-
-    Basically converts the list of runners into base 10 from base 2. Numpy requires indexes to be
-    integers so this fun ction is required to translate between runner positions and numpy
-
-    runners[0] = True if runner is on first
-    runners[1] = True if runner is on second
-    runners[2] = True if runner is on third
-    len(runners) should equals.
-
-    Args:
-        runners: (List[bool]): Where the runners are currently located.
-
-    Returns:
-        int: Base 10 representation of runner positions
-
-    Raises:
-        IndexError: If dlen(runners) != 3
-    
-    """
-    if len(runners) != 3:
-        raise IndexError('runners argument should be length 3')
-
-    runners_int = 0
-
-    if runners[0] is True:
-        runners_int += 1
-    if runners[1] is True:
-        runners_int += 2
-    if runners[2] is True:
-        runners_int += 4
-
-    return runners_int
 
 if __name__ == '__main__':
     pass
