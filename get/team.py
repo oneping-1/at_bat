@@ -2,19 +2,20 @@ from typing import List
 import csv
 
 class Team:
-    def __init__(self, id, abv, div):
-        self.id = int(id)
+    def __init__(self, team_id: int, abv: str, div: str):
+        self.id = int(team_id)
         self.abv = abv
         self.division = div
+        self.opponent = None
 
     def oppo(self, wins:int, losses:int, above_500:float):
         self.opponent = Opponent(wins, losses, above_500)
 
     @classmethod
-    def get_teams_list() -> List[Team]:
+    def get_teams_list(cls) -> List['Team']:
         teams = []
 
-        with open('csv/teams.csv') as file:
+        with open('csv/teams.csv', encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
 

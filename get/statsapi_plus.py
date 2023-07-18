@@ -101,7 +101,7 @@ def get_color_scoreboard(game):
     if game.gameData.teams.home.abbreviation == 'TEX':
         home = Fore.LIGHTBLUE_EX
 
-    bet_teams = ('LAD', 'DET', 'MIN', 'TEX', 'LAA')
+    bet_teams = ('MIL', 'CWS', 'AZ', 'WSH', 'DET', 'MIN')
     if game.gameData.teams.away.abbreviation in bet_teams:
         away = Fore.LIGHTGREEN_EX
 

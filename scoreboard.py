@@ -1,5 +1,3 @@
-import curses
-import sys
 from colorama import just_fix_windows_console
 from get.game import Game
 import get.statsapi_plus as sp
@@ -27,10 +25,10 @@ def main():
         away_color, home_color, away_team, home_team, detailed_state, abstract_state = game_data
 
         live_data = _get_liveData(game)
-        away_score, home_score, inning, outs, isTopInning, inning_state = live_data
+        away_score, home_score, inning, outs, inning_state = live_data
 
         if 'Final' in abstract_state:
-            if game.inning == 9:
+            if inning == 9:
                 prnt += (f'{away_color}{away_team:4s} {away_score:2d}  F\n')
                 prnt += (f'{home_color}{home_team:4s} {home_score:2d}\n')
             else:
@@ -46,7 +44,7 @@ def main():
             prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{home_team:4s}\n')
         elif inning_state in ('Top', 'Mid'):
-            prnt += (f'{away_color}{away_team:3s}- {away_score}:2d o{outs:1d}\n')
+            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
         elif inning_state in ('Bot', 'End'):
             prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d}\n')
@@ -79,11 +77,9 @@ def _get_liveData(game):
     inning = game.liveData.linescore.currentInning
     outs = game.liveData.linescore.outs
 
-    # What is this in middle and end of innings?
-    isTopInning = game.liveData.linescore.isTopInning
     inning_state = game.liveData.linescore.inningState
 
-    return (away_score, home_score, inning, outs, isTopInning, inning_state)
+    return (away_score, home_score, inning, outs, inning_state)
 
 
 if __name__ == '__main__':

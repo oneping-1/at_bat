@@ -58,13 +58,16 @@ def sos(days_ahead=15, print_results = False):
         losses = 0
         above_500 = 0
 
-        away_id = day.games.teams.away.team.id
-        home_id = day.games.teams.home.team.id
-
         for day in data.dates:
+            away_id = day.games.teams.away.team.id
+            home_id = day.games.teams.home.team.id
+
             if team.id not in (away_id, home_id):
                 raise ValueError('id mismatch')
-            elif team.id != day.games.teams.away.team.id:
+            if team.id == away_id and team.id == home_id:
+                raise ValueError('id mismatch')
+
+            if team.id != day.games.teams.away.team.id:
                 wins += day.games.teams.away.leagueRecord.wins
                 losses += day.games.teams.away.leagueRecord.losses
                 if day.games.teams.away.leagueRecord.pct > .500:
@@ -74,8 +77,6 @@ def sos(days_ahead=15, print_results = False):
                 losses += day.games.teams.home.leagueRecord.losses
                 if day.games.teams.home.leagueRecord.pct > .500:
                     above_500 += 1
-            else:
-                raise ValueError('id mismatch 2')
 
         team.oppo(wins, losses, above_500)
 
@@ -98,4 +99,4 @@ def _print_winpct_above500(days_ahead:int, teams: List[Team]):
 
 
 if __name__ == '__main__':
-    sos(days_ahead=30)
+    sos(days_ahead=15, print_results = True)
