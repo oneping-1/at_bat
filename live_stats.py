@@ -14,7 +14,8 @@ from typing import Tuple
 from get.game import Game, PlayEvents, AllPlays
 from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
 from get.runners import Runners
-from get.umpire import get_total_favored_runs
+from get.umpire import Umpire
+
 
 def print_last_pitch(gamePk: int = None,
                      delay: float = 0):
@@ -90,6 +91,7 @@ def print_last_pitch(gamePk: int = None,
         except KeyboardInterrupt:
             sys.exit()
 
+
 def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:
     away_team = game.gameData.teams.away.teamName
     away_score = at_bat.result.awayScore
@@ -103,31 +105,6 @@ def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:
     line_1 = f'{half_inn} {inning}'
     return (line_0, line_1)
 
-def _get_run_details(game: Game,
-                     pitch: PlayEvents,
-                     runners: Runners) -> Tuple[str, str]:
-
-    away_team = game.gameData.teams.away.abbreviation
-    home_team = game.gameData.teams.home.abbreviation
-
-    balls = pitch.count.balls
-    strikes = pitch.count.strikes
-    outs = pitch.count.outs
-    runners = int(runners)
-
-    renp = get_run_expectency_numpy()
-    run_exp = renp[balls][strikes][outs][runners]
-
-    favor = get_total_favored_runs(game_class=game)[1]
-
-    line_0 = f'Expected Runs: {run_exp}'
-
-    if favor < 0:
-        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
-    else:
-        line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
-
-    return (line_0, line_1)
 
 def _get_at_bat_details(at_bat: AllPlays, pitch: PlayEvents,
                         runners: Runners) -> Tuple[str, str, str]:
@@ -145,6 +122,34 @@ def _get_at_bat_details(at_bat: AllPlays, pitch: PlayEvents,
     line_2 = f'{str(runners)}'
 
     return (line_0, line_1, line_2)
+
+
+def _get_run_details(game: Game,
+                     pitch: PlayEvents,
+                     runners: Runners) -> Tuple[str, str]:
+
+    away_team = game.gameData.teams.away.abbreviation
+    home_team = game.gameData.teams.home.abbreviation
+
+    balls = pitch.count.balls
+    strikes = pitch.count.strikes
+    outs = pitch.count.outs
+    runners = int(runners)
+
+    renp = get_run_expectency_numpy()
+    run_exp = renp[balls][strikes][outs][runners]
+
+    favor = Umpire.find_missed_calls(game=game)[1]
+
+    line_0 = f'Expected Runs: {run_exp:.2f}'
+
+    if favor < 0:
+        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
+    else:
+        line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
+
+    return (line_0, line_1)
+
 
 def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
     if pitch.isPitch is True:
@@ -169,6 +174,7 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
 
     return (line_0, line_1, line_2, line_3, line_4)
 
+
 def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
     if pitch.hitData is not None:
         exit_velo = pitch.hitData.launchSpeed
@@ -187,6 +193,7 @@ def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
 
     return (line_0, line_1, line_2, line_3)
 
+
 def main():
     """
     Main function that grabs system arguments and runs code
@@ -199,16 +206,15 @@ def main():
     if args.gamepk is not None:
         gamePk = args.gamepk
     else:
-        #gamePk = int(input('gamePk: '))
-        gamePk = 717377
+        gamePk = int(input('gamePk: '))
 
     if args.delay is not None:
         delay = args.delay
     else:
-        #delay = float(input('delay: '))
-        delay = 48
+        delay = float(input('delay: '))
 
     print_last_pitch(gamePk, delay=delay)
+
 
 if __name__ == '__main__':
     main()

@@ -80,6 +80,7 @@ def get_daily_gamePks(date: str = None):
 
     return gamePks
 
+
 def get_color_scoreboard(game):
     away = Fore.WHITE
     home = Fore.WHITE
@@ -100,13 +101,15 @@ def get_color_scoreboard(game):
     if game.gameData.teams.home.abbreviation == 'TEX':
         home = Fore.LIGHTBLUE_EX
 
-    if game.gameData.teams.away.abbreviation in ('MIA', 'CWS', 'AZ', 'MIL', 'BOS', 'TB', 'LAD'):
+    bet_teams = ('LAD', 'DET', 'MIN', 'TEX', 'LAA')
+    if game.gameData.teams.away.abbreviation in bet_teams:
         away = Fore.LIGHTGREEN_EX
 
-    if game.gameData.teams.home.abbreviation in ('MIA', 'CWS', 'AZ', 'MIL', 'BOS', 'TB', 'LAD'):
+    if game.gameData.teams.home.abbreviation in bet_teams:
         home = Fore.LIGHTGREEN_EX
 
     return [away, home]
+
 
 def get_color(team_abv:str, division:str):
     if team_abv == 'TEX':
@@ -115,6 +118,7 @@ def get_color(team_abv:str, division:str):
         return Fore.LIGHTRED_EX
     else:
         return Fore.WHITE
+
 
 def get_run_expectency_numpy() -> np.ndarray:
     """
@@ -152,6 +156,7 @@ def get_run_expectency_numpy() -> np.ndarray:
             renp[balls][strikes][outs][runners] = run_expectency
 
     return renp
+
 
 if __name__ == '__main__':
     pass

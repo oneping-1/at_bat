@@ -8,6 +8,7 @@ from tqdm import tqdm
 background = 'blue'
 font_size = 12
 
+
 class Scoreboard:
     def __init__(self):
         self.window = tk.Tk()
@@ -16,13 +17,14 @@ class Scoreboard:
         self.main_frame = tk.Frame(self.window, bg=background)
         self.main_frame.pack()
 
+
     def create_game_frames(self):
         self.game_frames = []
         for _ in self.games:
             self.game_frames.append(tk.Frame(self.main_frame, bg=background))
 
-    def display_game_frames(self):
 
+    def display_game_frames(self):
         for i,frame in enumerate(self.game_frames):
             game = self.games[i]
             ac, hc = self.get_colors(game) # awah/home colors
@@ -83,6 +85,7 @@ class Scoreboard:
             scorebox4 = tk.Label(frame, text=f'{scorebox[3]:>2s}', font=('DSEG7 Classic', font_size), fg=hc, bg='black')
             scorebox4.grid(row=1, column=2)
 
+
     def get_colors(self, game: Game):
         colors = ['red', 'red']
         if game.gameData.teams.away.division == 'AW':
@@ -94,8 +97,10 @@ class Scoreboard:
         return ['red', 'red']
         return colors
 
+
     def get_games(self):
         self.games = gm.get_games()
+
 
     def update(self):
         try:
@@ -107,12 +112,14 @@ class Scoreboard:
         finally:
             self.window.after(5000, self.update)
 
+
     def run(self):
         self.get_games()
         self.create_game_frames()
         self.display_game_frames()
         self.update()
         self.window.mainloop()
+
 
 if __name__ == '__main__':
     sb = Scoreboard()

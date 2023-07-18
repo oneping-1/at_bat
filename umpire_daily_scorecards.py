@@ -9,7 +9,8 @@ import argparse
 from tqdm import tqdm
 from get.statsapi_plus import get_game_dict, get_daily_gamePks
 from get.game import Game
-from get.umpire import Umpire, get_total_favored_runs
+from get.umpire import Umpire
+
 
 def daily_ump_scorecards(date: str,
                         print_daily_stats: bool = False) -> List[Umpire]:
@@ -41,9 +42,8 @@ def daily_ump_scorecards(date: str,
         game_dict = get_game_dict(game_pk)
         game = Game(game_dict)
 
-        missed_calls, home_favor = get_total_favored_runs(game_class=game)
-
-        games.append(Umpire(missed_calls, home_favor, game))
+        games.append(Umpire(game=game))
+        games[-1].set()
 
     if print_daily_stats is True:
         for game in games:
@@ -51,7 +51,7 @@ def daily_ump_scorecards(date: str,
             home_team_abv = game.game.gameData.teams.home.abbreviation
 
             print(f'  {away_team_abv} at {home_team_abv}')
-            print(f'Missed Calls: {game.missed_calls}')
+            print(f'Missed Calls: {game.num_missed_calls}')
 
             if game.home_favor < 0:
                 print(f'  {-game.home_favor:+5.2f} {away_team_abv}')
@@ -60,6 +60,7 @@ def daily_ump_scorecards(date: str,
             print()
 
     return games
+
 
 def main():
     """
@@ -75,6 +76,7 @@ def main():
     args = parser.parse_args()
     print(args.print)
     daily_ump_scorecards(print_daily_stats=args.print, date=args.date)
+
 
 if __name__ == '__main__':
     main()

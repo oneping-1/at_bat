@@ -17,6 +17,7 @@ from get.standings import Standing, get_color
 
 just_fix_windows_console()
 
+
 if __name__ == '__main__':
     standings_data = statsapi.get('standings', {'leagueId':103})
     s = Standing(standings_data)

@@ -7,7 +7,7 @@ module.
 """
 
 import argparse
-from get.umpire import get_total_favored_runs
+from get.umpire import Umpire
 
 def main():
     """
@@ -25,7 +25,7 @@ def main():
     if args.gamePk is None:
         args.gamePk = int(input('gamePk: '))
 
-    get_total_favored_runs(gamePk=args.gamePk, print_missed_calls=True)
+    Umpire.find_missed_calls(gamePk=args.gamePk, print_missed_calls=True)
 
 if __name__ == '__main__':
     main()
