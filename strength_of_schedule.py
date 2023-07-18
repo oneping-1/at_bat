@@ -8,14 +8,15 @@ from datetime import timedelta
 import statsapi
 from colorama import just_fix_windows_console
 from tqdm import tqdm
+from typing import List
 from get.statsapi_plus import get_color
-from get.team import get_teams_list
+from get.team import Team
 from get.schedule import Schedule
 
 just_fix_windows_console()
 
 
-def sos(days_ahead=15):
+def sos(days_ahead=15, print_results = False):
     """
     Prints average win percentage and number of opponents with a winning
     record for a given time period.
@@ -23,6 +24,13 @@ def sos(days_ahead=15):
     Args:
         days_ahead (int, optional): The number of days ahead you want to
             look on a teams schedule. Defaults to 15
+        print_results (bool, optional): Determines if the results are
+            printed or not. Defaults to False
+
+    Returns:
+        teams (List[get.team.Team]): List of teams using the Team class.
+            The team class has a opponent instance variable with much
+            of the relevant info this function returns
 
     Raises:
         TypeError: If days_ahead argument is not type int
@@ -37,7 +45,7 @@ def sos(days_ahead=15):
     today = f'{today.year:4d}-{today.month:02d}-{today.day:02d}'
     ahead = f'{ahead.year:4d}-{ahead.month:02d}-{ahead.day:02d}'
 
-    teams = get_teams_list()
+    teams: List[Team] = Team.get_teams_list()
 
     for team in tqdm(teams):
         data = statsapi.get('schedule',
@@ -71,6 +79,13 @@ def sos(days_ahead=15):
 
         team.oppo(wins, losses, above_500)
 
+    if print_results is True:
+        _print_winpct_above500(days_ahead, teams)
+
+    return teams
+
+
+def _print_winpct_above500(days_ahead:int, teams: List[Team]):
     print(f'\nDays = {days_ahead}')
     print(' # | team |  win% | >500')
 
