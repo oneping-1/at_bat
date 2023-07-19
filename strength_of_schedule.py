@@ -5,10 +5,10 @@ winning record for a given number of days ahead.
 
 from datetime import datetime
 from datetime import timedelta
+from typing import List
 import statsapi
 from colorama import just_fix_windows_console
 from tqdm import tqdm
-from typing import List
 from get.statsapi_plus import get_color
 from get.team import Team
 from get.schedule import Schedule
@@ -67,12 +67,12 @@ def sos(days_ahead=15, print_results = False):
             if team.id == away_id and team.id == home_id:
                 raise ValueError('id mismatch')
 
-            if team.id != day.games.teams.away.team.id:
+            if team.id != away_id:
                 wins += day.games.teams.away.leagueRecord.wins
                 losses += day.games.teams.away.leagueRecord.losses
                 if day.games.teams.away.leagueRecord.pct > .500:
                     above_500 += 1
-            elif team.id != day.games.teams.home.team.id:
+            elif team.id != home_id:
                 wins += day.games.teams.home.leagueRecord.wins
                 losses += day.games.teams.home.leagueRecord.losses
                 if day.games.teams.home.leagueRecord.pct > .500:

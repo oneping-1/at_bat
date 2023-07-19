@@ -74,8 +74,7 @@ def main():
                         action='store_true')
 
     args = parser.parse_args()
-    print(args.print)
-    daily_ump_scorecards(print_daily_stats=args.print, date=args.date)
+    daily_ump_scorecards(print_daily_stats=True, date=args.date)
 
 
 if __name__ == '__main__':

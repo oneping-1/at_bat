@@ -1,6 +1,9 @@
+# pylint: disable=C0103
+
 from typing import List
-from .team_lookup import div_from_id, abv_from_id
-from colorama import Fore, just_fix_windows_console
+import csv
+from colorama import Fore
+
 
 class Standing:
     def __init__(self, standings):
@@ -9,10 +12,12 @@ class Standing:
         self.west = standings['records'][2]
         self._children()
 
+
     def _children(self):
         self.east = Records(self.east)
         self.central = Records(self.central)
         self.west = Records(self.west)
+
 
 class Records:
     def __init__(self, records):
@@ -31,6 +36,7 @@ class Records:
 
         self._children()
 
+
     def _children(self):
         self.league = self.league['id']
         self.division = self.division['id']
@@ -38,6 +44,7 @@ class Records:
 
         # list of teams in division
         self.teamRecords = [TeamRecords(x) for x in self.teamRecords]
+
 
 class TeamRecords:
     def __init__(self, teamRecords):
@@ -72,36 +79,65 @@ class TeamRecords:
         self.runDifferential = int(teamRecords['runDifferential'])
         self.winningPercentage = float(teamRecords['winningPercentage'])
         self._children()
-    
+
+
     def _get_int(self,string):
         if string == '-':
             return 0
         else:
             return int(string)
-        
+
+
     def _get_float(self,string):
         if string == '-':
             return 0
         else:
             return float(string)
 
+
     def _children(self):
         self.team = Team(self.team)
         self.streak = Streak(self.streak)
         self.records = Records2(self.records)
-        
+
+
 class Team:
     def __init__(self, team):
         self.id = int(team['id'])
         self.name = team['name']
-        self.abv = abv_from_id(self.id)
-        self.division = div_from_id(self.id)
+        self.abv = self._abv_from_id(self.id)
+        self.division = self._div_from_id(self.id)
+
+
+    @classmethod
+    def _abv_from_id(cls, code):
+        with open('csv/teams.csv', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            next(reader)
+
+            for team_id, abv, _ in reader:
+                if code == int(team_id):
+                    return abv
+
+
+    @classmethod
+    def _div_from_id(cls, code):
+        with open('csv/teams.csv', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            next(reader)
+
+            for team_id, _, div in reader:
+                if code == int(team_id):
+                    return div
+
+
 
 class Streak:
     def __init__(self, streak):
         self.streakType = streak['streakType']
         self.streakNumber = streak['streakNumber']
         self.streakCode = streak['streakCode']
+
 
 class Records2:
     def __init__(self, record):
@@ -111,11 +147,13 @@ class Records2:
         self.expectedRecords = record['expectedRecords']
         self._children()
 
+
     def _children(self):
         self.splitRecords = SplitRecords(self.splitRecords)
         self.divisionRecrds = DivisionRecords(self.divisionRecrds)
         self.leagueRecords = LeagueRecords(self.leagueRecords)
         self.expectedRecords = ExpectedRecords(self.expectedRecords)
+
 
 class SplitRecords:
     def __init__(self, splitRecords):
@@ -134,6 +172,7 @@ class SplitRecords:
         self.day = SplitRecordsDetails(splitRecords[12])
         self.night = SplitRecordsDetails(splitRecords[13])
 
+
 class SplitRecordsDetails:
     def __init__(self, srd):
         self.wins = int(srd['wins'])
@@ -148,10 +187,12 @@ class DivisionRecords:
         self.central = divisionRecords[2]
         self._children()
 
+
     def _children(self):
         self.west = DivisionRecordsDetailed(self.west)
         self.east = DivisionRecordsDetailed(self.east)
         self.central = DivisionRecordsDetailed(self.central)
+
 
 class DivisionRecordsDetailed:
     def __init__(self, drd):
@@ -161,15 +202,18 @@ class DivisionRecordsDetailed:
         self.id = int(drd['division']['id'])
         self.name = drd['division']['name']
 
+
 class LeagueRecords:
     def __init__(self, leagueRecords):
         self.american = leagueRecords[0]
         self.national = leagueRecords[1]
         self._children()
 
+
     def _children(self):
         self.american = LeagueRecordsDetailed(self.american)
         self.national = LeagueRecordsDetailed(self.national)
+
 
 class LeagueRecordsDetailed:
     def __init__(self, lrd):
@@ -179,15 +223,18 @@ class LeagueRecordsDetailed:
         self.id = int(lrd['league']['id'])
         self.name = lrd['league']['name']
 
+
 class ExpectedRecords:
     def __init__(self, expectedRecords):
         self.xWinLoss = expectedRecords[0]
         self.xWinLossSeason = expectedRecords[1]
         self._children()
 
+
     def _children(self):
         self.xWinLoss = ExpectedRecordsDetailed(self.xWinLoss)
         self.xWinLossSeason = ExpectedRecordsDetailed(self.xWinLossSeason)
+
 
 class ExpectedRecordsDetailed:
     def __init__(self, erd):
@@ -195,6 +242,7 @@ class ExpectedRecordsDetailed:
         self.losses = int(erd['losses'])
         self.type = erd['type']
         self.pct = float(erd['pct'])
+
 
 def get_color(team:Team):
     if team.abv == 'TEX':

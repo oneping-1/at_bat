@@ -1,6 +1,5 @@
 from typing import List, Tuple
 from .game import Game, AllPlays, PlayEvents
-from .runners import Runners
 from .statsapi_plus import get_game_dict
 
 
@@ -49,8 +48,8 @@ class Umpire():
         """
         Calculates total favored runs for the home team for a given team
 
-        Itterates through every pitch in a given game and finds pitches that
-            the umpire missed.
+        Itterates through every pitch in a given game and finds pitches
+            that the umpire missed.
         When home_favor >0, umpire effectively gave the home team runs.
         When <0, gave runs to the away team
 
@@ -79,14 +78,11 @@ class Umpire():
         elif game is None and gamePk is None:
             raise ValueError('game and gamePk not provided')
 
-        runners: Runners = Runners()
-        runners_int = int(runners)
-
         home_favor: float = 0
         missed_calls: List[Missed_Call] = []
 
         for at_bat in game.liveData.plays.allPlays:
-            runners.place_runners(at_bat)
+            runners_int = int(at_bat.runners)
             isTopInning = at_bat.about.isTopInning
 
             for i in at_bat.pitchIndex:
@@ -100,7 +96,7 @@ class Umpire():
 
                     if print_missed_calls is True:
                         print(cls._missed_pitch_details(
-                            at_bat, pitch, runners, home_delta))
+                            at_bat, pitch, home_delta))
 
         return (len(missed_calls), home_favor, missed_calls)
 
@@ -108,7 +104,6 @@ class Umpire():
     def _missed_pitch_details(cls,
                             at_bat: AllPlays,
                             pitch: PlayEvents,
-                            runners: List[bool],
                             home_delta: float) -> str:
 
         to_print_str = ''
@@ -126,22 +121,7 @@ class Umpire():
         else:
             to_print_str += f'{pitch.count.outs} outs, '
 
-        if runners == [False, False, False]:
-            to_print_str += 'bases empty\n'
-        elif runners == [True, False, False]:
-            to_print_str += 'runner on first\n'
-        elif runners == [False, True, False]:
-            to_print_str += 'runner on second\n'
-        elif runners == [True, True, False]:
-            to_print_str += 'runners on first and second\n'
-        elif runners == [False, False, True]:
-            to_print_str += 'runner on third\n'
-        elif runners == [True, False, True]:
-            to_print_str += 'runner on first and third\n'
-        elif runners == [False, True, True]:
-            to_print_str += 'runner on second and third\n'
-        elif runners == [True, True, True]:
-            to_print_str += 'bases loaded\n'
+        to_print_str += f'{str(at_bat.runners)}\n'
 
         balls = pitch.count.balls
         strikes = pitch.count.strikes
@@ -158,7 +138,7 @@ class Umpire():
         to_print_str += (f'bot = {pitch.pitchData.coordinates.pZ_bot:.3f} | '
                         f'top = {pitch.pitchData.coordinates.pZ_top:.3f}\n')
 
-        to_print_str += f'Home Favor: {home_delta:5.3f}\n'
+        to_print_str += f'Home Favor: {home_delta:4.2f}\n'
 
         return to_print_str
 

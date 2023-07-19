@@ -1,8 +1,16 @@
+"""
+Basically a utils module for other modules throughout the project.
+Eventually want to get rid of this module by moving these functions to
+more appropriate modules
+"""
+
+from typing import List
 import csv
 from datetime import datetime, timedelta
 import statsapi
 from colorama import Fore
 import numpy as np
+
 
 def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
     """
@@ -26,6 +34,10 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
             data = get_game_dict(717404, delay_seconds=45)
             game_class = Game(data)
 
+    Example:
+        game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
+        game_class = Game(game_dict)
+
     Raises:
         ValueError: If gamePk argument is not defined
         HTTPError: If gamePk argument is not valid
@@ -34,11 +46,13 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
     if gamePk is None:
         raise ValueError('gamePk not provided')
 
-    delay_time = get_utc_time(delay_seconds=delay_seconds)
-    data = statsapi.get('game', {'gamePk': gamePk, 'timecode': delay_time}, force=True)
+    delay_time = _get_utc_time(delay_seconds=delay_seconds)
+    data = statsapi.get('game',
+                        {'gamePk': gamePk, 'timecode': delay_time},
+                        force=True)
     return data
 
-def get_utc_time(delay_seconds: int = 0):
+def _get_utc_time(delay_seconds: int = 0):
     """
     returns the utc time in YYYMMDD-HHMMSS in 24 hour time
 
@@ -50,7 +64,8 @@ def get_utc_time(delay_seconds: int = 0):
         the output to be. Defaults to 0
 
     Returns:
-        str: The UTC time in the 'YYYYMMDD-HHMMSS' format
+        formated_time (str): The UTC time in the 'YYYYMMDD-HHMMSS'
+            format
 
     Raises:
         TypeError: If 'delay_seconds' is type str
@@ -67,7 +82,28 @@ def get_utc_time(delay_seconds: int = 0):
     return formatted_time
 
 
-def get_daily_gamePks(date: str = None):
+def get_daily_gamePks(date: str = None) -> List[int]:
+    """
+    Returns a list of gamePks for a given day in ISO 8601 format
+    (YYYY-MM-DD).
+
+    Args:
+        date (str, optional): The current date in ISO 8601 format,
+            YYYY-MM-DD. Defaults to present date.
+
+    Returns:
+        gamePks (List[int]): List of gamePks for given dates. Should
+            be sorted by start time.
+
+    Example:
+        gamePk_list = get_daily_gamePks(date='2023-07-18')
+        for gamePk in gamePk_list:
+            # code
+
+    Raises:
+        TypeError: If date argument is not type str
+
+    """
     gamePks = []
 
     if date is not None:
@@ -85,7 +121,22 @@ def get_color_scoreboard(game):
     away = Fore.WHITE
     home = Fore.WHITE
 
-    if 'Final' in game.gameData.status.abstractGameState or 'Preview' in game.gameData.status.abstractGameState or 'Warmup' in game.gameData.status.detailedState or 'Suspended' in game.gameData.status.detailedState:
+    abstract_state = game.gameData.status.abstractGameState
+    detailed_state = game.gameData.status.detailedState
+
+    if 'Final' in abstract_state:
+        away = Fore.LIGHTBLACK_EX
+        home = Fore.LIGHTBLACK_EX
+
+    if 'Preview' in abstract_state:
+        away = Fore.LIGHTBLACK_EX
+        home = Fore.LIGHTBLACK_EX
+
+    if 'Warmup' in detailed_state:
+        away = Fore.LIGHTBLACK_EX
+        home = Fore.LIGHTBLACK_EX
+
+    if 'Suspended' in detailed_state:
         away = Fore.LIGHTBLACK_EX
         home = Fore.LIGHTBLACK_EX
 

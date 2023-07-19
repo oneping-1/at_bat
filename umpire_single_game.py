@@ -4,10 +4,13 @@ is essentially a front for get.umpire.get_total_favored_runs. You should
 only be using this module if you are running it directly. If you need
 to import this module, think about importing directly from the umpire
 module.
+
+Can use --gamePk command line argument to skip input prompt
 """
 
 import argparse
 from get.umpire import Umpire
+
 
 def main():
     """
@@ -25,7 +28,11 @@ def main():
     if args.gamePk is None:
         args.gamePk = int(input('gamePk: '))
 
-    Umpire.find_missed_calls(gamePk=args.gamePk, print_missed_calls=True)
+    _, favor, _ = Umpire.find_missed_calls(gamePk=args.gamePk,
+                                           print_missed_calls=True)
+
+    return favor
+
 
 if __name__ == '__main__':
-    main()
+    print(f'{main():.2f}')

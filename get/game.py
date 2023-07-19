@@ -1,7 +1,7 @@
-# pylint: disable=C0103
 """
 Converts the Python dictionary returned by statsapi.get('game') into classes
 """
+# pylint: disable=C0103
 
 import datetime
 from typing import List, Tuple
@@ -136,7 +136,7 @@ class Plays:
         self._test = plays
         self.allPlays: List[AllPlays] = [AllPlays(play) for play in plays['allPlays']]
         self.currentPlay = plays.get('currentPlay', None)
-        
+
 class AllPlays:
     """
     Holds data for each at bat
@@ -147,6 +147,7 @@ class AllPlays:
         self.about = allPlays.get('about', None)
         self.count = allPlays.get('count', None)
         self.matchup = allPlays.get('matchup', None)
+        self.runners = None
         self.pitchIndex = allPlays.get('pitchIndex', None)
         events = allPlays.get('playEvents', None)
         self.playEvents: List[PlayEvents] = [PlayEvents(i) for i in events]
@@ -159,6 +160,7 @@ class AllPlays:
         self.about = About(self.about)
         self.count = Count(self.count)
         self.matchup = Matchup(self.matchup)
+        self.runners = Runners(self)
 
     def __eq__(self, other):
         if self._allPlays == other._allPlays:
@@ -228,6 +230,69 @@ class Matchup:
 
         if self.splits is not None:
             self.splits = Splits(self.splits)
+
+class Runners:
+    def __init__(self, at_bat: AllPlays):
+        """
+        Sets the runners based of the current at bat
+        
+        Args:
+            at_bat: (get.game.AllPlays): The current at bat
+        """
+        self.runners = [False, False, False]
+
+        if at_bat.matchup.postOnFirst is not None:
+            self.runners[0] = True
+        else:
+            self.runners[0] = False
+
+        if at_bat.matchup.postOnSecond is not None:
+            self.runners[1] = True
+        else:
+            self.runners[1] = False
+
+        if at_bat.matchup.postOnThird is not None:
+            self.runners[2] = True
+        else:
+            self.runners[2] = False
+
+    def clear_bases(self):
+        """
+        Manually clear the bases
+        Can be used for a new half inning
+        """
+        self.runners = [False, False, False].copy()
+
+    def __int__(self):
+        i = 0
+
+        if self.runners[0] is True:
+            i += 1
+        if self.runners[1] is True:
+            i += 2
+        if self.runners[2] is True:
+            i += 4
+
+        return i
+
+    def __str__(self):
+        if self.runners == [False, False, False]:
+            return 'bases empty'
+        if self.runners == [True, False, False]:
+            return 'runner on first'
+        if self.runners == [False, True, False]:
+            return 'runner on second'
+        if self.runners == [True, True, False]:
+            return 'runners on first and second'
+        if self.runners == [False, False, True]:
+            return 'runner on third'
+        if self.runners == [True, False, True]:
+            return 'runners on first and third'
+        if self.runners == [False, True, True]:
+            return 'runners on second and third'
+        if self.runners == [True, True, True]:
+            return 'bases loaded'
+
 
 class Side:
     def __init__(self, side):

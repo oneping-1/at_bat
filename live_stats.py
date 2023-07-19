@@ -13,7 +13,6 @@ import argparse
 from typing import Tuple
 from get.game import Game, PlayEvents, AllPlays
 from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
-from get.runners import Runners
 from get.umpire import Umpire
 
 
@@ -49,15 +48,13 @@ def print_last_pitch(gamePk: int = None,
     if gamePk is None:
         raise ValueError('gamePk not provided')
 
-    clr = ' ' * 60
-    runners = Runners()
+    clr = ' ' * 40
     god = curses.initscr()
 
     while True:
         try:
             game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay))
             at_bat = game.liveData.plays.allPlays[-1]
-            runners.place_runners(at_bat)
 
             if len(at_bat.playEvents) > 0:
                 pitch = at_bat.playEvents[-1]
@@ -67,12 +64,12 @@ def print_last_pitch(gamePk: int = None,
                     god.addstr(i, 0, f'{line} {clr}')
                     i += 1
 
-                for line in _get_at_bat_details(at_bat, pitch, runners):
+                for line in _get_at_bat_details(at_bat, pitch):
                     god.addstr(i, 0, f'{line} {clr}')
                     i += 1
 
                 i += 1
-                for line in _get_run_details(game, pitch, runners):
+                for line in _get_run_details(game, at_bat, pitch):
                     god.addstr(i, 0, f'{line} {clr}')
                     i += 1
 
@@ -106,8 +103,8 @@ def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:
     return (line_0, line_1)
 
 
-def _get_at_bat_details(at_bat: AllPlays, pitch: PlayEvents,
-                        runners: Runners) -> Tuple[str, str, str]:
+def _get_at_bat_details(at_bat: AllPlays,
+                        pitch: PlayEvents) -> Tuple[str, str, str]:
     pitcher = at_bat.matchup.pitcher.fullName
     batter = at_bat.matchup.batter.fullName
 
@@ -115,7 +112,7 @@ def _get_at_bat_details(at_bat: AllPlays, pitch: PlayEvents,
     strikes = pitch.count.strikes
     outs = pitch.count.outs
 
-    runners = str(runners).capitalize()
+    runners = str(at_bat.runners).capitalize()
 
     line_0 = f'{pitcher} to {batter}'
     line_1 = f'{balls}-{strikes} | {outs} Outs'
@@ -125,8 +122,8 @@ def _get_at_bat_details(at_bat: AllPlays, pitch: PlayEvents,
 
 
 def _get_run_details(game: Game,
-                     pitch: PlayEvents,
-                     runners: Runners) -> Tuple[str, str]:
+                     at_bat: AllPlays,
+                     pitch: PlayEvents) -> Tuple[str, str]:
 
     away_team = game.gameData.teams.away.abbreviation
     home_team = game.gameData.teams.home.abbreviation
@@ -134,7 +131,7 @@ def _get_run_details(game: Game,
     balls = pitch.count.balls
     strikes = pitch.count.strikes
     outs = pitch.count.outs
-    runners = int(runners)
+    runners = int(at_bat.runners)
 
     renp = get_run_expectency_numpy()
     run_exp = renp[balls][strikes][outs][runners]

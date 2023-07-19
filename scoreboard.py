@@ -1,23 +1,18 @@
+import argparse
 from colorama import just_fix_windows_console
 from get.game import Game
 import get.statsapi_plus as sp
-import argparse
 
 just_fix_windows_console()
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--delay', help='delay in seconds', type=float, default=0)
-    args = parser.parse_args()
-
+def loop(delay_seconds:int = 0):
     prnt = ''
 
     gamePks = sp.get_daily_gamePks()
     games = []
     for game in gamePks:
-        prnt_bool = True
-        data = sp.get_game_dict(game, delay_seconds=args.delay)
+        data = sp.get_game_dict(game, delay_seconds=delay_seconds)
         game = Game(data)
         games.append(game)
 
@@ -43,15 +38,17 @@ def main():
         elif 'Preview' in abstract_state or 'Warmup' in detailed_state:
             prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{home_team:4s}\n')
-        elif inning_state in ('Top', 'Mid'):
+        elif inning_state in ('Top', 'Middle'):
             prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
-        elif inning_state in ('Bot', 'End'):
+        elif inning_state in ('Bottom', 'End'):
             prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d}\n')
             prnt += (f'{home_color}{home_team:3s}- {home_score:2d} {inning:2d}\n')
+        else:
+            prnt += (f'{away_color}{away_team:4s} {away_score:2d}\n')
+            prnt += (f'{home_color}{home_team:4s} {home_score:2d}\n')
 
-        if prnt_bool:
-            prnt += '\n'
+        prnt += '\n'
 
     print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
     print(prnt)
@@ -81,6 +78,14 @@ def _get_liveData(game):
 
     return (away_score, home_score, inning, outs, inning_state)
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--delay', help='delay in seconds', type=float, default=0)
+    args = parser.parse_args()
+
+    while True:
+        loop(delay_seconds=args.delay)
 
 if __name__ == '__main__':
     main()
