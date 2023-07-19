@@ -1,7 +1,6 @@
 # MLB Stat
 
-Live MLB (and potentially minor league) game stats.
-Umpire.py is an attempt to recreate Ump Scorecards (https://twitter.com/UmpScorecards). Has multiple functions that essentially do the same thing
+Live MLB and MiLB game stats.
 
 ## Table of Contents
 
@@ -19,6 +18,7 @@ Incomplete:
 - [ ] More pytests
 - [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
+- [ ] Make scoreboard.py return something. Maybe move to another module?
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function

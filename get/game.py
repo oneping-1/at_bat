@@ -1,7 +1,7 @@
 """
 Converts the Python dictionary returned by statsapi.get('game') into classes
 """
-# pylint: disable=C0103
+# pylint: disable=C0103, C0111
 
 import datetime
 from typing import List, Tuple

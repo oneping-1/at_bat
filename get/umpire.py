@@ -42,9 +42,9 @@ class Umpire():
 
     @classmethod
     def find_missed_calls(cls,
-                            game: Game = None,
-                            gamePk: int = None,
-                            print_missed_calls: bool = False)-> float:
+                          game: Game = None,
+                          gamePk: int = None,
+                          print_missed_calls: bool = False)-> float:
         """
         Calculates total favored runs for the home team for a given team
 

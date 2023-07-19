@@ -1,4 +1,16 @@
+# pylint: disable=C0103, C0111
+
+"""
+Converts the standings_data dict returned by statsapi.get('standings')
+into a class for easier data grabbing. 
+
+Example:
+    schedule_data = statsapi.get('schedule', {})
+    schedule_data = Standing(schedule_data)
+"""
+
 from typing import List
+
 
 class Schedule:
     def __init__(self, sch: dict):
@@ -9,7 +21,8 @@ class Schedule:
         self.dates: List[Dates] = []
 
         for date in sch['dates']:
-            self.dates.append(Dates(date))   
+            self.dates.append(Dates(date))
+
 
 class Dates:
     def __init__(self, date:dict):
@@ -23,6 +36,7 @@ class Dates:
 
     def _children(self):
         self.games = Games(self.games[0])
+
 
 class Games:
     def __init__(self, games:dict):
@@ -61,6 +75,7 @@ class Games:
         self.venue = Venue(self.venue)
         self.content = Content(self.content)
 
+
 class Status:
     def __init__(self, status:dict):
         self.abstractGameState = status['abstractGameState']
@@ -71,6 +86,7 @@ class Status:
         self.abstractGameCode = status['abstractGameCode']
         # no children
 
+
 class Teams:
     def __init__(self, teams:dict):
         self.away = teams['away']
@@ -80,6 +96,7 @@ class Teams:
     def _children(self):
         self.away = Team(self.away)
         self.home = Team(self.home)
+
 
 class Team:
     def __init__(self, team:dict):
@@ -93,12 +110,14 @@ class Team:
         self.leagueRecord = LeagueRecord(self.leagueRecord)
         self.team = Team2(self.team)
 
+
 class LeagueRecord:
     def __init__(self, lr:dict):
         self.wins = int(lr['wins'])
         self.losses = int(lr['losses'])
         self.pct = float(lr['pct'])
         # no children
+
 
 class Team2:
     def __init__(self, team:dict):
@@ -107,12 +126,14 @@ class Team2:
         self.link = team['link']
         # no children
 
+
 class Venue:
     def __init__(self, venue:dict):
         self.id = venue['id']
         self.name = venue['name']
         self.link = venue['link']
         # no children
+
 
 class Content:
     def __init__(self, content:dict):

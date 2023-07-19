@@ -1,3 +1,16 @@
+"""
+Module that prints live MLB scores for a given day in a format similar
+to a out-of-town scoreboard. Has team abbreviations, score, outs,
+runners, and inning. Also will print if a game is final or in a delay.
+
+You can change the colors of each team in the get_color_scoreboard
+function in the statsapi_plus.py module
+
+This module takes in one command line prompt '--delay' which is the
+number of seconds you want the scoreboard to be delayed. Useful to not
+get spoiled of scores before they happen on devices
+"""
+
 import argparse
 from colorama import just_fix_windows_console
 from get.game import Game
@@ -20,7 +33,7 @@ def loop(delay_seconds:int = 0):
         away_color, home_color, away_team, home_team, detailed_state, abstract_state = game_data
 
         live_data = _get_liveData(game)
-        away_score, home_score, inning, outs, inning_state = live_data
+        away_score, home_score, inning, outs, inning_state, runners = live_data
 
         if 'Final' in abstract_state:
             if inning == 9:
@@ -39,10 +52,10 @@ def loop(delay_seconds:int = 0):
             prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{home_team:4s}\n')
         elif inning_state in ('Top', 'Middle'):
-            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d}\n')
+            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d} r{int(runners):1d}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
         elif inning_state in ('Bottom', 'End'):
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d}\n')
+            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} r{int(runners):1d}\n')
             prnt += (f'{home_color}{home_team:3s}- {home_score:2d} {inning:2d}\n')
         else:
             prnt += (f'{away_color}{away_team:4s} {away_score:2d}\n')
@@ -76,12 +89,17 @@ def _get_liveData(game):
 
     inning_state = game.liveData.linescore.inningState
 
-    return (away_score, home_score, inning, outs, inning_state)
+    try:
+        runners = game.liveData.plays.allPlays[-1].runners
+    except IndexError:
+        runners = None
+
+    return (away_score, home_score, inning, outs, inning_state, runners)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--delay', help='delay in seconds', type=float, default=0)
+    parser.add_argument('--delay', help='delay in seconds', type=float, default=0)
     args = parser.parse_args()
 
     while True:

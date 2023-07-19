@@ -1,4 +1,13 @@
-# pylint: disable=C0103
+# pylint: disable=C0103, C0111
+
+"""
+Converts the standings_data dict returned by statsapi.get('standings')
+into a class for easier data grabbing. 
+
+Example:
+    standings_data = statsapi.get('schedule', {'leagueId':103})
+    standings_class = Standing(standings_data)
+"""
 
 from typing import List
 import csv
