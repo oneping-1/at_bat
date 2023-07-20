@@ -50,13 +50,13 @@ def daily_ump_scorecards(date: str,
             away_team_abv = game.game.gameData.teams.away.abbreviation
             home_team_abv = game.game.gameData.teams.home.abbreviation
 
-            print(f'  {away_team_abv} at {home_team_abv}')
-            print(f'Missed Calls: {game.num_missed_calls}')
+            print(f'{away_team_abv} at {home_team_abv}')
+            print(f'Misses: {game.num_missed_calls}')
 
             if game.home_favor < 0:
-                print(f'  {-game.home_favor:+5.2f} {away_team_abv}')
+                print(f'{-game.home_favor:+5.2f} {away_team_abv}')
             else:
-                print(f'  {game.home_favor:+5.2f} {home_team_abv}')
+                print(f'{game.home_favor:+5.2f} {home_team_abv}')
             print()
 
     return games

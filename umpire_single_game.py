@@ -10,6 +10,7 @@ Can use --gamePk command line argument to skip input prompt
 
 import argparse
 from get.umpire import Umpire
+from get.plotter import Plotter
 
 
 def main():
@@ -28,8 +29,13 @@ def main():
     if args.gamePk is None:
         args.gamePk = int(input('gamePk: '))
 
-    _, favor, _ = Umpire.find_missed_calls(gamePk=args.gamePk,
+    plotter = Plotter()
+
+    _, favor, missed_list = Umpire.find_missed_calls(gamePk=args.gamePk,
                                            print_missed_calls=True)
+
+    print(f'{favor:.2f}')
+    plotter.plot(missed_list)
 
     return favor
 

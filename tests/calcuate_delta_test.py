@@ -1,6 +1,7 @@
+# pylint: disable=C0103
+
 import pytest
-from ..get.game import PlayEvents
-from ..get.runners import Runners
+from ..get.game import PlayEvents, Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
@@ -30,7 +31,7 @@ def test_calculate_delta_01():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -64,7 +65,7 @@ def test_calculate_delta_02():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -103,7 +104,7 @@ def test_calculate_delta_03():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -145,7 +146,7 @@ def test_calculate_delta_04():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -188,7 +189,7 @@ def test_calculate_delta_05():
         }
     }
 
-    runners = Runners([True, False, False])
+    runners = Runners(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -230,7 +231,7 @@ def test_calculate_delta_06():
         }
     }
 
-    runners = Runners([True, False, False])
+    runners = Runners(runners_list=[True, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -272,7 +273,7 @@ def test_calculate_delta_07():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -314,7 +315,7 @@ def test_calculate_delta_08():
         }
     }
 
-    runners = Runners([True, False, False])
+    runners = Runners(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -356,7 +357,7 @@ def test_calculate_delta_09():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -398,7 +399,7 @@ def test_calculate_delta_10():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -440,7 +441,7 @@ def test_calculate_delta_11():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -482,7 +483,7 @@ def test_calculate_delta_12():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -524,7 +525,7 @@ def test_calculate_delta_13():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -566,7 +567,7 @@ def test_calculate_delta_14():
         }
     }
 
-    runners = Runners([True, False, False])
+    runners = Runners(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -608,7 +609,7 @@ def test_calculate_delta_15():
         }
     }
 
-    runners = Runners([True, False, False])
+    runners = Runners(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -650,7 +651,7 @@ def test_calculate_delta_16():
         }
     }
 
-    runners = Runners([False, False, False])
+    runners = Runners(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)

@@ -3,18 +3,8 @@ from .game import Game, AllPlays, PlayEvents
 from .statsapi_plus import get_game_dict
 
 
-class Missed_Call():
-    def __init__(self, pitch: PlayEvents):
-        self.pX = pitch.pitchData.coordinates.pX
-        self.pZ = pitch.pitchData.coordinates.pZ
-
-        self.sZ_top = pitch.pitchData.coordinates.sZ_top
-        self.sZ_bot = pitch.pitchData.coordinates.sZ_bot
-
-        self.pZ_top = pitch.pitchData.coordinates.pZ_top
-        self.pZ_bot = pitch.pitchData.coordinates.pZ_bot
-
 class Umpire():
+
     def __init__(self,
                  gamePk: int = None,
                  game: Game = None):
@@ -28,12 +18,16 @@ class Umpire():
             raise ValueError('gamePk and game arguments not provided')
 
         self.num_missed_calls = 0
-        self.missed_calls: List[Missed_Call] = []
+        self.missed_calls: List[PlayEvents] = []
         self.home_favor = 0
 
     def set(self,
             print_missed_calls: bool = False
-            ) -> Tuple[int, float, List[Missed_Call]]:
+            ) -> Tuple[int, float, List[PlayEvents]]:
+        """
+        Basically a front to Umpire.find_missed_calls that automatically
+        inputs its output into instance variables
+        """
 
         stats = self.find_missed_calls(game=self.game,
                                      print_missed_calls=print_missed_calls)
@@ -44,7 +38,7 @@ class Umpire():
     def find_missed_calls(cls,
                           game: Game = None,
                           gamePk: int = None,
-                          print_missed_calls: bool = False)-> float:
+                          print_missed_calls: bool = False) -> Tuple[int, float, List[PlayEvents]]:
         """
         Calculates total favored runs for the home team for a given team
 
@@ -66,7 +60,7 @@ class Umpire():
             num_missed_calls (int): The number of missed calls by the umpire
             home_favor (float): The runs the umpire gave the home team
                 by their missed calls
-            missed_calls (List[Missed_Calls]): A list of missed calls
+            missed_calls (List[PlayEvents]): A list of missed calls
                 with each element a Missed_Calls class
 
         Raises:
@@ -79,7 +73,7 @@ class Umpire():
             raise ValueError('game and gamePk not provided')
 
         home_favor: float = 0
-        missed_calls: List[Missed_Call] = []
+        missed_calls: List[PlayEvents] = []
 
         for at_bat in game.liveData.plays.allPlays:
             runners_int = int(at_bat.runners)

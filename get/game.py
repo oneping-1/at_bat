@@ -1,7 +1,7 @@
 """
 Converts the Python dictionary returned by statsapi.get('game') into classes
 """
-# pylint: disable=C0103, C0111
+# pylint: disable=C0103
 
 import datetime
 from typing import List, Tuple
@@ -14,6 +14,7 @@ from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
 
 margin_of_error = 0.25/12 # Margin of Error of hawkeye system (inches)
 
+
 class Game:
     def __init__(self, data:dict):
         self.gameData = data['gameData']
@@ -23,6 +24,7 @@ class Game:
     def _children(self):
         self.gameData = GameData(self.gameData)
         self.liveData = LiveData(self.liveData)
+
 
 class GameData:
     def __init__(self, gameData):
@@ -53,6 +55,7 @@ class GameData:
         if self.primaryDatacaster:
             self.primaryDatacaster = PrimaryDatacaster(self.primaryDatacaster)
 
+
 class Datetime:
     def __init__(self, times):
         self.dateTime = times.get('dateTime', None)
@@ -61,11 +64,13 @@ class Datetime:
         self.startTime = f'{self.startHour} {self.startMin}'
         # no children
 
+
 class Status:
     def __init__(self, status):
         self.abstractGameState = status['abstractGameState']
         self.detailedState = status['detailedState']
         # no children
+
 
 class TeamsGameData:
     def __init__(self, teams):
@@ -77,6 +82,7 @@ class TeamsGameData:
         self.away = TeamGameData(self.away)
         self.home = TeamGameData(self.home)
 
+
 class TeamGameData:
     def __init__(self, team):
         self.id = team['id']
@@ -85,12 +91,14 @@ class TeamGameData:
         self.division = _get_division(self.id)
         # no children
 
+
 class Weather:
     def __init__(self, weather):
         self.condition = weather.get('condition', None)
         self.temp = weather.get('temp', None)
         self.wind = weather.get('wind', None)
         # no children
+
 
 class GameInfo:
     def __init__(self, gameInfo):
@@ -99,11 +107,13 @@ class GameInfo:
         self.gameDurationMinutes = gameInfo.get('gameDurationMinutes', None)
         # no children
 
+
 class Flags:
     def __init__(self, flags):
         self.noHitter = flags['noHitter']
         self.perfectGame = flags['perfectGame']
         # no children
+
 
 class OfficialScorer:
     def __init__(self, officialScorer):
@@ -112,12 +122,14 @@ class OfficialScorer:
         self.link = officialScorer['link']
         # no children
 
+
 class PrimaryDatacaster:
     def __init__(self, primaryDatacaster):
         self.id = primaryDatacaster['id']
         self.fullName = primaryDatacaster['fullName']
         self.link = primaryDatacaster['link']
         # no children
+
 
 class LiveData:
     def __init__(self, liveData):
@@ -131,11 +143,13 @@ class LiveData:
         self.plays = Plays(self.plays)
         self.linescore = Linescore(self.linescore)
 
+
 class Plays:
     def __init__(self, plays):
         self._test = plays
         self.allPlays: List[AllPlays] = [AllPlays(play) for play in plays['allPlays']]
         self.currentPlay = plays.get('currentPlay', None)
+
 
 class AllPlays:
     """
@@ -160,12 +174,13 @@ class AllPlays:
         self.about = About(self.about)
         self.count = Count(self.count)
         self.matchup = Matchup(self.matchup)
-        self.runners = Runners(self)
+        self.runners = Runners(at_bat = self)
 
     def __eq__(self, other):
         if self._allPlays == other._allPlays:
             return True
         return False
+
 
 class Result:
     def __init__(self, result):
@@ -178,6 +193,7 @@ class Result:
         self.homeScore = result.get('homeScore', None)
         self.isOut = result.get('isOut', None)
         # no children
+
 
 class About:
     def __init__(self, about):
@@ -194,12 +210,14 @@ class About:
         self.captivatingIndex = about.get('captivatingIndex', None)
         # no children
 
+
 class Count:
     def __init__(self, count):
         self.balls = int(count.get('balls', None))
         self.strikes = int(count.get('strikes', None))
         self.outs = int(count.get('outs', None))
         # no children
+
 
 class Matchup:
     def __init__(self, matchup):
@@ -231,30 +249,38 @@ class Matchup:
         if self.splits is not None:
             self.splits = Splits(self.splits)
 
+
 class Runners:
-    def __init__(self, at_bat: AllPlays):
+    def __init__(self,
+                 at_bat: AllPlays = None,
+                 runners_list: List[bool] = None):
         """
         Sets the runners based of the current at bat
         
         Args:
             at_bat: (get.game.AllPlays): The current at bat
         """
-        self.runners = [False, False, False]
+        if at_bat is not None:
+            self.runners = [False, False, False]
 
-        if at_bat.matchup.postOnFirst is not None:
-            self.runners[0] = True
-        else:
-            self.runners[0] = False
+            if at_bat.matchup.postOnFirst is not None:
+                self.runners[0] = True
+            else:
+                self.runners[0] = False
 
-        if at_bat.matchup.postOnSecond is not None:
-            self.runners[1] = True
-        else:
-            self.runners[1] = False
+            if at_bat.matchup.postOnSecond is not None:
+                self.runners[1] = True
+            else:
+                self.runners[1] = False
 
-        if at_bat.matchup.postOnThird is not None:
-            self.runners[2] = True
+            if at_bat.matchup.postOnThird is not None:
+                self.runners[2] = True
+            else:
+                self.runners[2] = False
+        elif runners_list is not None and len(runners_list) == 3:
+            self.runners = runners_list.copy()
         else:
-            self.runners[2] = False
+            raise ValueError('no argument defined')
 
     def clear_bases(self):
         """
@@ -299,11 +325,13 @@ class Side:
         self.code = side.get('L', None)
         self.description = side['description']
 
+
 class Splits:
     def __init__(self, splits):
         self.batter = splits.get('batter', None)
         self.pitcher = splits.get('pitcher', None)
         self.menOnBase = splits.get('menOnBase', None)
+
 
 class PlayEvents:
     MOE = margin_of_error
@@ -461,6 +489,7 @@ class PlayEvents:
             return True
         return False
 
+
 class Details:
     def __init__(self, details):
         self.call = details.get('call', None)
@@ -484,11 +513,13 @@ class Details:
         if self.type:
             self.type = PitchType(self.type)
 
+
 class PitchType:
     def __init__(self, pitchType):
         self.code = pitchType.get('code', None)
         self.description = pitchType['description']
         # no children
+
 
 class PitchData:
     def __init__(self, pitchData):
@@ -531,6 +562,7 @@ class PitchData:
             return 'In Zone'
         else:
             return 'Out of Zone'
+
 
 class PitchCoordinates:
     def __init__(self, coor, sz_top, sz_bot):
@@ -624,12 +656,14 @@ class PitchCoordinates:
         elif self.pX is None or self.pZ is None:
             return False
 
+
 class Breaks:
     def __init__(self, breaks):
         self.breakAngle = breaks.get('breakAngle', None)
         self.spinRate = breaks.get('spinRate', None)
         self.spinDirection = breaks.get('spinDirection', None)
         # no children
+
 
 class HitData:
     def __init__(self, hitData):
@@ -654,10 +688,12 @@ class HitData:
     def _children(self):
         self.coordinates = HitCoordinates(self.coordinates)
 
+
 class HitCoordinates:
     def __init__(self, coor):
         self.coordX = coor.get('coordX', None)
         self.coordY = coor.get('coordY', None)
+
 
 class Linescore:
     def __init__(self, linescore):
@@ -677,6 +713,7 @@ class Linescore:
         self.defense = Defense(self.defense)
         self.offense = Offense(self.offense)
 
+
 class TeamsLinescore:
     def __init__(self, teams):
         self.home = teams['home']
@@ -687,12 +724,14 @@ class TeamsLinescore:
         self.home = TeamLinescore(self.home)
         self.away = TeamLinescore(self.away)
 
+
 class TeamLinescore:
     def __init__(self, team):
         self.runs = team.get('runs', None)
         self.hits = team.get('hits', None)
         self.errors = team.get('errors', None)
         # no children
+
 
 class Defense:
     def __init__(self, defense):
@@ -723,6 +762,7 @@ class Defense:
             self.first = Player(self.first)
 
         # continue with other positions + batter,ondeck,inhole
+
 
 class Offense:
     def __init__(self, offense):
@@ -762,12 +802,14 @@ class Offense:
         if self.pitcher:
             self.pitcher = Player(self.pitcher)
 
+
 class Player:
     def __init__(self, player):
         self.id = player['id']
         self.fullName = player['fullName']
         self.link = player['link']
         # no children
+
 
 class Decisions:
     def __init__(self, decision):
@@ -778,6 +820,7 @@ class Decisions:
     def _children(self):
         self.winner = Player(self.winner)
         self.loser = Player(self.loser)
+
 
 def _convert_zulu_to_local(zulu_time_str):
     zulu_time = datetime.datetime.strptime(zulu_time_str, '%Y-%m-%dT%H:%M:%SZ')
@@ -795,12 +838,14 @@ def _convert_zulu_to_local(zulu_time_str):
 
     return [t[0:2], t[3:]]
 
+
 def _get_delayed_timecode(delay_seconds):
     now = datetime.datetime.now()
     delay = datetime.timedelta(seconds=delay_seconds)
 
     new_time = now - delay
     return new_time.strftime('%m%d%Y_%H%M%S')
+
 
 def _get_division(code:int):
     match code:
@@ -864,7 +909,8 @@ def _get_division(code:int):
             return 'AE'
         case 158: # MIL
             return 'NC'
-        
+
+
 def get_games() -> List[Game]:
     gamePks = get_daily_gamePks()
     games = []
@@ -874,6 +920,7 @@ def get_games() -> List[Game]:
         games.append(Game(data))
 
     return games
+
 
 if __name__ == "__main__":
     print(_get_delayed_timecode(5))
