@@ -1,4 +1,4 @@
-from ..get.game import PlayEvents
+from get.game import PlayEvents
 import math
 
 def test_random_MOE_01():

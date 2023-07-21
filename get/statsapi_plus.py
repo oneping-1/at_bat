@@ -189,11 +189,11 @@ def get_run_expectency_numpy() -> np.ndarray:
         numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
 
     Raises:
-        FileNotFoundError: re.csv file missing, renamed, or misplaced
+        FileNotFoundError: re_fangraph.csv file missing, renamed, or misplaced
     """
     renp = np.zeros((5,4,4,8))
 
-    with open('csv/re.csv', 'r', encoding='utf-8') as file:
+    with open('csv/re_fangraph.csv', 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
 
@@ -209,5 +209,44 @@ def get_run_expectency_numpy() -> np.ndarray:
     return renp
 
 
+def get_run_expectency_difference_numpy() -> np.ndarray:
+    """
+    Returns the numpy array run expectency table
+
+    Run expectency table obtained from:
+    https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
+
+    How to index:
+    renp[balls][strikes][outs][runners]
+    where runners is a int obtained from get_runners_int() function
+
+    Args:
+        None
+    
+    Returns:
+        numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
+
+    Raises:
+        FileNotFoundError: red_fangraph.csv file missing, renamed, or misplaced`
+    """
+    rednp = np.zeros((5,4,4,8))
+
+    with open('csv/red_fangraph.csv', 'r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        next(reader)
+
+        for row in reader:
+            balls = int(row[0])
+            strikes = int(row[1])
+            outs = int(row[2])
+            runners = int(row[3])
+            run_expectency = float(row[4])
+
+            rednp[balls][strikes][outs][runners] = run_expectency
+
+    return rednp
+
+
+
 if __name__ == '__main__':
-    pass
+    get_run_expectency_difference_numpy()

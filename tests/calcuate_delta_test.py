@@ -1,9 +1,43 @@
 # pylint: disable=C0103
 
 import pytest
-from ..get.game import PlayEvents, Runners
+from get.game import PlayEvents, Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
+
+def test_calculate_delta_00():
+    """
+    Ball called Strike
+    Top of inning
+    0-0 count
+    """
+    playEvents_dict = {
+        'details': {
+            'code': 'C'
+        },
+        'count': {
+            'balls': 0,
+            'strikes': 1,
+            'outs': 0
+        },
+        'pitchData': {
+            'strikeZoneTop': 3.5,
+            'strikeZoneBottom': 1.5,
+            'coordinates': {
+                'pX': -1,
+                'pZ': 2
+            },
+            'zone': 5
+        }
+    }
+
+    runners = Runners(runners_list=[False, False, False])
+    isTopInning = True
+
+    pitch = PlayEvents(playEvents_dict)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
+
+    assert home_delta_monte == pytest.approx(.1, abs=1e-3)
 
 def test_calculate_delta_01():
     """
@@ -112,8 +146,10 @@ def test_calculate_delta_03():
     home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards has -0.11
-    assert home_delta_zone == pytest.approx(-.12, abs=1e-3)
-    assert home_delta_monte == pytest.approx(-.12, abs=1e-3)
+    # Fangraphs RE = -0.12
+    # Fangraphs RED = -0.13
+    assert home_delta_zone == pytest.approx(-.13, abs=1e-3)
+    assert home_delta_monte == pytest.approx(-.13, abs=1e-3)
 
 def test_calculate_delta_04():
     """
@@ -154,9 +190,8 @@ def test_calculate_delta_04():
     home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Did not show on Ump Scorecards
-    assert home_delta_zone == pytest.approx(-.09, abs=1e-3)
+    assert home_delta_zone == pytest.approx(-.1, abs=1e-3)
     assert home_delta_monte == 0
-    
 
 def test_calculate_delta_05():
     """
@@ -197,8 +232,8 @@ def test_calculate_delta_05():
     home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
     # Ump Scorecards has -0.08
-    assert home_delta_zone == pytest.approx(-0.09, abs=1e-3)
-    assert home_delta_monte == pytest.approx(-0.09, abs=1e-3)
+    assert home_delta_zone == pytest.approx(-0.08, abs=1e-3)
+    assert home_delta_monte == pytest.approx(-0.08, abs=1e-3)
 
 def test_calculate_delta_06():
     """
@@ -322,9 +357,9 @@ def test_calculate_delta_08():
     home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
     home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
 
-    # Ump Scorecards had -0.141
-    assert home_delta_zone == pytest.approx(-0.16, abs=1e-3)
-    assert home_delta_monte == pytest.approx(-0.16, abs=1e-3)
+    # Ump Scorecards had -0.14
+    assert home_delta_zone == pytest.approx(-0.15, abs=1e-3)
+    assert home_delta_monte == pytest.approx(-0.15, abs=1e-3)
 
 def test_calculate_delta_09():
     """

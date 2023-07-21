@@ -1,7 +1,7 @@
 """
 Converts the Python dictionary returned by statsapi.get('game') into classes
 """
-# pylint: disable=C0103
+# pylint: disable=C0103, C0111
 
 import datetime
 from typing import List, Tuple
@@ -10,7 +10,8 @@ import random
 import pytz
 import statsapi
 from tqdm import tqdm
-from .statsapi_plus import get_daily_gamePks, get_run_expectency_numpy
+from .statsapi_plus import get_daily_gamePks
+from .statsapi_plus import get_run_expectency_difference_numpy
 
 margin_of_error = 0.25/12 # Margin of Error of hawkeye system (inches)
 
@@ -335,7 +336,7 @@ class Splits:
 
 class PlayEvents:
     MOE = margin_of_error
-    renp = get_run_expectency_numpy()
+    rednp = get_run_expectency_difference_numpy()
 
     def __init__(self, playEvents: dict):
         self._playEvents = playEvents
@@ -388,20 +389,20 @@ class PlayEvents:
 
         if correct is True:
             return 0
-        elif self.details.code == 'C':
+        if self.details.code == 'C':
             # Ball called Strike
-            home_delta += PlayEvents.renp[b+1][s-1][o][r] - PlayEvents.renp[b][s][o][r]
+            home_delta += PlayEvents.rednp[b][s-1][o][r]
 
         elif self.details.code == 'B':
             # Strike called Ball
-            home_delta += PlayEvents.renp[b-1][s+1][o][r] - PlayEvents.renp[b][s][o][r]
+            home_delta -= PlayEvents.rednp[b-1][s][o][r]
 
 
         if isTopInning is True:
             return home_delta
         return -home_delta
 
-    def delta_favor_monte(self, runners: int, isTopInning: bool) -> float:
+    def delta_favor_monte(self, runners_int: int, isTopInning: bool) -> float:
         home_delta = 0
 
         correct = True
@@ -410,7 +411,7 @@ class PlayEvents:
         s = self.count.strikes
         o = self.count.outs
 
-        r = runners
+        r = runners_int
 
         if self.pitchData is None:
             return 0
@@ -418,18 +419,18 @@ class PlayEvents:
         if self.pitchData.coordinates.is_valid() is False:
             return 0
 
-        if self.details.code == 'C' or self.details.code == 'B':
+        if self.details.code in ('C', 'B'):
             correct = self._is_correct_call_monte_carlo()
 
         if correct is True:
             return 0
-        elif self.details.code == 'C':
-            # Ball called Strike
-            home_delta += PlayEvents.renp[b+1][s-1][o][r] - PlayEvents.renp[b][s][o][r]
 
+        if self.details.code == 'C':
+            # Ball called Strike
+            home_delta += PlayEvents.rednp[b][s-1][o][r]
         elif self.details.code == 'B':
             # Strike called Ball
-            home_delta += PlayEvents.renp[b-1][s+1][o][r] - PlayEvents.renp[b][s][o][r]
+            home_delta -= PlayEvents.rednp[b-1][s][o][r]
 
         if isTopInning is True:
             return home_delta
@@ -438,10 +439,9 @@ class PlayEvents:
     def _is_correct_call_zone_num(self) -> bool:
         if self.details.code == 'C' and self.pitchData.zone > 10:
             return False
-        elif self.details.code == 'B' and self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
+        if self.details.code == 'B' and self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
             return False
-        else:
-            return True
+        return True
 
     def _is_correct_call_monte_carlo(self) -> bool:
         strike = 0

@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from .game import Game, AllPlays, PlayEvents
-from .statsapi_plus import get_game_dict
+from get.game import Game, AllPlays, PlayEvents
+from get.statsapi_plus import get_game_dict
 
 
 class Umpire():

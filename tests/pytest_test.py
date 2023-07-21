@@ -1,4 +1,8 @@
-from .. import inc_dec    # The code to test
+"""
+Module to test pytests and vscode testing tab
+"""
+
+from main import inc_dec
 
 def test_increment():
     assert inc_dec.increment(3) == 4
