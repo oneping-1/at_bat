@@ -1,14 +1,7 @@
 
 *.pyc
 json.txt
-.vscode/settings.json
-*.pyc
-*.pyc
-*.pyc
-*.pyc
-json.txt
-get/__pycache__/__init__.cpython-311.pyc
-*.pyc
-test.py
-*.pyc
-json.txt
+.vscode
+.__pycache__
+.pytest_cache
+
