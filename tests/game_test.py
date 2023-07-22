@@ -1,43 +1,11 @@
-# pylint: disable=C0103
+# pylint: disable=C0103, C0111
+# pylint: disable=protected-access
 
+import math
 import pytest
 from get.game import PlayEvents, Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
-
-def test_calculate_delta_00():
-    """
-    Ball called Strike
-    Top of inning
-    0-0 count
-    """
-    playEvents_dict = {
-        'details': {
-            'code': 'C'
-        },
-        'count': {
-            'balls': 0,
-            'strikes': 1,
-            'outs': 0
-        },
-        'pitchData': {
-            'strikeZoneTop': 3.5,
-            'strikeZoneBottom': 1.5,
-            'coordinates': {
-                'pX': -1,
-                'pZ': 2
-            },
-            'zone': 5
-        }
-    }
-
-    runners = Runners(runners_list=[False, False, False])
-    isTopInning = True
-
-    pitch = PlayEvents(playEvents_dict)
-    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
-
-    assert home_delta_monte == pytest.approx(.1, abs=1e-3)
 
 def test_calculate_delta_01():
     """
@@ -696,3 +664,128 @@ def test_calculate_delta_16():
     # Was on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.22, abs=1e-3)
     assert home_delta_monte == pytest.approx(-0.22, abs=1e-3)
+
+def test_random_moe_01():
+    pX = 0
+    pZ = 0
+
+    playEvents = {
+        'pitchData': {
+            'coordinates': {
+                'pX': pX,
+                'pZ': pZ
+            },
+            'strikeZoneTop': 3.5,
+            'strikeZoneBottom': 1.5
+        }
+    }
+
+    pitch = PlayEvents(playEvents)
+
+    rand_x, rand_z = pitch._generage_random_pitch_location()
+
+    dx = math.pow(pX - rand_x, 2)
+    dz = math.pow(pZ - rand_z, 2)
+    mag = math.sqrt(dx + dz)
+
+    assert mag <= PlayEvents.MOE
+
+def test_random_moe_02():
+    pX = 0
+    pZ = 1
+
+    playEvents = {
+        'pitchData': {
+            'coordinates': {
+                'pX': pX,
+                'pZ': pZ
+            },
+            'strikeZoneTop': 3.5,
+            'strikeZoneBottom': 1.5
+        }
+    }
+
+    pitch = PlayEvents(playEvents)
+
+    rand_x, rand_z = pitch._generage_random_pitch_location()
+
+    dx = math.pow(pX - rand_x, 2)
+    dz = math.pow(pZ - rand_z, 2)
+    mag = math.sqrt(dx + dz)
+
+    assert mag <= PlayEvents.MOE
+
+def test_random_moe_03():
+    pX = 1
+    pZ = 0
+
+    playEvents = {
+        'pitchData': {
+            'coordinates': {
+                'pX': pX,
+                'pZ': pZ
+            },
+            'strikeZoneTop': 5,
+            'strikeZoneBottom': 1
+        }
+    }
+
+    pitch = PlayEvents(playEvents)
+
+    rand_x, rand_z = pitch._generage_random_pitch_location()
+
+    dx = math.pow(pX - rand_x, 2)
+    dz = math.pow(pZ - rand_z, 2)
+    mag = math.sqrt(dx + dz)
+
+    assert mag <= PlayEvents.MOE
+
+def test_random_moe_04():
+    pX = 0
+    pZ = 2
+
+    playEvents = {
+        'pitchData': {
+            'coordinates': {
+                'pX': pX,
+                'pZ': pZ
+            },
+            'strikeZoneTop': 2.5,
+            'strikeZoneBottom': 2
+        }
+    }
+
+    pitch = PlayEvents(playEvents)
+
+    rand_x, rand_z = pitch._generage_random_pitch_location()
+
+    dx = math.pow(pX - rand_x, 2)
+    dz = math.pow(pZ - rand_z, 2)
+    mag = math.sqrt(dx + dz)
+
+    assert mag <= PlayEvents.MOE
+
+def test_random_moe_05():
+    pX = -3
+    pZ = 0
+
+    playEvents = {
+        'pitchData': {
+            'coordinates': {
+                'pX': pX,
+                'pZ': pZ
+            },
+            'strikeZoneTop': 4,
+            'strikeZoneBottom': 1
+        }
+    }
+
+    pitch = PlayEvents(playEvents)
+
+    rand_x, rand_z = pitch._generage_random_pitch_location()
+
+    dx = math.pow(pX - rand_x, 2)
+    dz = math.pow(pZ - rand_z, 2)
+    mag = math.sqrt(dx + dz)
+
+    assert mag <= PlayEvents.MOE

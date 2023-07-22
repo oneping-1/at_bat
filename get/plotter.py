@@ -35,7 +35,7 @@ class Plotter:
         self.axis = None
 
 
-    def plot(self, pitches: List[PlayEvents]):
+    def plot(self, pitches: List[PlayEvents], plot: bool = True):
         """
         Plots a list of pitches using matplot lib. Input is a list of
         pitches so that multiple pitches can be printed
@@ -43,6 +43,8 @@ class Plotter:
         Arg:
             pitches (List[PlayEvents]): List of pitches
                 (game.PlayEvents) that want to be plotted
+            plot (bool, optional): Argument to turn off plot but still
+                do calculations. Default = True
 
         Raises:
             ValueError: If len(pitches) == 0
@@ -85,7 +87,9 @@ class Plotter:
         for spine in self.axis.spines.values():
             spine.set_visible(False)
 
-        plt.show()
+        # Able to turn off plot if used in testing
+        if plot is True:
+            plt.show()
 
     def _get_normalized_pitch_location(self, pitch: PlayEvents):
         pX = pitch.pitchData.coordinates.pX
@@ -108,7 +112,7 @@ class Plotter:
         pZ_top = d_top + self.sZ_top
         pZ_bot = d_bot + self.sZ_bot
 
-        if abs(pZ_top) > abs(pZ_bot):
+        if abs(d_top) > abs(d_bot):
             pZ = pZ_bot
         else:
             pZ = pZ_top

@@ -468,15 +468,15 @@ class PlayEvents:
         strike = 0
         ball = 0
 
-        pz_left = -0.83
-        pz_right = 0.83
+        pX_left = -0.83
+        pX_right = 0.83
         pZ_top = self.pitchData.coordinates.pZ_top
         pZ_bot = self.pitchData.coordinates.pZ_bot
 
         for _ in range(1, 501):
             rand_x, rand_z = self._generage_random_pitch_location()
 
-            if (rand_x >= pz_left) and (rand_x <= pz_right) and (rand_z >= pZ_bot) and (rand_z <= pZ_top):
+            if pX_left <= rand_x <= pX_right and pZ_bot <= rand_z <= pZ_top:
                 strike += 1
             else:
                 ball += 1
@@ -506,7 +506,7 @@ class PlayEvents:
     def __eq__(self, other):
         if other is None:
             return False
-        elif self._playEvents == other._playEvents:
+        if self._playEvents == other._playEvents:
             return True
         return False
 

@@ -2,6 +2,8 @@
 Module to test pytests and vscode testing tab
 """
 
+# pylint: disable=C0111
+
 from main import inc_dec
 
 def test_increment():
