@@ -197,7 +197,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-g', '--gamepk', help = 'gamePk', type=int)
-    parser.add_argument('-d', '--delay', help='delay in seconds', type=float)
+    parser.add_argument('-d', '--delay', help='delay in seconds', type=int)
     args = parser.parse_args()
 
     if args.gamepk is not None:

@@ -19,7 +19,7 @@ Incomplete:
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
 - [ ] Make scoreboard.py return something. Maybe move to another module?
 - [ ] Integrate plotter with rest of code
-- [ ] Make plotter adjust pitches to normalized top and bottom of zone
+- [ ] Make a new function in plotter.py that just outputs pitch location so that it can be unit tested
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -42,3 +42,4 @@ Complete:
 - [X] Refactor, move get_total_favored_runs() into class. Add instance variable of list of missed calls. Maybe another class. Easier to print (not entirely tested)
 - [X] Make strength_of_schedule.py return class and then have seperate function print (not entirely tested)
 - [X] Create some kind of graphic to show pitch location
+- [X] Make plotter adjust pitches to normalized top and bottom of zone

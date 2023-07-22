@@ -101,7 +101,7 @@ def test_random_MOE_04():
 
     assert mag <= PlayEvents.MOE
 
-def test_04():
+def test_random_MOE_05():
     pX = -3
     pZ = 0
 

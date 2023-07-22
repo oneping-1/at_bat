@@ -1,5 +1,21 @@
 """
-Converts the Python dictionary returned by statsapi.get('game') into classes
+Converts the Python dictionary returned by statsapi.get('game') into
+classes that represent each level in the dictionary returned by
+statsapi.get('game').
+
+Other important classes in this module are:
+    AllPlays: A class that is typically stored in a list that represents
+        each at bat in a game
+    PlayEvents: A class that is again typically stored in a list that
+        represents each pitch in an at bat. Also has data for pickoffs,
+        mound visits, pitching changes, and pinch players
+
+Example
+from get.statsapi_plus import get_game_dict
+from get.game import Game
+
+game_dict = get_game_dict(gamePk)
+game_class = Game(game_dict)
 """
 # pylint: disable=C0103, C0111
 
@@ -10,13 +26,18 @@ import random
 import pytz
 import statsapi
 from tqdm import tqdm
-from .statsapi_plus import get_daily_gamePks
-from .statsapi_plus import get_run_expectency_difference_numpy
+from get.statsapi_plus import get_daily_gamePks
+from get.statsapi_plus import get_run_expectency_difference_numpy
 
 margin_of_error = 0.25/12 # Margin of Error of hawkeye system (inches)
 
-
 class Game:
+    """
+    Initial class that the user interacts with to get the class started.
+    The argument for this class is the dictionary returned by 
+    either statsapi.get() or get_game_dict() (both return the same
+    thing).
+    """
     def __init__(self, data:dict):
         self.gameData = data['gameData']
         self.liveData = data['liveData']
