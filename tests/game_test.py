@@ -224,11 +224,11 @@ def test_calculate_delta_06():
             'outs': 0
         },
         'pitchData': {
-            'strikeZoneTop': 3.37370384468164,
-            'strikeZoneBottom': 1.62742076652336,
+            'strikeZoneTop': 3.37,
+            'strikeZoneBottom': 1.63,
             'coordinates': {
-                'pX': 0.2710530314580832,
-                'pZ': 3.518891508624232
+                'pX': 0.27,
+                'pZ': 3.52
             },
             'zone': 12
         }
@@ -518,11 +518,11 @@ def test_calculate_delta_13():
             'outs': 1
         },
         'pitchData': {
-            'strikeZoneTop': 3.08087458992998,
-            'strikeZoneBottom': 1.45858003668385,
+            'strikeZoneTop': 3.08,
+            'strikeZoneBottom': 1.46,
             'coordinates': {
-                'pX': -0.8026750052835597,
-                'pZ': 1.4342317987795377
+                'pX': -0.80,
+                'pZ': 1.43
             },
             'zone': 7
         }
@@ -664,6 +664,49 @@ def test_calculate_delta_16():
     # Was on Ump Scorecards
     assert home_delta_zone == pytest.approx(-0.22, abs=1e-3)
     assert home_delta_monte == pytest.approx(-0.22, abs=1e-3)
+
+def test_calculate_delta_17():
+    """
+    Ball called Strike
+    Top Inning
+    3-1 Count
+
+    2023-07-21
+    Top 6, Leclerc to Taylor
+    https://twitter.com/UmpScorecards/status/1682761151476539399
+    https://baseballsavant.mlb.com/statcast_search?hfPTM=&hfPT=&hfAB=&hfGT=R%7C&hfPR=called%5C.%5C.strike%7C&hfZ=11%7C12%7C13%7C14%7C&hfStadium=&hfBBL=&hfNewZones=&hfPull=&hfC=31%7C&hfSea=2023%7C&hfSit=&player_type=pitcher&hfOuts=&hfOpponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=2023-07-21&game_date_lt=2023-07-21&hfMo=&hfTeam=&home_road=&hfRO=&position=&hfInfield=&hfOutfield=&hfInn=&hfBBT=&batters_lookup%5B%5D=621035&hfFlag=&pitchers_lookup%5B%5D=600917&metric_1=&group_by=name&min_pitches=0&min_results=0&min_pas=0&sort_col=pitches&player_event_sort=api_p_release_speed&sort_order=desc#results
+    """
+    playEvents_dict = {
+        'details': {
+            'code': 'C'
+        },
+        'count': {
+            'balls': 3,
+            'strikes': 2,
+            'outs': 1
+        },
+        'pitchData': {
+            'strikeZoneTop': 3.44,
+            'strikeZoneBottom': 1.91,
+            'coordinates': {
+                'pX': 0.61,
+                'pZ': 1.55
+            },
+            'zone': 14
+        }
+    }
+
+    runners = Runners(runners_list=[False, False, False])
+    isTopInning = True
+
+    pitch = PlayEvents(playEvents_dict)
+    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
+    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
+
+    # Was not on Ump Scorecards
+    assert home_delta_zone == pytest.approx(0.22, abs=1e-3)
+    assert home_delta_monte == 0
+
 
 def test_random_moe_01():
     pX = 0

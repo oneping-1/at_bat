@@ -29,7 +29,7 @@ from tqdm import tqdm
 from get.statsapi_plus import get_daily_gamePks
 from get.statsapi_plus import get_run_expectency_difference_numpy
 
-margin_of_error = 0.25/12 # Margin of Error of hawkeye system (inches)
+MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 class Game:
     """
@@ -41,6 +41,7 @@ class Game:
     def __init__(self, data:dict):
         self.gameData = data['gameData']
         self.liveData = data['liveData']
+        self.gamePk = data.get('gamePk', None)
         self._children()
 
     def _children(self):
@@ -183,7 +184,6 @@ class AllPlays:
         self.about = allPlays.get('about', None)
         self.count = allPlays.get('count', None)
         self.matchup = allPlays.get('matchup', None)
-        self.runners = None
         self.pitchIndex = allPlays.get('pitchIndex', None)
         events = allPlays.get('playEvents', None)
         self.playEvents: List[PlayEvents] = [PlayEvents(i) for i in events]
@@ -196,7 +196,6 @@ class AllPlays:
         self.about = About(self.about)
         self.count = Count(self.count)
         self.matchup = Matchup(self.matchup)
-        self.runners = Runners(at_bat = self)
 
     def __eq__(self, other):
         if self._allPlays == other._allPlays:
@@ -272,76 +271,6 @@ class Matchup:
             self.splits = Splits(self.splits)
 
 
-class Runners:
-    def __init__(self,
-                 at_bat: AllPlays = None,
-                 runners_list: List[bool] = None):
-        """
-        Sets the runners based of the current at bat
-        
-        Args:
-            at_bat: (get.game.AllPlays): The current at bat
-        """
-        if at_bat is not None:
-            self.runners = [False, False, False]
-
-            if at_bat.matchup.postOnFirst is not None:
-                self.runners[0] = True
-            else:
-                self.runners[0] = False
-
-            if at_bat.matchup.postOnSecond is not None:
-                self.runners[1] = True
-            else:
-                self.runners[1] = False
-
-            if at_bat.matchup.postOnThird is not None:
-                self.runners[2] = True
-            else:
-                self.runners[2] = False
-        elif runners_list is not None and len(runners_list) == 3:
-            self.runners = runners_list.copy()
-        else:
-            raise ValueError('no argument defined')
-
-    def clear_bases(self):
-        """
-        Manually clear the bases
-        Can be used for a new half inning
-        """
-        self.runners = [False, False, False].copy()
-
-    def __int__(self):
-        i = 0
-
-        if self.runners[0] is True:
-            i += 1
-        if self.runners[1] is True:
-            i += 2
-        if self.runners[2] is True:
-            i += 4
-
-        return i
-
-    def __str__(self):
-        if self.runners == [False, False, False]:
-            return 'bases empty'
-        if self.runners == [True, False, False]:
-            return 'runner on first'
-        if self.runners == [False, True, False]:
-            return 'runner on second'
-        if self.runners == [True, True, False]:
-            return 'runners on first and second'
-        if self.runners == [False, False, True]:
-            return 'runner on third'
-        if self.runners == [True, False, True]:
-            return 'runners on first and third'
-        if self.runners == [False, True, True]:
-            return 'runners on second and third'
-        if self.runners == [True, True, True]:
-            return 'bases loaded'
-
-
 class Side:
     def __init__(self, side):
         self.code = side.get('L', None)
@@ -356,7 +285,7 @@ class Splits:
 
 
 class PlayEvents:
-    MOE = margin_of_error
+    MOE = MARGIN_OF_ERROR
     rednp = get_run_expectency_difference_numpy()
 
     def __init__(self, playEvents: dict):
@@ -586,14 +515,17 @@ class PitchData:
 
 
 class PitchCoordinates:
+    BALL_RADIUS_INCH = 1.437
+    BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
+
     def __init__(self, coor, sz_top, sz_bot):
 
         self.sZ_top = sz_top
         self.sZ_bot = sz_bot
 
         # Location of Center of Pitch for Ball/Strike
-        self.pZ_top = self.sZ_top + 0.12
-        self.pZ_bot = self.sZ_bot - 0.12
+        self.pZ_top = self.sZ_top + self.BALL_RADIUS_FEET
+        self.pZ_bot = self.sZ_bot - self.BALL_RADIUS_FEET
 
         # Acceleration in X,Y,Z directions
         self.aX = coor.get('aX', None)
@@ -796,10 +728,9 @@ class Offense:
         self.pitcher = offense.get('pitcher', None)
         self._children()
 
-        self.runners = (1 if self.first else 0) + (2 if self.second else 0) + (4 if self.third else 0)
-        self.is_first = self.first is not None
-        self.is_second = self.second is not None
-        self.is_third = self.third is not None
+        self.is_first = True if self.first is not None else False
+        self.is_second = True if self.second is not None else False
+        self.is_third = True if self.third is not None else False
 
     def _children(self):
         if self.batter:
@@ -816,10 +747,10 @@ class Offense:
 
         if self.second:
             self.second = Player(self.second)
-        
+
         if self.third:
             self.third = Player(self.third)
-        
+
         if self.pitcher:
             self.pitcher = Player(self.pitcher)
 

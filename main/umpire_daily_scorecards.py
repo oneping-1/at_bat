@@ -13,7 +13,8 @@ from get.umpire import Umpire
 
 
 def daily_ump_scorecards(date: str,
-                        print_daily_stats: bool = False) -> List[Umpire]:
+                        print_daily_stats: bool = False
+                        ) -> List[Umpire]:
     """
     Finds the missed calls and favor for each game in a given day
 
@@ -50,6 +51,7 @@ def daily_ump_scorecards(date: str,
             away_team_abv = game.game.gameData.teams.away.abbreviation
             home_team_abv = game.game.gameData.teams.home.abbreviation
 
+            print(f'pk: {game.gamePk}')
             print(f'{away_team_abv} at {home_team_abv}')
             print(f'Misses: {game.num_missed_calls}')
 

@@ -71,15 +71,15 @@ class Plotter:
         self.axis.add_patch(zone)
 
         # creates and prints each pitch in list
-        for _, pitch in enumerate(pitches):
+        for i, pitch in enumerate(pitches):
             pX, pZ, color = self._get_normalized_pitch_location(pitch)
             pitch = patches.Circle((pX, pZ), radius=self.BALL_RADIUS_FEET,
                                     facecolor='none', edgecolor=color)
             self.axis.add_patch(pitch)
-            #self.axis.text(pX, pZ, str(i+1), ha='center', va='center')
+            self.axis.text(pX, pZ, str(i+1), ha='center', va='center')
 
-        plt.xlim(-2, 2)
-        plt.ylim(0,5)
+        plt.xlim(-1.5, 1.5)
+        plt.ylim(1,4)
         plt.xticks([])
         plt.yticks([])
         self.axis.set_aspect('equal')

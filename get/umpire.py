@@ -1,10 +1,23 @@
 from typing import List, Tuple
 from get.game import Game, AllPlays, PlayEvents
+from get.runners import Runners
 from get.statsapi_plus import get_game_dict
 
 
 class Umpire():
+    """
+    Holds info for each game and their missed calls.
 
+    Attribues:
+        game (get.game.Game): Game class with all info
+        gamePk (int): gamePk number
+        num_missed_calls (int): The number of missed calls made
+            in the game
+        home_favor (float): The number of runs awarded to the home team
+            in the game
+        away_abv (str): The abbreviation of the away team
+        home_abv (str): The abbreviation of the home team
+    """
     def __init__(self,
                  gamePk: int = None,
                  game: Game = None):
@@ -12,14 +25,17 @@ class Umpire():
         if game is not None:
             self.game = game
         elif gamePk is not None:
-            game_dict= get_game_dict(gamePk)
+            game_dict = get_game_dict(gamePk)
             self.game = Game(game_dict)
         else:
             raise ValueError('gamePk and game arguments not provided')
 
+        self.gamePk = game.gamePk
         self.num_missed_calls = 0
         self.missed_calls: List[PlayEvents] = []
         self.home_favor = 0
+        self.away_abv = game.gameData.teams.away.abbreviation
+        self.home_abv = game.gameData.teams.home.abbreviation
 
     def set(self,
             print_missed_calls: bool = False
@@ -38,7 +54,8 @@ class Umpire():
     def find_missed_calls(cls,
                           game: Game = None,
                           gamePk: int = None,
-                          print_missed_calls: bool = False) -> Tuple[int, float, List[PlayEvents]]:
+                          print_missed_calls: bool = False
+                          ) -> Tuple[int, float, List[PlayEvents]]:
         """
         Calculates total favored runs for the home team for a given team
 
@@ -72,16 +89,19 @@ class Umpire():
         elif game is None and gamePk is None:
             raise ValueError('game and gamePk not provided')
 
+        j = 1
+
         home_favor: float = 0
         missed_calls: List[PlayEvents] = []
+        runners = Runners()
 
         for at_bat in game.liveData.plays.allPlays:
-            runners_int = int(at_bat.runners)
+            runners.new_batter(at_bat)
+            runners_int = int(runners)
             isTopInning = at_bat.about.isTopInning
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
-
                 home_delta = pitch.delta_favor_monte(runners_int, isTopInning)
 
                 if home_delta != 0:
@@ -90,15 +110,20 @@ class Umpire():
 
                     if print_missed_calls is True:
                         print(cls._missed_pitch_details(
-                            at_bat, pitch, home_delta))
+                            at_bat, runners, pitch, home_delta,j))
+                        j += 1
+
+            runners.end_batter(at_bat)
 
         return (len(missed_calls), home_favor, missed_calls)
 
     @classmethod
     def _missed_pitch_details(cls,
                             at_bat: AllPlays,
+                            runners: Runners,
                             pitch: PlayEvents,
-                            home_delta: float) -> str:
+                            home_delta: float,
+                            i: int) -> str:
 
         to_print_str = ''
 
@@ -107,7 +132,7 @@ class Umpire():
         pitcher_name = at_bat.matchup.pitcher.fullName
         batter_name = at_bat.matchup.batter.fullName
 
-        to_print_str += f'{half_inn} {inning}\n'
+        to_print_str += f'{i}: {half_inn} {inning}\n'
         to_print_str += f'{pitcher_name} to {batter_name}\n'
 
         if pitch.count.outs == 1:
@@ -115,7 +140,7 @@ class Umpire():
         else:
             to_print_str += f'{pitch.count.outs} outs, '
 
-        to_print_str += f'{str(at_bat.runners)}\n'
+        to_print_str += f'{str(runners)}\n'
 
         balls = pitch.count.balls
         strikes = pitch.count.strikes

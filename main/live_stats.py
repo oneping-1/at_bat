@@ -14,6 +14,7 @@ from typing import Tuple
 from get.game import Game, PlayEvents, AllPlays
 from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
 from get.umpire import Umpire
+from get.runners import Runners
 
 
 def print_last_pitch(gamePk: int = None,
@@ -112,7 +113,10 @@ def _get_at_bat_details(at_bat: AllPlays,
     strikes = pitch.count.strikes
     outs = pitch.count.outs
 
-    runners = str(at_bat.runners).capitalize()
+    runners = Runners()
+    # end_batter method sets the runners which is why its used here
+    # might have errors with walks?
+    runners.end_batter(runners)
 
     line_0 = f'{pitcher} to {batter}'
     line_1 = f'{balls}-{strikes} | {outs} Outs'
@@ -136,14 +140,14 @@ def _get_run_details(game: Game,
     renp = get_run_expectency_numpy()
     run_exp = renp[balls][strikes][outs][runners]
 
-    favor = Umpire.find_missed_calls(game=game)[1]
+    misses, favor, _ = Umpire.find_missed_calls(game=game)
 
     line_0 = f'Expected Runs: {run_exp:.2f}'
 
     if favor < 0:
-        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
+        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team} ({misses})'
     else:
-        line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
+        line_1 = f'Ump Favor: {favor:+5.2f} {home_team} ({misses})'
 
     return (line_0, line_1)
 
