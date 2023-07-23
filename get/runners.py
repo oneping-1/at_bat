@@ -5,7 +5,8 @@ to be run at the beginning and end of each at bat when itterating
 through at bats in a game
 """
 
-from get.game import AllPlays
+from typing import List
+
 
 class Runners:
     """
@@ -30,7 +31,7 @@ class Runners:
         self.isTopInning = None
         self.inning = 0
 
-    def new_batter(self, at_bat: AllPlays):
+    def new_batter(self, at_bat):
         """
         Checks if a new half inning has started. If so, will clear the
         bases. This method should be run at the start of an at bat. If
@@ -50,7 +51,7 @@ class Runners:
             self.runners = [False, False, False].copy()
 
 
-    def end_batter(self, at_bat: AllPlays):
+    def end_batter(self, at_bat):
         """
         Update class instance at the end of an at bat. Places the
         runners based off the outcome of the at bat.
@@ -81,6 +82,29 @@ class Runners:
         Can be used for a new half inning
         """
         self.runners = [False, False, False].copy()
+
+    def set_bases(self, runners_list: List[bool]):
+        """
+        Manually set runners location on the bases
+
+        Arguments:
+            runners_list (List[bool]): List of runners locations with
+                index 0 being first base and index 2 being third base.
+                Switch each index to True if a runner is on the base
+                and False if no runner is on the base
+
+        Raises:
+            ValueError: If len of runners_list is not 3
+            TypeError: If elements in runners_list are not type bool
+        """
+        if len(runners_list) != 3:
+            raise ValueError('runners_list is not len 3')
+
+        for base in runners_list:
+            if base is not False and base is not True:
+                raise TypeError('Elements should be type bool')
+
+        self.runners = runners_list.copy()
 
     def __int__(self):
         """

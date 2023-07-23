@@ -8,7 +8,7 @@ to find trend
 from get.plotter import Plotter
 from get.game import PlayEvents
 
-pitch_dict_1 = {
+pitch_01 = {
     'details': {
         'code': 'B'
     },
@@ -22,7 +22,7 @@ pitch_dict_1 = {
     }
 }
 
-pitch_dict_2 = {
+pitch_02 = {
     'details': {
         'code': 'C'
     },
@@ -36,7 +36,7 @@ pitch_dict_2 = {
     }
 }
 
-pitch_dict_3 = {
+pitch_03 = {
     'details': {
         'code': 'B'
     },
@@ -50,9 +50,25 @@ pitch_dict_3 = {
     }
 }
 
-pitch_1 = PlayEvents(pitch_dict_1)
-pitch_2 = PlayEvents(pitch_dict_2)
-pitch_3 = PlayEvents(pitch_dict_3)
+pitch_04 = {
+    'details': {
+        'code': 'C'
+    },
+    'pitchData': {
+        'strikeZoneTop': 3.54,
+        'strikeZoneBottom': 1.79,
+        'coordinates': {
+            'pX': -0.86,
+            'pZ': 2.27
+        }
+    }
+}
+
+pitches = []
+pitches.append(PlayEvents(pitch_01))
+pitches.append(PlayEvents(pitch_02))
+pitches.append(PlayEvents(pitch_03))
+pitches.append(PlayEvents(pitch_04))
 
 plotter = Plotter()
-plotter.plot([pitch_1, pitch_2, pitch_3])
+plotter.plot(pitches)

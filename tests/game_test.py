@@ -3,7 +3,8 @@
 
 import math
 import pytest
-from get.game import PlayEvents, Runners
+from get.game import PlayEvents
+from get.runners import Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
@@ -33,7 +34,8 @@ def test_calculate_delta_01():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -67,7 +69,8 @@ def test_calculate_delta_02():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -106,7 +109,8 @@ def test_calculate_delta_03():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -150,7 +154,8 @@ def test_calculate_delta_04():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -192,7 +197,8 @@ def test_calculate_delta_05():
         }
     }
 
-    runners = Runners(runners_list=[True, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -234,7 +240,8 @@ def test_calculate_delta_06():
         }
     }
 
-    runners = Runners(runners_list=[True, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[True, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -276,7 +283,8 @@ def test_calculate_delta_07():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -318,7 +326,8 @@ def test_calculate_delta_08():
         }
     }
 
-    runners = Runners(runners_list=[True, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -360,7 +369,8 @@ def test_calculate_delta_09():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -402,7 +412,8 @@ def test_calculate_delta_10():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -444,7 +455,8 @@ def test_calculate_delta_11():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -486,7 +498,8 @@ def test_calculate_delta_12():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = False
 
     pitch = PlayEvents(playEvents_dict)
@@ -528,7 +541,8 @@ def test_calculate_delta_13():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -570,7 +584,8 @@ def test_calculate_delta_14():
         }
     }
 
-    runners = Runners(runners_list=[True, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -612,7 +627,8 @@ def test_calculate_delta_15():
         }
     }
 
-    runners = Runners(runners_list=[True, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[True, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -654,7 +670,8 @@ def test_calculate_delta_16():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)
@@ -696,7 +713,8 @@ def test_calculate_delta_17():
         }
     }
 
-    runners = Runners(runners_list=[False, False, False])
+    runners = Runners()
+    runners.set_bases(runners_list=[False, False, False])
     isTopInning = True
 
     pitch = PlayEvents(playEvents_dict)

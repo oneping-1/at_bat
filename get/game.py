@@ -28,6 +28,7 @@ import statsapi
 from tqdm import tqdm
 from get.statsapi_plus import get_daily_gamePks
 from get.statsapi_plus import get_run_expectency_difference_numpy
+from get.runners import Runners
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
@@ -323,7 +324,7 @@ class PlayEvents:
         if self.pitchData is not None:
             self.pitchData = PitchData(self.pitchData)
 
-    def delta_favor_zone(self, runners: int, isTopInning: bool) -> float:
+    def delta_favor_zone(self, runners_int: int, isTopInning: bool) -> float:
         home_delta = 0
 
         correct = True
@@ -332,7 +333,7 @@ class PlayEvents:
         s = self.count.strikes
         o = self.count.outs
 
-        r = runners
+        r = runners_int
 
         if self.details.code == 'C' or self.details.code == 'B':
             correct = self._is_correct_call_zone_num()
@@ -726,11 +727,17 @@ class Offense:
         self.second = offense.get('second', None)
         self.third = offense.get('third', None)
         self.pitcher = offense.get('pitcher', None)
-        self._children()
 
         self.is_first = True if self.first is not None else False
         self.is_second = True if self.second is not None else False
         self.is_third = True if self.third is not None else False
+
+        runners_list = [self.is_first, self.is_second, self.is_third]
+
+        self.x = Runners()
+        self.x.set_bases(runners_list)
+
+        self._children()
 
     def _children(self):
         if self.batter:
@@ -757,9 +764,9 @@ class Offense:
 
 class Player:
     def __init__(self, player):
-        self.id = player['id']
-        self.fullName = player['fullName']
-        self.link = player['link']
+        self.id = player.get('id', None)
+        self.fullName = player.get('fullName', None)
+        self.link = player.get('link', None)
         # no children
 
 

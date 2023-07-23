@@ -13,7 +13,7 @@ Incomplete:
 - [ ] Implement Margin of Error method to calculate if pitch was in the zone
 - [ ] Add restructured text doc strings for functions, classes (In Progress)
 - [ ] Pylint code (In Progress)
-- [ ] Make scoreboard.py use curses library (In Progress)
+- [ ] Make scoreboard.py use curses library
 - [ ] More pytests
 - [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
@@ -21,6 +21,8 @@ Incomplete:
 - [ ] Integrate plotter with rest of code
 - [ ] Make csv files accessible even when running files from subfolders
 - [ ] Check if runners variable in live_stats.py has issues with walks
+- [ ] Write doc strings for get_delta_zone() and get_delta_monte()
+- [ ] Setters and Getters in runners class
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function

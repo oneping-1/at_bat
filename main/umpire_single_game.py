@@ -21,7 +21,7 @@ def main():
     get.umpire.get_total_favored_runs
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gamePk', default=None,
+    parser.add_argument('--gamePk', '--gamepk', default=None,
                         help='gamePk', type=int)
 
     args = parser.parse_args()

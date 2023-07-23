@@ -24,8 +24,8 @@ def loop(delay_seconds:int = 0):
 
     gamePks = sp.get_daily_gamePks()
     games = []
-    for game in gamePks:
-        data = sp.get_game_dict(game, delay_seconds=delay_seconds)
+    for gamePk in gamePks:
+        data = sp.get_game_dict(gamePk, delay_seconds=delay_seconds)
         game = Game(data)
         games.append(game)
 
@@ -52,10 +52,10 @@ def loop(delay_seconds:int = 0):
             prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{home_team:4s}\n')
         elif inning_state in ('Top', 'Middle'):
-            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d} r{int(runners):1d}\n')
+            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d} {runners}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
         elif inning_state in ('Bottom', 'End'):
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} r{int(runners):1d}\n')
+            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} {runners}\n')
             prnt += (f'{home_color}{home_team:3s}- {home_score:2d} {inning:2d}\n')
         else:
             prnt += (f'{away_color}{away_team:4s} {away_score:2d}\n')
@@ -80,7 +80,7 @@ def _get_gameData(game):
     return(away_color, home_color, away_team, home_team, detailed_state, abstract_state)
 
 
-def _get_liveData(game):
+def _get_liveData(game: Game):
     away_score = game.liveData.linescore.teams.away.runs
     home_score = game.liveData.linescore.teams.home.runs
 
@@ -89,10 +89,7 @@ def _get_liveData(game):
 
     inning_state = game.liveData.linescore.inningState
 
-    try:
-        runners = game.liveData.plays.allPlays[-1].runners
-    except IndexError:
-        runners = None
+    runners = repr(game.liveData.linescore.offense.x)
 
     return (away_score, home_score, inning, outs, inning_state, runners)
 
