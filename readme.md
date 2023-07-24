@@ -23,6 +23,7 @@ Incomplete:
 - [ ] Check if runners variable in live_stats.py has issues with walks
 - [ ] Write doc strings for get_delta_zone() and get_delta_monte()
 - [ ] Setters and Getters in runners class
+- [ ] Fix circular import issue between runners.py and game.py
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function

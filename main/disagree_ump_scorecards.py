@@ -9,6 +9,7 @@ from get.plotter import Plotter
 from get.game import PlayEvents
 
 pitch_01 = {
+    # test_calculate_delta_04
     'details': {
         'code': 'B'
     },
@@ -22,6 +23,7 @@ pitch_01 = {
     }
 }
 
+# test_calculate_delta_06
 pitch_02 = {
     'details': {
         'code': 'C'
@@ -36,6 +38,7 @@ pitch_02 = {
     }
 }
 
+# test_calculate_delta_13
 pitch_03 = {
     'details': {
         'code': 'B'
@@ -50,16 +53,17 @@ pitch_03 = {
     }
 }
 
+# test_calculate_delta_17
 pitch_04 = {
     'details': {
         'code': 'C'
     },
     'pitchData': {
-        'strikeZoneTop': 3.54,
-        'strikeZoneBottom': 1.79,
+        'strikeZoneTop': 3.47,
+        'strikeZoneBottom': 1.72,
         'coordinates': {
-            'pX': -0.86,
-            'pZ': 2.27
+            'pX': 0.61,
+            'pZ': 1.55
         }
     }
 }

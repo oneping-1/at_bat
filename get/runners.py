@@ -5,8 +5,11 @@ to be run at the beginning and end of each at bat when itterating
 through at bats in a game
 """
 
+from __future__ import annotations
 from typing import List
 
+if 1 == 0:
+    from get.game import AllPlays
 
 class Runners:
     """
@@ -22,6 +25,7 @@ class Runners:
             isn't
         inning (int): The current inning number
     """
+
     def __init__(self):
         """
         Initializes Runners class. Also holds inning info so that it
@@ -31,7 +35,7 @@ class Runners:
         self.isTopInning = None
         self.inning = 0
 
-    def new_batter(self, at_bat):
+    def new_batter(self, at_bat: AllPlays):
         """
         Checks if a new half inning has started. If so, will clear the
         bases. This method should be run at the start of an at bat. If
@@ -51,7 +55,7 @@ class Runners:
             self.runners = [False, False, False].copy()
 
 
-    def end_batter(self, at_bat):
+    def end_batter(self, at_bat: AllPlays):
         """
         Update class instance at the end of an at bat. Places the
         runners based off the outcome of the at bat.

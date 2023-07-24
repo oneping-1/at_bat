@@ -116,18 +116,18 @@ def _get_at_bat_details(at_bat: AllPlays,
     runners = Runners()
     # end_batter method sets the runners which is why its used here
     # might have errors with walks?
-    runners.end_batter(runners)
+    runners.end_batter(at_bat)
 
     line_0 = f'{pitcher} to {batter}'
     line_1 = f'{balls}-{strikes} | {outs} Outs'
-    line_2 = f'{str(runners)}'
+    line_2 = f'{str(runners).capitalize()}'
 
     return (line_0, line_1, line_2)
 
 
 def _get_run_details(game: Game,
                      at_bat: AllPlays,
-                     pitch: PlayEvents) -> Tuple[str, str]:
+                     pitch: PlayEvents) -> Tuple[str, str, str]:
 
     away_team = game.gameData.teams.away.abbreviation
     home_team = game.gameData.teams.home.abbreviation
@@ -135,7 +135,9 @@ def _get_run_details(game: Game,
     balls = pitch.count.balls
     strikes = pitch.count.strikes
     outs = pitch.count.outs
-    runners = int(at_bat.runners)
+    runners = Runners()
+    runners.end_batter(at_bat)
+    runners = int(runners)
 
     renp = get_run_expectency_numpy()
     run_exp = renp[balls][strikes][outs][runners]
@@ -143,13 +145,14 @@ def _get_run_details(game: Game,
     misses, favor, _ = Umpire.find_missed_calls(game=game)
 
     line_0 = f'Expected Runs: {run_exp:.2f}'
+    line_1 = f'Missed Calls: {misses}'
 
     if favor < 0:
-        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team} ({misses})'
+        line_2 = f'Ump Favor: {-favor:+5.2f} {away_team}'
     else:
-        line_1 = f'Ump Favor: {favor:+5.2f} {home_team} ({misses})'
+        line_2 = f'Ump Favor: {favor:+5.2f} {home_team}'
 
-    return (line_0, line_1)
+    return (line_0, line_1, line_2)
 
 
 def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:

@@ -251,6 +251,8 @@ class Matchup:
         self.postOnSecond = matchup.get('postOnSecond', None)
         self.postOnThird = matchup.get('postOnThird', None)
         self.splits = matchup.get('splits', None)
+        self.runners = Runners()
+
         self._children()
 
     def _children(self):
@@ -261,12 +263,24 @@ class Matchup:
 
         if self.postOnFirst is not None:
             self.postOnFirst = Player(self.postOnFirst)
+            self.is_first = True
+        else:
+            self.is_first = False
 
         if self.postOnSecond is not None:
             self.postOnSecond = Player(self.postOnSecond)
+            self.is_second = True
+        else:
+            self.is_second = False
 
         if self.postOnThird is not None:
             self.postOnThird = Player(self.postOnThird)
+            self.is_third = True
+        else:
+            self.is_third = False
+
+        runners = [self.is_first, self.is_second, self.is_third]
+        self.runners.set_bases(runners)
 
         if self.splits is not None:
             self.splits = Splits(self.splits)
@@ -398,8 +412,8 @@ class PlayEvents:
         strike = 0
         ball = 0
 
-        pX_left = -0.83
-        pX_right = 0.83
+        pX_left = PitchCoordinates.PX_MIN
+        pX_right = PitchCoordinates.PX_MAX
         pZ_top = self.pitchData.coordinates.pZ_top
         pZ_bot = self.pitchData.coordinates.pZ_bot
 
@@ -413,9 +427,9 @@ class PlayEvents:
 
         total = ball + strike
 
-        if self.details.code == 'B' and ((strike / total) >= 0.90):
+        if self.details.code == 'B' and ((strike / total) > 0.90):
             return False
-        elif self.details.code =='C' and ((ball / total) >= 0.90):
+        elif self.details.code =='C' and ((ball / total) > 0.90):
             return False
         else:
             return True
@@ -516,8 +530,14 @@ class PitchData:
 
 
 class PitchCoordinates:
-    BALL_RADIUS_INCH = 1.437
+    BALL_CIRCUMFERENCE_INCH = 9.125
+    BALL_RADIUS_INCH = BALL_CIRCUMFERENCE_INCH / (2 * math.pi)
     BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
+
+    PLATE_WIDTH_INCH = 17
+    PLATE_WIDTH_FEET = PLATE_WIDTH_INCH / 12
+    PX_MIN = (-PLATE_WIDTH_FEET / 2) - BALL_RADIUS_FEET
+    PX_MAX = (PLATE_WIDTH_FEET / 2) + BALL_RADIUS_FEET
 
     def __init__(self, coor, sz_top, sz_bot):
 
