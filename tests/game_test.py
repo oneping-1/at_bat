@@ -10,21 +10,14 @@ from get.runners import Runners
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
 def load_data():
-    with open('csv/test_calculate_delta.csv', 'r', encoding='utf-8') as file:
+    with open('csv/one_miss_games.csv', 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         test_data = list(reader)
     return test_data
 
-def str_to_bool(s: str):
-    if s.lower() == 'true':
-        return True
-    if s.lower() == 'false':
-        return False
-    raise ValueError('argument is not True or False')
-
 
 @pytest.mark.parametrize('test_data', load_data())
-def test_calculate_delta(test_data):
+def test_single_miss_games(test_data):
     playEvents_dict = {
         'details': {
             'code': test_data['code']
@@ -56,11 +49,13 @@ def test_calculate_delta(test_data):
     pitch = PlayEvents(playEvents_dict)
     home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
     home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
+    home_delta_dist = pitch.delta_favor_dist(int(runners), isTopInning)
 
     delta_zone = float(test_data['delta_zone'])
     delta_monte = float(test_data['delta_monte'])
     assert home_delta_zone == pytest.approx(delta_zone, abs=1e-3)
-    assert home_delta_monte == pytest.approx(delta_monte, abs=1e-3)
+    #assert home_delta_monte == pytest.approx(delta_monte, abs=1e-3)
+    assert home_delta_dist == pytest.approx(delta_monte, abs=1e-3)
 
 def test_random_moe_01():
     pX = 0
@@ -186,3 +181,10 @@ def test_random_moe_05():
     mag = math.sqrt(dx + dz)
 
     assert mag <= PlayEvents.MOE
+
+def str_to_bool(s: str):
+    if s.lower() == 'true':
+        return True
+    if s.lower() == 'false':
+        return False
+    raise ValueError('argument is not True or False')

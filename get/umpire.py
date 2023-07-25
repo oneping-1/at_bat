@@ -102,7 +102,7 @@ class Umpire():
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
-                home_delta = pitch.delta_favor_monte(runners_int, isTopInning)
+                home_delta = pitch.delta_favor_dist(runners_int, isTopInning)
 
                 if home_delta != 0:
                     home_favor += home_delta
@@ -153,6 +153,9 @@ class Umpire():
 
         to_print_str += (f'pX = {pitch.pitchData.coordinates.pX:.3f} | '
                         f'pZ = {pitch.pitchData.coordinates.pZ:.3f}\n')
+
+        to_print_str += (f'left: {pitch.pitchData.coordinates.PX_MIN:.3f} | '
+                         f'right: {pitch.pitchData.coordinates.PX_MAX:.3f}\n')
 
         to_print_str += (f'bot = {pitch.pitchData.coordinates.pZ_bot:.3f} | '
                         f'top = {pitch.pitchData.coordinates.pZ_top:.3f}\n')

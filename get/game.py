@@ -367,6 +367,39 @@ class PlayEvents:
             return home_delta
         return -home_delta
 
+    def delta_favor_dist(self, runners_int: int, isTopInning: bool) -> float:
+        # between 0.288 and 0.504 based of tests
+        max_error_inch = 0.35
+        max_error_feet = max_error_inch / 12
+
+        if self.pitchData is None:
+            return 0
+
+        if self.pitchData.coordinates.is_valid() is False:
+            return 0
+
+        pX = self.pitchData.coordinates.pX
+        pZ = self.pitchData.coordinates.pZ
+
+        pZ_top = self.pitchData.coordinates.pZ_top
+        pZ_bot = self.pitchData.coordinates.pZ_bot
+
+        pX_left = self.pitchData.coordinates.PX_MIN
+        pX_right = self.pitchData.coordinates.PX_MAX
+
+        dist_left = abs(pX - pX_left)
+        dist_right = abs(pX - pX_right)
+        dist_top = abs(pZ - pZ_top)
+        dist_bot = abs(pZ - pZ_bot)
+
+        dist = (dist_left, dist_right, dist_top, dist_bot)
+        smallest_dist = min(dist)
+
+        if smallest_dist <= max_error_feet:
+            return 0
+        return self.delta_favor_zone(runners_int=runners_int,
+                                     isTopInning=isTopInning)
+
     def delta_favor_monte(self, runners_int: int, isTopInning: bool) -> float:
         home_delta = 0
 
@@ -541,6 +574,7 @@ class PitchCoordinates:
 
     def __init__(self, coor, sz_top, sz_bot):
 
+        # Strike Zone top and bottom
         self.sZ_top = sz_top
         self.sZ_bot = sz_bot
 
