@@ -34,7 +34,7 @@ def daily_ump_scorecards(date: str,
             favor easily accessable as well as the full Game class
 
     Raises
-        HTTPError: Occurs when the provided date is not valid
+        ConnectionError: Connection to API fails
     """
     daily_games_pk = get_daily_gamePks(date=date)
     games: List[Umpire] = []

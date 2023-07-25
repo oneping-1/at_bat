@@ -82,6 +82,7 @@ class Umpire():
 
         Raises:
             ValueError: If game and gamePk are not provided
+            ConnectionError: If connection to API fails
         """
         if game is None and gamePk is not None:
             game_dict = get_game_dict(gamePk)

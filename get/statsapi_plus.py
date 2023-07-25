@@ -40,7 +40,7 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
 
     Raises:
         ValueError: If gamePk argument is not defined
-        HTTPError: If gamePk argument is not valid
+        ConnectionError: If connection to API fails
         TypeError: If delay_seconds is not valid 
     """
     if gamePk is None:

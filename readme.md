@@ -9,8 +9,6 @@ Live MLB and MiLB game stats.
 ## To-Do
 
 Incomplete:
-- [ ] Figure out how to match Ump Scorecards
-- [ ] Implement Margin of Error method to calculate if pitch was in the zone
 - [ ] Add restructured text doc strings for functions, classes (In Progress)
 - [ ] Pylint code (In Progress)
 - [ ] Make scoreboard.py use curses library
@@ -24,6 +22,7 @@ Incomplete:
 - [ ] Write doc strings for get_delta_zone() and get_delta_monte()
 - [ ] Setters and Getters in runners class
 - [ ] Fix circular import issue between runners.py and game.py
+- [ ] Fine tune delta_favor_dist()
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -49,3 +48,5 @@ Complete:
 - [X] Make plotter adjust pitches to normalized top and bottom of zone
 - [X] Make a new function in plotter.py that just outputs pitch location so that it can be unit tested
 - [X] Fix runners not updating correctly in umpire calculations. Add seperate class
+- [X] Figure out how to match Ump Scorecards
+- [X] Implement Margin of Error method to calculate if pitch was in the zone
