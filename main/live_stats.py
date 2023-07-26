@@ -155,28 +155,25 @@ def _get_run_details(game: Game,
     return (line_0, line_1, line_2)
 
 
-def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
+def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
     if pitch.isPitch is True:
         desc = pitch.details.description
         speed = pitch.pitchData.startSpeed
         pitch_type = pitch.details.type.description
-        spin_rate = pitch.pitchData.breaks.spinRate
 
         line_0 = 'Pitch Details: '
         line_1 = f'{desc}'
         line_2 = f'{speed} {pitch_type}'
-        line_3 = f'{spin_rate} RPM'
-        line_4 = f'Zone: {pitch.pitchData.zone}'
+        line_3 = f'Zone: {pitch.pitchData.zone}'
     else:
         desc = pitch.details.description
 
         line_0 = 'Pitch Details: '
         line_1 = f'{desc}'
-        line_2 = ''
         line_3 = ''
-        line_4 = ''
+        line_3 = ''
 
-    return (line_0, line_1, line_2, line_3, line_4)
+    return (line_0, line_1, line_2, line_3)
 
 
 def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:

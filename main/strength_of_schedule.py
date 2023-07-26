@@ -3,6 +3,7 @@ Prints the average win percentage and number of opponents who have a
 winning record for a given number of days ahead.
 """
 
+import argparse
 from datetime import datetime
 from datetime import timedelta
 from typing import List
@@ -98,5 +99,21 @@ def _print_winpct_above500(days_ahead:int, teams: List[Team]):
         print(f'{team.opponent.above_500:2d}')
 
 
+def main():
+    """
+    Gets system arguments and parses them before running sos() function
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--days', '--days_ahead',
+                        help = 'Number of days ahead',
+                        type = int)
+    
+    args = parser.parse_args()
+
+    if args.days is None:
+        args.days = 15
+
+    sos(days_ahead=args.days, print_results = True)
+
 if __name__ == '__main__':
-    sos(days_ahead=15, print_results = True)
+    main()
