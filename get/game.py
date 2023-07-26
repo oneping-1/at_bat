@@ -368,8 +368,8 @@ class PlayEvents:
         return -home_delta
 
     def delta_favor_dist(self, runners_int: int, isTopInning: bool) -> float:
-        # between 0.288 and 0.504 based of tests
-        max_error_inch = 0.35
+        # between 0.320 and 0.505 based of tests
+        max_error_inch = .325
         max_error_feet = max_error_inch / 12
 
         if self.pitchData is None:
@@ -395,7 +395,7 @@ class PlayEvents:
         dist = (dist_left, dist_right, dist_top, dist_bot)
         smallest_dist = min(dist)
 
-        if smallest_dist <= max_error_feet:
+        if smallest_dist <= max_error_feet :
             return 0
         return self.delta_favor_zone(runners_int=runners_int,
                                      isTopInning=isTopInning)

@@ -48,7 +48,7 @@ def test_single_miss_games(test_data):
 
     pitch = PlayEvents(playEvents_dict)
     home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
-    home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
+    #home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
     home_delta_dist = pitch.delta_favor_dist(int(runners), isTopInning)
 
     delta_zone = float(test_data['delta_zone'])
