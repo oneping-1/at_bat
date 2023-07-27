@@ -4,13 +4,18 @@
 import math
 import csv
 import pytest
+import os
 from get.game import PlayEvents
 from get.runners import Runners
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
 def load_data():
-    with open('csv/one_miss_games.csv', 'r', encoding='utf-8') as file:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_dir = os.path.join(current_dir, '..', 'csv')
+    csv_file_path = os.path.join(csv_dir, 'one_miss_games.csv')
+
+    with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         test_data = list(reader)
     return test_data

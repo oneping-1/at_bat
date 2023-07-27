@@ -17,7 +17,6 @@ Incomplete:
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
 - [ ] Make scoreboard.py return something. Maybe move to another module?
 - [ ] Integrate plotter with rest of code
-- [ ] Make csv files accessible even when running files from subfolders
 - [ ] Check if runners variable in live_stats.py has issues with walks
 - [ ] Write doc strings for get_delta_zone() and get_delta_monte()
 - [ ] Setters and Getters in runners class
@@ -50,3 +49,4 @@ Complete:
 - [X] Fix runners not updating correctly in umpire calculations. Add seperate class
 - [X] Figure out how to match Ump Scorecards
 - [X] Implement Margin of Error method to calculate if pitch was in the zone
+- [X] Make csv files accessible even when running files from subfolders

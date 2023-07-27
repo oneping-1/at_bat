@@ -8,6 +8,7 @@ from typing import List
 import csv
 from datetime import datetime, timedelta
 import statsapi
+import os
 from colorama import Fore
 import numpy as np
 
@@ -191,9 +192,13 @@ def get_run_expectency_numpy() -> np.ndarray:
     Raises:
         FileNotFoundError: re_fangraph.csv file missing, renamed, or misplaced
     """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'csv')
+    csv_file_path = os.path.join(csv_path, 're_fangraph.csv')
+
     renp = np.zeros((5,4,4,8))
 
-    with open('csv/re_fangraph.csv', 'r', encoding='utf-8') as file:
+    with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
 
@@ -229,9 +234,12 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
     Raises:
         FileNotFoundError: red_fangraph.csv file missing, renamed, or misplaced`
     """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'csv')
+    csv_file_path = os.path.join(csv_path, 'red_fangraph.csv')
     rednp = np.zeros((5,4,4,8))
 
-    with open('csv/red_fangraph.csv', 'r', encoding='utf-8') as file:
+    with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
 

@@ -1,5 +1,6 @@
 from typing import List
 import csv
+import os
 
 class Team:
     def __init__(self, team_id: int, abv: str, div: str):
@@ -13,9 +14,12 @@ class Team:
 
     @classmethod
     def get_teams_list(cls) -> List['Team']:
-        teams = []
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(current_dir, '..', 'csv')
+        csv_file_path = os.path.join(csv_path, 'teams.csv')
 
-        with open('csv/teams.csv', encoding='utf-8') as file:
+        teams = []
+        with open(csv_file_path, encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
 
@@ -31,3 +35,6 @@ class Opponent:
         self.total = wins + losses
         self.win_pct = self.wins / self.total
         self.above_500 = above_500
+
+if __name__ == '__main__':
+    Team.get_teams_list()

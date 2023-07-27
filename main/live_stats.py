@@ -170,7 +170,7 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
 
         line_0 = 'Pitch Details: '
         line_1 = f'{desc}'
-        line_3 = ''
+        line_2 = ''
         line_3 = ''
 
     return (line_0, line_1, line_2, line_3)
