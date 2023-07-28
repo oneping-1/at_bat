@@ -7,9 +7,7 @@ through at bats in a game
 
 from __future__ import annotations
 from typing import List
-
-if 1 == 0:
-    from get.game import AllPlays
+from get.game import AllPlays
 
 class Runners:
     """
@@ -110,7 +108,7 @@ class Runners:
 
         self.runners = runners_list.copy()
 
-    def __int__(self):
+    def __int__(self) -> int:
         """
         Converts the current state of the bases to an integer
         representation.
@@ -131,7 +129,7 @@ class Runners:
 
         return i
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Converts the current the current state of the bases into a
         readable sentence someone would say
@@ -157,7 +155,7 @@ class Runners:
         if self.runners == [True, True, True]:
             return 'bases loaded'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Converts the current state of bases into short string that
         quickly describes base status.

@@ -1,4 +1,4 @@
 [BASIC]
 
 # List of good variable names
-good-names=gamePk,gamePks,i,isTopInning,pX,pZ,sZ_top,sZ_bot,pZ_top,pZ_bot,id, get_daily_gamePks, _get_gameData, _get_liveData,sX_min,sX_max,PlayEvents,playEvents,dx,dz, pX_1, pX_2, pZ_1, pZ_2,j,_isTopInning
+good-names=gamePk,gamePks,i,isTopInning,pX,pZ,sZ_top,sZ_bot,pZ_top,pZ_bot,id, get_daily_gamePks, _get_gameData, _get_liveData,sX_min,sX_max,PlayEvents,playEvents,dx,dz, pX_1, pX_2, pZ_1, pZ_2,j,_isTopInning,pX_left,pX_right
