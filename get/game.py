@@ -20,15 +20,13 @@ game_class = Game(game_dict)
 # pylint: disable=C0103, C0111
 
 import datetime
-from typing import List, Tuple
+from typing import List
 import math
-import random
 import pytz
 import statsapi
 from tqdm import tqdm
 from get.statsapi_plus import get_daily_gamePks
 from get.statsapi_plus import get_run_expectency_difference_numpy
-from get.runners import Runners
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
@@ -251,7 +249,6 @@ class Matchup:
         self.postOnSecond = matchup.get('postOnSecond', None)
         self.postOnThird = matchup.get('postOnThird', None)
         self.splits = matchup.get('splits', None)
-        self.runners = Runners()
 
         self._children()
 
@@ -263,24 +260,12 @@ class Matchup:
 
         if self.postOnFirst is not None:
             self.postOnFirst = Player(self.postOnFirst)
-            self.is_first = True
-        else:
-            self.is_first = False
 
         if self.postOnSecond is not None:
             self.postOnSecond = Player(self.postOnSecond)
-            self.is_second = True
-        else:
-            self.is_second = False
 
         if self.postOnThird is not None:
             self.postOnThird = Player(self.postOnThird)
-            self.is_third = True
-        else:
-            self.is_third = False
-
-        runners = [self.is_first, self.is_second, self.is_third]
-        self.runners.set_bases(runners)
 
         if self.splits is not None:
             self.splits = Splits(self.splits)
@@ -337,148 +322,6 @@ class PlayEvents:
 
         if self.pitchData is not None:
             self.pitchData = PitchData(self.pitchData)
-
-    def delta_favor_zone(self, runners_int: int, isTopInning: bool) -> float:
-        home_delta = 0
-
-        correct = True
-
-        b = self.count.balls
-        s = self.count.strikes
-        o = self.count.outs
-
-        r = runners_int
-
-        if self.details.code == 'C' or self.details.code == 'B':
-            correct = self._is_correct_call_zone_num()
-
-        if correct is True:
-            return 0
-        if self.details.code == 'C':
-            # Ball called Strike
-            home_delta += PlayEvents.rednp[b][s-1][o][r]
-
-        elif self.details.code == 'B':
-            # Strike called Ball
-            home_delta -= PlayEvents.rednp[b-1][s][o][r]
-
-
-        if isTopInning is True:
-            return home_delta
-        return -home_delta
-
-    def delta_favor_dist(self, runners_int: int, isTopInning: bool) -> float:
-        # between 0.320 and 0.505 based of tests
-        max_error_inch = .325
-        max_error_feet = max_error_inch / 12
-
-        if self.pitchData is None:
-            return 0
-
-        if self.pitchData.coordinates.is_valid() is False:
-            return 0
-
-        pX = self.pitchData.coordinates.pX
-        pZ = self.pitchData.coordinates.pZ
-
-        pZ_top = self.pitchData.coordinates.pZ_top
-        pZ_bot = self.pitchData.coordinates.pZ_bot
-
-        pX_left = self.pitchData.coordinates.PX_MIN
-        pX_right = self.pitchData.coordinates.PX_MAX
-
-        dist_left = abs(pX - pX_left)
-        dist_right = abs(pX - pX_right)
-        dist_top = abs(pZ - pZ_top)
-        dist_bot = abs(pZ - pZ_bot)
-
-        dist = (dist_left, dist_right, dist_top, dist_bot)
-        smallest_dist = min(dist)
-
-        if smallest_dist <= max_error_feet :
-            return 0
-        return self.delta_favor_zone(runners_int=runners_int,
-                                     isTopInning=isTopInning)
-
-    def delta_favor_monte(self, runners_int: int, isTopInning: bool) -> float:
-        home_delta = 0
-
-        correct = True
-
-        b = self.count.balls
-        s = self.count.strikes
-        o = self.count.outs
-
-        r = runners_int
-
-        if self.pitchData is None:
-            return 0
-
-        if self.pitchData.coordinates.is_valid() is False:
-            return 0
-
-        if self.details.code in ('C', 'B'):
-            correct = self._is_correct_call_monte_carlo()
-
-        if correct is True:
-            return 0
-
-        if self.details.code == 'C':
-            # Ball called Strike
-            home_delta += PlayEvents.rednp[b][s-1][o][r]
-        elif self.details.code == 'B':
-            # Strike called Ball
-            home_delta -= PlayEvents.rednp[b-1][s][o][r]
-
-        if isTopInning is True:
-            return home_delta
-        return -home_delta
-
-    def _is_correct_call_zone_num(self) -> bool:
-        if self.details.code == 'C' and self.pitchData.zone > 10:
-            return False
-        if self.details.code == 'B' and self.pitchData.zone >= 1 and self.pitchData.zone <= 9:
-            return False
-        return True
-
-    def _is_correct_call_monte_carlo(self) -> bool:
-        strike = 0
-        ball = 0
-
-        pX_left = PitchCoordinates.PX_MIN
-        pX_right = PitchCoordinates.PX_MAX
-        pZ_top = self.pitchData.coordinates.pZ_top
-        pZ_bot = self.pitchData.coordinates.pZ_bot
-
-        for _ in range(1, 501):
-            rand_x, rand_z = self._generage_random_pitch_location()
-
-            if pX_left <= rand_x <= pX_right and pZ_bot <= rand_z <= pZ_top:
-                strike += 1
-            else:
-                ball += 1
-
-        total = ball + strike
-
-        if self.details.code == 'B' and ((strike / total) > 0.90):
-            return False
-        elif self.details.code =='C' and ((ball / total) > 0.90):
-            return False
-        else:
-            return True
-
-    def _generage_random_pitch_location(self) -> Tuple[float, float]:
-        dr = random.uniform(-self.MOE, self.MOE)
-        dt = random.uniform(0, 360)
-        dt = math.radians(dt)
-
-        dx = dr * math.cos(dt)
-        dz = dr * math.sin(dt)
-
-        rand_x = self.pitchData.coordinates.pX + dx
-        rand_z = self.pitchData.coordinates.pZ + dz
-
-        return (rand_x, rand_z)
 
     def __eq__(self, other):
         if other is None:
@@ -785,11 +628,7 @@ class Offense:
         self.is_first = True if self.first is not None else False
         self.is_second = True if self.second is not None else False
         self.is_third = True if self.third is not None else False
-
-        runners_list = [self.is_first, self.is_second, self.is_third]
-
-        self.x = Runners()
-        self.x.set_bases(runners_list)
+        #runners_list = [self.is_first, self.is_second, self.is_third]
 
         self._children()
 

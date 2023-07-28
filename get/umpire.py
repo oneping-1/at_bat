@@ -1,10 +1,15 @@
 from typing import List, Tuple
+import random
+import math
 from get.game import Game, AllPlays, PlayEvents
 from get.runners import Runners
 from get.statsapi_plus import get_game_dict
 
+MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
+
 
 class Umpire():
+    MOE = MARGIN_OF_ERROR
     """
     Holds info for each game and their missed calls.
 
@@ -64,8 +69,8 @@ class Umpire():
         When home_favor >0, umpire effectively gave the home team runs.
         When <0, gave runs to the away team
 
-        print_every_missed_call will print the following for every missed
-            call when set to True. Defaults to False:
+        print_every_missed_call will print the following for every 
+            missed call when set to True. Defaults to False:
         1. Inning
         2. Pitcher and Batter
         3. Count
@@ -103,7 +108,9 @@ class Umpire():
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
-                home_delta = pitch.delta_favor_dist(runners_int, isTopInning)
+                home_delta = Umpire.delta_favor_dist(pitch,
+                                                     runners_int,
+                                                     isTopInning)
 
                 if home_delta != 0:
                     home_favor += home_delta
@@ -118,6 +125,7 @@ class Umpire():
 
         return (len(missed_calls), home_favor, missed_calls)
 
+
     @classmethod
     def _missed_pitch_details(cls,
                             at_bat: AllPlays,
@@ -125,7 +133,7 @@ class Umpire():
                             pitch: PlayEvents,
                             home_delta: float,
                             i: int) -> str:
-
+        """Helper method to find_missed_calls"""
         to_print_str = ''
 
         half_inn = at_bat.about.halfInning.capitalize()
@@ -164,6 +172,172 @@ class Umpire():
         to_print_str += f'Home Favor: {home_delta:4.2f}\n'
 
         return to_print_str
+
+
+    @classmethod
+    def delta_favor_zone(cls, pitch: PlayEvents,
+                         runners_int: int, isTopInning: bool) -> float:
+
+        home_delta = 0
+
+        correct = True
+
+        b = pitch.count.balls
+        s = pitch.count.strikes
+        o = pitch.count.outs
+
+        r = runners_int
+
+        if pitch.details.code == 'C' or pitch.details.code == 'B':
+            correct = Umpire._is_correct_call_zone_num(pitch)
+
+        if correct is True:
+            return 0
+        if pitch.details.code == 'C':
+            # Ball called Strike
+            home_delta += PlayEvents.rednp[b][s-1][o][r]
+
+        elif pitch.details.code == 'B':
+            # Strike called Ball
+            home_delta -= PlayEvents.rednp[b-1][s][o][r]
+
+        if isTopInning is True:
+            return home_delta
+        return -home_delta
+
+
+    @classmethod
+    def delta_favor_dist(self, pitch: PlayEvents,
+                         runners_int: int, isTopInning: bool) -> float:
+        # between 0.320 and 0.505 based of tests
+        max_error_inch = .325
+        max_error_feet = max_error_inch / 12
+
+        if pitch.pitchData is None:
+            return 0
+
+        if pitch.pitchData.coordinates.is_valid() is False:
+            return 0
+
+        pX = pitch.pitchData.coordinates.pX
+        pZ = pitch.pitchData.coordinates.pZ
+
+        pZ_top = pitch.pitchData.coordinates.pZ_top
+        pZ_bot = pitch.pitchData.coordinates.pZ_bot
+
+        pX_left = pitch.pitchData.coordinates.PX_MIN
+        pX_right = pitch.pitchData.coordinates.PX_MAX
+
+        dist_left = abs(pX - pX_left)
+        dist_right = abs(pX - pX_right)
+        dist_top = abs(pZ - pZ_top)
+        dist_bot = abs(pZ - pZ_bot)
+
+        dist = (dist_left, dist_right, dist_top, dist_bot)
+
+        smallest_dist = min(dist)
+
+        if smallest_dist <= max_error_feet :
+            return 0
+        return Umpire.delta_favor_zone(pitch=pitch,
+                                       runners_int=runners_int,
+                                       isTopInning=isTopInning)
+
+
+    @classmethod
+    def delta_favor_monte(self, pitch: PlayEvents,
+                          runners_int: int, isTopInning: bool) -> float:
+        home_delta = 0
+
+        correct = True
+
+        b = pitch.count.balls
+        s = pitch.count.strikes
+        o = pitch.count.outs
+
+        r = runners_int
+
+        if pitch.pitchData is None:
+            return 0
+
+        if pitch.pitchData.coordinates.is_valid() is False:
+            return 0
+
+        if pitch.details.code in ('C', 'B'):
+            correct = pitch._is_correct_call_monte_carlo()
+
+        if correct is True:
+            return 0
+
+        if pitch.details.code == 'C':
+            # Ball called Strike
+            home_delta += PlayEvents.rednp[b][s-1][o][r]
+        elif pitch.details.code == 'B':
+            # Strike called Ball
+            home_delta -= PlayEvents.rednp[b-1][s][o][r]
+
+        if isTopInning is True:
+            return home_delta
+        return -home_delta
+
+
+    @classmethod
+    def _is_correct_call_zone_num(cls, pitch: PlayEvents) -> bool:
+        """Helper method to delta_favor_zone"""
+        if pitch.details.code == 'C' and pitch.pitchData.zone > 10:
+            return False
+        if pitch.details.code == 'B' and 1 <= pitch.pitchData.zone <= 9:
+            return False
+        return True
+
+
+    @classmethod
+    def _is_correct_call_monte_carlo(self, pitch: PlayEvents) -> bool:
+        """Helper method to delta_favor_zone"""
+        strike = 0
+        ball = 0
+
+        pX_left = pitch.PX_MIN
+        pX_right = pitch.PX_MAX
+        pZ_top = pitch.pitchData.coordinates.pZ_top
+        pZ_bot = pitch.pitchData.coordinates.pZ_bot
+
+        for _ in range(1, 501):
+            rand_x, rand_z = pitch._generage_random_pitch_location()
+
+            if pX_left <= rand_x <= pX_right and pZ_bot <= rand_z <= pZ_top:
+                strike += 1
+            else:
+                ball += 1
+
+        total = ball + strike
+
+        if self.details.code == 'B' and ((strike / total) > 0.90):
+            return False
+        elif self.details.code =='C' and ((ball / total) > 0.90):
+            return False
+        else:
+            return True
+
+
+    @classmethod
+    def _generage_random_pitch_location(self, pitch: PlayEvents
+                                        ) -> Tuple[float, float]:
+        """Helper method to delta_favor_zone"""
+        pX = pitch.pitchData.coordinates.pX
+        pZ = pitch.pitchData.coordinates.pZ
+
+        dr = random.uniform(-pitch.MOE, pitch.MOE)
+        dt = random.uniform(0, 360)
+        dt = math.radians(dt)
+
+        dx = dr * math.cos(dt)
+        dz = dr * math.sin(dt)
+
+        rand_x = pX + dx
+        rand_z = pZ + dz
+
+        return (rand_x, rand_z)
 
 
     def __len__(self):

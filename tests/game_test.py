@@ -7,6 +7,7 @@ import pytest
 import os
 from get.game import PlayEvents
 from get.runners import Runners
+from get.umpire import Umpire
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
@@ -52,12 +53,13 @@ def test_single_miss_games(test_data):
     isTopInning = str_to_bool(test_data['isTopInning'])
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = pitch.delta_favor_zone(int(runners), isTopInning)
-    #home_delta_monte = pitch.delta_favor_monte(int(runners), isTopInning)
-    home_delta_dist = pitch.delta_favor_dist(int(runners), isTopInning)
+    home_delta_zone = Umpire.delta_favor_zone(pitch, int(runners), isTopInning)
+    #home_delta_monte = Umpire.delta_favor_monte(pitch, int(runners), isTopInning)
+    home_delta_dist = Umpire.delta_favor_dist(pitch, int(runners), isTopInning)
 
     delta_zone = float(test_data['delta_zone'])
     delta_monte = float(test_data['delta_monte'])
+
     assert home_delta_zone == pytest.approx(delta_zone, abs=1e-3)
     #assert home_delta_monte == pytest.approx(delta_monte, abs=1e-3)
     assert home_delta_dist == pytest.approx(delta_monte, abs=1e-3)
@@ -79,7 +81,7 @@ def test_random_moe_01():
 
     pitch = PlayEvents(playEvents)
 
-    rand_x, rand_z = pitch._generage_random_pitch_location()
+    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
     dx = math.pow(pX - rand_x, 2)
     dz = math.pow(pZ - rand_z, 2)
@@ -104,7 +106,7 @@ def test_random_moe_02():
 
     pitch = PlayEvents(playEvents)
 
-    rand_x, rand_z = pitch._generage_random_pitch_location()
+    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
     dx = math.pow(pX - rand_x, 2)
     dz = math.pow(pZ - rand_z, 2)
@@ -129,7 +131,7 @@ def test_random_moe_03():
 
     pitch = PlayEvents(playEvents)
 
-    rand_x, rand_z = pitch._generage_random_pitch_location()
+    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
     dx = math.pow(pX - rand_x, 2)
     dz = math.pow(pZ - rand_z, 2)
@@ -154,7 +156,7 @@ def test_random_moe_04():
 
     pitch = PlayEvents(playEvents)
 
-    rand_x, rand_z = pitch._generage_random_pitch_location()
+    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
     dx = math.pow(pX - rand_x, 2)
     dz = math.pow(pZ - rand_z, 2)
@@ -179,7 +181,7 @@ def test_random_moe_05():
 
     pitch = PlayEvents(playEvents)
 
-    rand_x, rand_z = pitch._generage_random_pitch_location()
+    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
     dx = math.pow(pX - rand_x, 2)
     dz = math.pow(pZ - rand_z, 2)

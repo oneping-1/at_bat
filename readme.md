@@ -20,7 +20,6 @@ Incomplete:
 - [ ] Check if runners variable in live_stats.py has issues with walks
 - [ ] Write doc strings for get_delta_zone() and get_delta_monte()
 - [ ] Setters and Getters in runners class
-- [ ] Fix circular import issue between runners.py and game.py
 - [ ] Fine tune delta_favor_dist()
 
 Complete:
@@ -50,3 +49,4 @@ Complete:
 - [X] Figure out how to match Ump Scorecards
 - [X] Implement Margin of Error method to calculate if pitch was in the zone
 - [X] Make csv files accessible even when running files from subfolders
+- [X] Fix circular import issue between runners.py and game.py
