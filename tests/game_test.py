@@ -11,7 +11,14 @@ from get.umpire import Umpire
 
 # https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
 
-def load_data():
+def str_to_bool(string: str) -> bool:
+    if string.lower() == 'false':
+        return False
+    if string.lower() == 'true':
+        return True
+    return None
+
+def load_data_one_miss_games():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_dir = os.path.join(current_dir, '..', 'csv')
     csv_file_path = os.path.join(csv_dir, 'one_miss_games.csv')
@@ -22,8 +29,8 @@ def load_data():
     return test_data
 
 
-@pytest.mark.parametrize('test_data', load_data())
-def test_single_miss_games(test_data):
+@pytest.mark.parametrize('test_data', load_data_one_miss_games())
+def test_one_miss_games(test_data):
     playEvents_dict = {
         'details': {
             'code': test_data['code']
@@ -64,22 +71,37 @@ def test_single_miss_games(test_data):
     #assert home_delta_monte == pytest.approx(delta_monte, abs=1e-3)
     assert home_delta_dist == pytest.approx(delta_monte, abs=1e-3)
 
-def test_random_moe_01():
-    pX = 0
-    pZ = 0
 
+def load_data_random_moe():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_dir = os.path.join(current_dir, '..', 'csv')
+    csv_file_path = os.path.join(csv_dir, 'random_moe.csv')
+
+    with open(csv_file_path, 'r', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        test_data = list(reader)
+    return test_data
+
+
+@pytest.mark.parametrize('test_data', load_data_random_moe())
+def test_random_moe(test_data):
+    print(test_data['pX'])
     playEvents = {
         'pitchData': {
             'coordinates': {
-                'pX': pX,
-                'pZ': pZ
+                'pX': test_data['pX'],
+                'pZ': test_data['pZ']
             },
-            'strikeZoneTop': 3.5,
-            'strikeZoneBottom': 1.5
+            'strikeZoneTop': test_data['strikeZoneTop'],
+            'strikeZoneBottom': test_data['strikeZoneBottom']
         }
     }
 
     pitch = PlayEvents(playEvents)
+
+    # test pitch locations are added properly
+    pX = pitch.pitchData.coordinates.pX
+    pZ = pitch.pitchData.coordinates.pZ
 
     rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
 
@@ -87,111 +109,4 @@ def test_random_moe_01():
     dz = math.pow(pZ - rand_z, 2)
     mag = math.sqrt(dx + dz)
 
-    assert mag <= PlayEvents.MOE
-
-def test_random_moe_02():
-    pX = 0
-    pZ = 1
-
-    playEvents = {
-        'pitchData': {
-            'coordinates': {
-                'pX': pX,
-                'pZ': pZ
-            },
-            'strikeZoneTop': 3.5,
-            'strikeZoneBottom': 1.5
-        }
-    }
-
-    pitch = PlayEvents(playEvents)
-
-    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
-
-    dx = math.pow(pX - rand_x, 2)
-    dz = math.pow(pZ - rand_z, 2)
-    mag = math.sqrt(dx + dz)
-
-    assert mag <= PlayEvents.MOE
-
-def test_random_moe_03():
-    pX = 1
-    pZ = 0
-
-    playEvents = {
-        'pitchData': {
-            'coordinates': {
-                'pX': pX,
-                'pZ': pZ
-            },
-            'strikeZoneTop': 5,
-            'strikeZoneBottom': 1
-        }
-    }
-
-    pitch = PlayEvents(playEvents)
-
-    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
-
-    dx = math.pow(pX - rand_x, 2)
-    dz = math.pow(pZ - rand_z, 2)
-    mag = math.sqrt(dx + dz)
-
-    assert mag <= PlayEvents.MOE
-
-def test_random_moe_04():
-    pX = 0
-    pZ = 2
-
-    playEvents = {
-        'pitchData': {
-            'coordinates': {
-                'pX': pX,
-                'pZ': pZ
-            },
-            'strikeZoneTop': 2.5,
-            'strikeZoneBottom': 2
-        }
-    }
-
-    pitch = PlayEvents(playEvents)
-
-    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
-
-    dx = math.pow(pX - rand_x, 2)
-    dz = math.pow(pZ - rand_z, 2)
-    mag = math.sqrt(dx + dz)
-
-    assert mag <= PlayEvents.MOE
-
-def test_random_moe_05():
-    pX = -3
-    pZ = 0
-
-    playEvents = {
-        'pitchData': {
-            'coordinates': {
-                'pX': pX,
-                'pZ': pZ
-            },
-            'strikeZoneTop': 4,
-            'strikeZoneBottom': 1
-        }
-    }
-
-    pitch = PlayEvents(playEvents)
-
-    rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
-
-    dx = math.pow(pX - rand_x, 2)
-    dz = math.pow(pZ - rand_z, 2)
-    mag = math.sqrt(dx + dz)
-
-    assert mag <= PlayEvents.MOE
-
-def str_to_bool(s: str):
-    if s.lower() == 'true':
-        return True
-    if s.lower() == 'false':
-        return False
-    raise ValueError('argument is not True or False')
+    assert mag <= Umpire.MOE
