@@ -21,18 +21,19 @@ def main():
     get.umpire.get_total_favored_runs
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gamePk', '--gamepk', default=None,
-                        help='gamePk', type=int)
+    parser.add_argument('--gamePk', '--gamepk', help='gamePk', type=int)
 
     args = parser.parse_args()
 
     if args.gamePk is None:
-        args.gamePk = int(input('gamePk: '))
+        gamePk = int(input('gamePk: '))
+    else:
+        gamePk = args.gamePk
 
     plotter = Plotter()
 
-    _, favor, missed_list = Umpire.find_missed_calls(gamePk=args.gamePk,
-                                           print_missed_calls=True)
+    results = Umpire.find_missed_calls(gamePk=gamePk, print_missed_calls=True)
+    _, favor, missed_list = results
 
     print(f'{favor:.2f}')
     plotter.plot(missed_list)

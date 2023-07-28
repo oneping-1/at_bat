@@ -51,8 +51,7 @@ class Umpire():
         self.away_abv = game.gameData.teams.away.abbreviation
         self.home_abv = game.gameData.teams.home.abbreviation
 
-    def set(self,
-            print_missed_calls: bool = False
+    def set(self, print_missed_calls: bool = False
             ) -> Tuple[int, float, List[PlayEvents]]:
         """
         Basically a front to Umpire.find_missed_calls that automatically
@@ -65,9 +64,7 @@ class Umpire():
         self.num_missed_calls, self.home_favor, self.missed_calls = stats
 
     @classmethod
-    def find_missed_calls(cls,
-                          game: Game = None,
-                          gamePk: int = None,
+    def find_missed_calls(cls, game: Game = None, gamePk: int = None,
                           print_missed_calls: bool = False
                           ) -> Tuple[int, float, List[PlayEvents]]:
         """
@@ -116,8 +113,7 @@ class Umpire():
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
-                home_delta = Umpire.delta_favor_dist(pitch,
-                                                     isTopInning,
+                home_delta = Umpire.delta_favor_dist(pitch, isTopInning,
                                                      runners=runners)
 
                 if home_delta != 0:
@@ -135,12 +131,9 @@ class Umpire():
 
 
     @classmethod
-    def _missed_pitch_details(cls,
-                            at_bat: AllPlays,
-                            runners: Runners,
-                            pitch: PlayEvents,
-                            home_delta: float,
-                            i: int) -> str:
+    def _missed_pitch_details(cls, at_bat: AllPlays, runners: Runners,
+                              pitch: PlayEvents, home_delta: float, i: int
+                              ) -> str:
         """Helper method to find_missed_calls"""
         to_print_str = ''
 
@@ -168,14 +161,14 @@ class Umpire():
             to_print_str += f'{balls-1}-{strikes}, strike called ball\n'
 
 
-        to_print_str += (f'pX = {pitch.pitchData.coordinates.pX:.3f} | '
-                        f'pZ = {pitch.pitchData.coordinates.pZ:.3f}\n')
+        to_print_str += (f'pX = {pitch.pitchData.coordinates.pX:.5f} | '
+                        f'pZ = {pitch.pitchData.coordinates.pZ:.5f}\n')
 
-        to_print_str += (f'left: {pitch.pitchData.coordinates.PX_MIN:.3f} | '
-                         f'right: {pitch.pitchData.coordinates.PX_MAX:.3f}\n')
+        to_print_str += (f'left: {pitch.pitchData.coordinates.PX_MIN:.5f} | '
+                         f'right: {pitch.pitchData.coordinates.PX_MAX:.5f}\n')
 
-        to_print_str += (f'bot = {pitch.pitchData.coordinates.pZ_bot:.3f} | '
-                        f'top = {pitch.pitchData.coordinates.pZ_top:.3f}\n')
+        to_print_str += (f'bot = {pitch.pitchData.coordinates.pZ_bot:.5f} | '
+                        f'top = {pitch.pitchData.coordinates.pZ_top:.5f}\n')
 
         to_print_str += f'Home Favor: {home_delta:4.2f}\n'
 

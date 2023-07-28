@@ -45,12 +45,7 @@ class Plotter:
                 (game.PlayEvents) that want to be plotted
             plot (bool, optional): Argument to turn off plot but still
                 do calculations. Default = True
-
-        Raises:
-            ValueError: If len(pitches) == 0
         """
-        if len(pitches) == 0:
-            raise ValueError('len of pitches should be >1')
 
         # normalized strike zone
         if len(pitches) == 1:

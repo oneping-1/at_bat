@@ -110,3 +110,11 @@ def test_random_moe(test_data):
     mag = math.sqrt(dx + dz)
 
     assert mag <= Umpire.hmoe
+
+def test_pat_hoberg_perfect_game():
+    results = Umpire.find_missed_calls(gamePk=715723)
+    num_misses, home_favor, missed_calls = results
+
+    assert num_misses == 0
+    assert home_favor == 0
+    assert len(missed_calls) == 0
