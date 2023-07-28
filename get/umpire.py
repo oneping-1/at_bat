@@ -112,14 +112,13 @@ class Umpire():
 
         for at_bat in game.liveData.plays.allPlays:
             runners.new_batter(at_bat)
-            runners_int = int(runners)
             isTopInning = at_bat.about.isTopInning
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
                 home_delta = Umpire.delta_favor_dist(pitch,
-                                                     runners_int,
-                                                     isTopInning)
+                                                     isTopInning,
+                                                     runners=runners)
 
                 if home_delta != 0:
                     home_favor += home_delta
@@ -184,8 +183,9 @@ class Umpire():
 
 
     @classmethod
-    def delta_favor_zone(cls, pitch: PlayEvents,
-                         runners_int: int, isTopInning: bool) -> float:
+    def delta_favor_zone(cls, pitch: PlayEvents, isTopInning: bool,
+                         runners: Runners = None, runners_int: int = None,
+                         ) -> float:
         """
         Calculates the favored runs the umpire gave the home team if
         a pitch is missed based of the zone number of the pitch.
@@ -201,12 +201,14 @@ class Umpire():
         Args:
             pitch (PlayEvents): The pitch data from the game.PlayEvents
                 class. The PlayEvents class holds all the pitch data
-            runners_int (int): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
+            runners (Runners): The Runners class that holds data for
+                runners locations. Takes priority over runners_int
+            runners_int (int): The integer representation for base
+                runner locations. Can be obtained by using int(Runners)
+                where Runners is the Runners class
 
         Returns:
             home_favor (float): The amount of runs the umpire gave for
@@ -216,10 +218,15 @@ class Umpire():
             TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
         """
-        if isinstance(runners_int, int) is False:
+        if runners_int is None and runners is None:
+            raise ValueError('No runners_int or runners argument provided')
+        if isinstance(runners_int, int) is False and runners_int is not None:
             raise TypeError('runners_int should be type int')
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
+
+        if runners is not None:
+            runners_int = int(runners)
 
         home_delta = 0
 
@@ -250,8 +257,9 @@ class Umpire():
 
 
     @classmethod
-    def delta_favor_dist(cls, pitch: PlayEvents,
-                         runners_int: int, isTopInning: bool) -> float:
+    def delta_favor_dist(cls, pitch: PlayEvents, isTopInning: bool,
+                         runners: Runners = None, runners_int: int = None
+                         ) -> float:
         """
         Calculates the favored runs the umpire gave the home team if
         a pitch is missed based of the distance the pitch was from the
@@ -268,12 +276,14 @@ class Umpire():
         Args:
             pitch (PlayEvents): The pitch data from the game.PlayEvents
                 class. The PlayEvents class holds all the pitch data
-            runners_int (int): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
+            runners (Runners): The Runners class that holds data for
+                runners locations. Takes priority over runners_int
+            runners_int (int): The integer representation for base
+                runner locations. Can be obtained by using int(Runners)
+                where Runners is the Runners class
 
         Returns:
             home_favor (float): The amount of runs the umpire gave for
@@ -283,10 +293,15 @@ class Umpire():
             TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
         """
-        if isinstance(runners_int, int) is False:
+        if runners is None and runners_int is None:
+            raise ValueError('runners and runners_int were not provided')
+        if isinstance(runners_int, int) is False and runners_int is not None:
             raise TypeError('runners_int should be type int')
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
+
+        if runners is not None:
+            runners_int = int(runners)
 
         if pitch.pitchData is None:
             return 0
@@ -303,8 +318,9 @@ class Umpire():
 
 
     @classmethod
-    def delta_favor_monte(cls, pitch: PlayEvents,
-                          runners_int: int, isTopInning: bool) -> float:
+    def delta_favor_monte(cls, pitch: PlayEvents, isTopInning: bool,
+                          runners: Runners = None, runners_int: int = None
+                          ) -> float:
         """
         Claculates the favored runs the umpire gave the home team if
         a pitch is missed based off potential pitch locations
@@ -340,10 +356,15 @@ class Umpire():
             TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
         """
+        if runners is None and runners_int is None:
+            raise ValueError('runners and runners_int were not provided')
         if isinstance(runners_int, int) is False:
             raise TypeError('runners_int should be type int')
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
+
+        if runners is not None:
+            runners_int = int(runners)
 
         home_delta = 0
 

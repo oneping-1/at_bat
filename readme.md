@@ -18,7 +18,6 @@ Incomplete:
 - [ ] Make scoreboard.py return something. Maybe move to another module?
 - [ ] Integrate plotter with rest of code
 - [ ] Check if runners variable in live_stats.py has issues with walks
-- [ ] Write doc strings for get_delta_zone() and get_delta_monte()
 - [ ] Setters and Getters in runners class
 - [ ] Fine tune delta_favor_dist()
 
@@ -50,3 +49,5 @@ Complete:
 - [X] Implement Margin of Error method to calculate if pitch was in the zone
 - [X] Make csv files accessible even when running files from subfolders
 - [X] Fix circular import issue between runners.py and game.py
+- [X] Write doc strings for get_delta_zone() and get_delta_monte()
+- [X] Make delta_favor functions take either runners_int or runners arguments

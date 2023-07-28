@@ -58,12 +58,11 @@ def test_one_miss_games(test_data):
     runners_list = [first, second, third]
     runners.set_bases(runners_list=runners_list)
     isTopInning = str_to_bool(test_data['isTopInning'])
-    runners = int(runners)
 
     pitch = PlayEvents(playEvents_dict)
-    home_delta_zone = Umpire.delta_favor_zone(pitch, runners, isTopInning)
-    #home_delta_monte = Umpire.delta_favor_monte(pitch, int(runners), isTopInning)
-    home_delta_dist = Umpire.delta_favor_dist(pitch, runners, isTopInning)
+    home_delta_zone = Umpire.delta_favor_zone(pitch, isTopInning, runners=runners)
+    #home_delta_monte = Umpire.delta_favor_monte(pitch, isTopInning, runners=runners)
+    home_delta_dist = Umpire.delta_favor_dist(pitch, isTopInning, runners=runners)
 
     delta_zone = float(test_data['delta_zone'])
     delta_monte = float(test_data['delta_monte'])
