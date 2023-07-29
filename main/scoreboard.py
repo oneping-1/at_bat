@@ -14,6 +14,7 @@ get spoiled of scores before they happen on devices
 import argparse
 from colorama import just_fix_windows_console
 from get.game import Game
+from get.runners import Runners
 import get.statsapi_plus as sp
 
 just_fix_windows_console()
@@ -29,11 +30,19 @@ def loop(delay_seconds:int = 0):
         game = Game(data)
         games.append(game)
 
+        is_first = game.liveData.linescore.offense.is_first
+        is_second = game.liveData.linescore.offense.is_second
+        is_third = game.liveData.linescore.offense.is_third
+        runners_list = [is_first, is_second, is_third]
+
+        runners = Runners()
+        runners.set_bases(runners_list)
+
         game_data = _get_gameData(game)
         away_color, home_color, away_team, home_team, detailed_state, abstract_state = game_data
 
         live_data = _get_liveData(game)
-        away_score, home_score, inning, outs, inning_state, runners = live_data
+        away_score, home_score, inning, outs, inning_state = live_data
 
         if 'Final' in abstract_state:
             if inning == 9:
@@ -52,11 +61,11 @@ def loop(delay_seconds:int = 0):
             prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
             prnt += (f'{home_color}{home_team:4s}\n')
         elif inning_state in ('Top', 'Middle'):
-            prnt += (f'{away_color}{away_team:3s}- {away_score:2d} o{outs:1d} {runners}\n')
+            prnt += (f'{away_color}{away_team:3s}= {away_score:2d} o{outs:1d} {repr(runners)}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
         elif inning_state in ('Bottom', 'End'):
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} {runners}\n')
-            prnt += (f'{home_color}{home_team:3s}- {home_score:2d} {inning:2d}\n')
+            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} {repr(runners)}\n')
+            prnt += (f'{home_color}{home_team:3s}= {home_score:2d} {inning:2d}\n')
         else:
             prnt += (f'{away_color}{away_team:4s} {away_score:2d}\n')
             prnt += (f'{home_color}{home_team:4s} {home_score:2d}\n')
@@ -89,9 +98,7 @@ def _get_liveData(game: Game):
 
     inning_state = game.liveData.linescore.inningState
 
-    runners = repr(game.liveData.linescore.offense.x)
-
-    return (away_score, home_score, inning, outs, inning_state, runners)
+    return (away_score, home_score, inning, outs, inning_state)
 
 
 def main():

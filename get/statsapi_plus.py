@@ -4,11 +4,11 @@ Eventually want to get rid of this module by moving these functions to
 more appropriate modules
 """
 
-from typing import List
+from typing import List, Tuple
 import csv
 from datetime import datetime, timedelta
-import statsapi
 import os
+import statsapi
 from colorama import Fore
 import numpy as np
 
@@ -28,21 +28,21 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
         delay_seconds (float, optional): The number of seconds the data
             should be delayed to match what you're seeing. Defaults to 0
 
+    Raises:
+        ValueError: If gamePk argument is not defined
+        ConnectionError: If connection to API fails
+        TypeError: If delay_seconds is not valid 
+
     Returns:
-        data (dict): The game dictionary recieved with the given delay.
-            Can be turned into a Game object by using this dict as the
-            only argument to Game. Example: 
+        dict: The game dictionary recieved with the given delay. Can be
+            turned into a Game object by using this dict as the only
+            argument to Game. Example: 
             data = get_game_dict(717404, delay_seconds=45)
             game_class = Game(data)
 
     Example:
         game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
         game_class = Game(game_dict)
-
-    Raises:
-        ValueError: If gamePk argument is not defined
-        ConnectionError: If connection to API fails
-        TypeError: If delay_seconds is not valid 
     """
     if gamePk is None:
         raise ValueError('gamePk not provided')
@@ -52,6 +52,7 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
                         {'gamePk': gamePk, 'timecode': delay_time},
                         force=True)
     return data
+
 
 def _get_utc_time(delay_seconds: int = 0):
     """
@@ -64,12 +65,11 @@ def _get_utc_time(delay_seconds: int = 0):
         delay_seconds (int, optional): Seconds behind present you want
         the output to be. Defaults to 0
 
-    Returns:
-        formated_time (str): The UTC time in the 'YYYYMMDD-HHMMSS'
-            format
-
     Raises:
         TypeError: If 'delay_seconds' is type str
+
+    Returns:
+        str: The UTC time in the 'YYYYMMDD-HHMMSS' format
     """
     # Get the current time in UTC
     utc_time = datetime.utcnow()
@@ -93,17 +93,16 @@ def get_daily_gamePks(date: str = None) -> List[int]:
             YYYY-MM-DD. Defaults to present date.
 
     Returns:
-        gamePks (List[int]): List of gamePks for given dates. Should
+        List[int]: List of gamePks for given dates. Should
             be sorted by start time.
+
+    Raises:
+        TypeError: If date argument is not type str
 
     Example:
         gamePk_list = get_daily_gamePks(date='2023-07-18')
         for gamePk in gamePk_list:
             # code
-
-    Raises:
-        TypeError: If date argument is not type str
-
     """
     gamePks = []
 
@@ -118,7 +117,22 @@ def get_daily_gamePks(date: str = None) -> List[int]:
     return gamePks
 
 
-def get_color_scoreboard(game):
+def get_color_scoreboard(game) -> Tuple[Fore, Fore]:
+    """
+    Gets colors for teams in the scoreboard module. I have some basic
+    colors for when games arent live (before or after game). I also have
+    highlighted teams that are important to me. Feel free to change
+    if certain teams are more important to you
+
+    Args:
+        game (get.Game): The Game class from the game module that holds
+            all the data about the game
+
+    Returns:
+        Tuple[Fore, Fore]: A tuple that holds Fore classes for the color
+            of each team. Index 0 is the away team color and index 1 is
+            the home team color
+    """
     away = Fore.WHITE
     home = Fore.WHITE
 
@@ -153,23 +167,34 @@ def get_color_scoreboard(game):
     if game.gameData.teams.home.abbreviation == 'TEX':
         home = Fore.LIGHTBLUE_EX
 
-    bet_teams = ()
+    bet_teams = ('DET', 'NYY', 'LAA', 'WSH', 'MIL', 'OAK', 'MIL', 'MIN', 'CHC',
+                 'TEX', 'BOS')
     if game.gameData.teams.away.abbreviation in bet_teams:
         away = Fore.LIGHTGREEN_EX
 
     if game.gameData.teams.home.abbreviation in bet_teams:
         home = Fore.LIGHTGREEN_EX
 
-    return [away, home]
+    return (away, home)
 
 
-def get_color(team_abv:str, division:str):
+def get_color(team_abv:str, division:str) -> Fore:
+    """
+    Takes a team and their division and outputs a color. Used for me
+    because these are the teams that are important to me
+
+    Args:
+        team_abv (str): The team abbreviations
+        division (str): The division of the team
+
+    Returns:
+        Fore: A colorama Fore class for the given color
+    """
     if team_abv == 'TEX':
         return Fore.LIGHTBLUE_EX
-    elif division == 'AW':
+    if division == 'AW':
         return Fore.LIGHTRED_EX
-    else:
-        return Fore.WHITE
+    return Fore.WHITE
 
 
 def get_run_expectency_numpy() -> np.ndarray:
@@ -185,12 +210,12 @@ def get_run_expectency_numpy() -> np.ndarray:
 
     Args:
         None
-    
-    Returns:
-        numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
 
     Raises:
         FileNotFoundError: re_fangraph.csv file missing, renamed, or misplaced
+
+    Returns:
+        numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')
@@ -223,16 +248,13 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
 
     How to index:
     renp[balls][strikes][outs][runners]
-    where runners is a int obtained from get_runners_int() function
-
-    Args:
-        None
-    
-    Returns:
-        numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
+    where runners is a int obtained from int(Runners)
 
     Raises:
-        FileNotFoundError: red_fangraph.csv file missing, renamed, or misplaced`
+        FileNotFoundError: red_fangraph.csv file missing, renamed, or misplaced
+
+    Returns:
+        np.ndarray: Run expectency table
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')

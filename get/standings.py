@@ -9,6 +9,7 @@ Example:
     standings_class = Standing(standings_data)
 """
 
+import os
 from typing import List
 import csv
 from colorama import Fore
@@ -120,7 +121,11 @@ class Team:
 
     @classmethod
     def _abv_from_id(cls, code):
-        with open('csv/teams.csv', encoding='utf-8') as file:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_dir = os.path.join(current_dir, '..', 'csv')
+        csv_file_path = os.path.join(csv_dir, 'teams.csv')
+
+        with open(csv_file_path, encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
 

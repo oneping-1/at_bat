@@ -19,19 +19,6 @@ class Umpire():
     hmoe = HAWKEYE_MARGIN_OF_ERROR
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
-    """
-    Holds info for each game and their missed calls.
-
-    Attribues:
-        game (get.game.Game): Game class with all info
-        gamePk (int): gamePk number
-        num_missed_calls (int): The number of missed calls made
-            in the game
-        home_favor (float): The number of runs awarded to the home team
-            in the game
-        away_abv (str): The abbreviation of the away team
-        home_abv (str): The abbreviation of the home team
-    """
     def __init__(self,
                  gamePk: int = None,
                  game: Game = None):
@@ -54,8 +41,12 @@ class Umpire():
     def set(self, print_missed_calls: bool = False
             ) -> Tuple[int, float, List[PlayEvents]]:
         """
-        Basically a front to Umpire.find_missed_calls that automatically
-        inputs its output into instance variables
+        A instance method that runs the Umpire.find_missed_calls class
+        method and inputs the results directly into the Umpire instance
+
+        Args:
+            print_missed_calls (bool, optional): _description_.
+                Defaults to False.
         """
 
         stats = self.find_missed_calls(game=self.game,
@@ -68,32 +59,30 @@ class Umpire():
                           print_missed_calls: bool = False
                           ) -> Tuple[int, float, List[PlayEvents]]:
         """
-        Calculates total favored runs for the home team for a given team
+        Calculates total favored runs for the home team for a given
+        team. Itterates through every pitch in a given game and finds
+        pitches that the umpire missed. When home_favor >0, umpire gave
+        the home team runs. When <0, gave runs to the away team
 
-        Itterates through every pitch in a given game and finds pitches
-            that the umpire missed.
-        When home_favor >0, umpire effectively gave the home team runs.
-        When <0, gave runs to the away team
-
-        print_every_missed_call will print the following for every 
-            missed call when set to True. Defaults to False:
-        1. Inning
-        2. Pitcher and Batter
-        3. Count
-        4. Pitch Location
-        5. Strike Zone Location
-        6. Favor
-
-        Returns:
-            num_missed_calls (int): The number of missed calls by the umpire
-            home_favor (float): The runs the umpire gave the home team
-                by their missed calls
-            missed_calls (List[PlayEvents]): A list of missed calls
-                with each element a Missed_Calls class
+        Args:
+            game (Game, optional): A Game class from get.game. Takes
+                priority over gamePk argument. Defaults to None.
+            gamePk (int, optional): A gamePk for the desired game.
+                Useful to avoid manually creating Game class before
+                running this method. Defaults to None.
+            print_missed_calls (bool, optional): Prints info for each
+                missed call in a game. Including inning, pitcher, batter,
+                count, pitch location, strike zone info, and favor.
+                Defaults to False.
 
         Raises:
             ValueError: If game and gamePk are not provided
             ConnectionError: If connection to API fails
+
+        Returns:
+            Tuple[int, float, List[PlayEvents]]: The number of missed
+                calls, the home favor, and a list of pitches that were
+                all called wrong in the given game
         """
         if game is None and gamePk is not None:
             game_dict = get_game_dict(gamePk)
@@ -197,19 +186,22 @@ class Umpire():
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
-            runners (Runners): The Runners class that holds data for
-                runners locations. Takes priority over runners_int
-            runners_int (int): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class
-
-        Returns:
-            home_favor (float): The amount of runs the umpire gave for
-                a pitch. 0 if pitch is swung or correct call was made.
+            runners (Runners, optional): The Runners class that holds
+                data for runners locations. Takes priority over
+                runners_int. Defaults to None
+            runners_int (int, optional): The integer representation for
+                base runner locations. Can be obtained by using
+                int(Runners) where Runners is the Runners class.
+                Defaults to None
 
         Raises:
+            ValueError: If no runners or runners_int argument provided
             TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
+
+        Returns:
+            floa): The amount of runs the umpire gave for a pitch. 0 if
+                pitch is swung or correct call was made.
         """
         if runners_int is None and runners is None:
             raise ValueError('No runners_int or runners argument provided')
@@ -272,19 +264,22 @@ class Umpire():
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
-            runners (Runners): The Runners class that holds data for
-                runners locations. Takes priority over runners_int
-            runners_int (int): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class
-
-        Returns:
-            home_favor (float): The amount of runs the umpire gave for
-                a pitch. 0 if pitch is swung or correct call was made.
+            runners (Runners, optional): The Runners class that holds
+                data for runners locations. Takes priority over
+                runners_int. Defaults to None
+            runners_int (int, optional): The integer representation for
+                base runner locations. Can be obtained by using
+                int(Runners) where Runners is the Runners class.
+                Defaults to None
 
         Raises:
+            ValueError: If not runners or runners_int arugments provided
             TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
+
+        Returns:
+            float: The amount of runs the umpire gave for  pitch. 0 if
+                pitch is swung or correct call was made.
         """
         if runners is None and runners_int is None:
             raise ValueError('runners and runners_int were not provided')
@@ -334,20 +329,23 @@ class Umpire():
         Args:
             pitch (PlayEvents): The pitch data from the game.PlayEvents
                 class. The PlayEvents class holds all the pitch data
-            runners_int (int): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
-
-        Returns:
-            home_favor (float): The amount of runs the umpire gave for
-                a pitch. 0 if pitch is swung or correct call was made.
+            runners (Runners, optional): The Runners class that holds
+                data for runners locations. Takes priority over
+                runners_int. Defaults to None. Defaults to None.
+            runners_int (int, optional): The integer representation for base
+                runner locations. Can be obtained by using int(Runners)
+                where Runners is the Runners class. Defaults to None
 
         Raises:
-            TypeError: If runners_int argument is not type int
-            TypeError: If isTopInning argument is not type bool
+            ValueError: _description_
+            TypeError: _description_
+            TypeError: _description_
+
+        Returns:
+            float: _description_
         """
         if runners is None and runners_int is None:
             raise ValueError('runners and runners_int were not provided')

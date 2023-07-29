@@ -16,10 +16,8 @@ Incomplete:
 - [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
 - [ ] Make scoreboard.py return something. Maybe move to another module?
-- [ ] Integrate plotter with rest of code
-- [ ] Check if runners variable in live_stats.py has issues with walks
 - [ ] Setters and Getters in runners class
-- [ ] Fine tune delta_favor_dist()
+- [ ] Fine tune delta_favor_dist() even more
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -51,3 +49,6 @@ Complete:
 - [X] Fix circular import issue between runners.py and game.py
 - [X] Write doc strings for get_delta_zone() and get_delta_monte()
 - [X] Make delta_favor functions take either runners_int or runners arguments
+- [X] Integrate plotter with rest of code
+- [X] Check if runners variable in live_stats.py has issues with walks
+- [X] Fine tune delta_favor_dist()
