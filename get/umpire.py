@@ -11,7 +11,7 @@ HAWKEYE_MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # max distance a ball can be from strike zone edge before umpire
 # call becomes incorrect. between 0.320 and 0.505 based of tests
-BUFFER_INCH = .325
+BUFFER_INCH = .350
 BUFFER_FEET = BUFFER_INCH / 12
 
 
@@ -19,6 +19,8 @@ class Umpire():
     hmoe = HAWKEYE_MARGIN_OF_ERROR
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
+
+
     def __init__(self,
                  gamePk: int = None,
                  game: Game = None):
@@ -37,6 +39,7 @@ class Umpire():
         self.home_favor = 0
         self.away_abv = game.gameData.teams.away.abbreviation
         self.home_abv = game.gameData.teams.home.abbreviation
+
 
     def set(self, print_missed_calls: bool = False
             ) -> Tuple[int, float, List[PlayEvents]]:
@@ -463,6 +466,7 @@ class Umpire():
             return True
 
         return False
+
 
     @classmethod
     def _generage_random_pitch_location(cls, pitch: PlayEvents

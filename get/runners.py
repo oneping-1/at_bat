@@ -5,13 +5,13 @@ to be run at the beginning and end of each at bat when itterating
 through at bats in a game
 """
 
-from __future__ import annotations
 from typing import List
-from get.game import AllPlays
+from get.game import AllPlays, Offense
+
 
 class Runners:
     """
-    Handles runners on base baths
+    Handles runners on base paths
 
     Attributes:
         runners (List[bool]): A list of length 3 where each element
@@ -22,7 +22,23 @@ class Runners:
             half of the inning. True if it is the top half, false if it
             isn't
         inning (int): The current inning number
+        
+    Methods:
+        new_batter(at_bat: AllPlays): Checks if a new inning has started
+            in the game module and clears bases if new half inning has
+            started
+        end_batter(at_bat: AllPlays): Sets Runners.runners based off the
+            current position of the batters at the end of an at bat
+        clear_bases(): Clears the bases of runners. Mainly used if a new
+            half inning has started and want to manually clear bases
+        set_bases(runners_list: List[bool]): Argument is a list of bools
+            that indicate where runners are. Useful if want to manually
+            set runner position on bases
+        set_bases_offense(offense: Offense): Method to adjust runners
+            instance variable automatically based off live runner
+            locations in the game class
     """
+
 
     def __init__(self):
         """
@@ -32,6 +48,7 @@ class Runners:
         self.runners = [False, False, False]
         self.isTopInning = None
         self.inning = 0
+
 
     def new_batter(self, at_bat: AllPlays):
         """
@@ -78,12 +95,14 @@ class Runners:
         else:
             self.runners[2] = True
 
+
     def clear_bases(self):
         """
         Manually clear the bases
         Can be used for a new half inning
         """
         self.runners = [False, False, False].copy()
+
 
     def set_bases(self, runners_list: List[bool]):
         """
@@ -108,6 +127,27 @@ class Runners:
 
         self.runners = runners_list.copy()
 
+
+    def set_bases_offense(self, offense: Offense):
+        """
+        Set the runners instance variable based off the Offense class
+        in the game module. Can input the game.liveData.linescore.offense
+        directly as a method argument and adjust the runners variable
+        correctly
+
+        Args:
+            offense (Offense): The Offense class from get.game that
+                holds live data on where the runners are on the base
+                paths.
+        """
+        is_first = offense.is_first
+        is_second = offense.is_second
+        is_third = offense.is_third
+
+        runners_list = [is_first, is_second, is_third]
+        self.runners = runners_list.copy()
+
+
     def __int__(self) -> int:
         """
         Converts the current state of the bases to an integer
@@ -128,6 +168,7 @@ class Runners:
             i += 4
 
         return i
+
 
     def __str__(self) -> str:
         """
@@ -154,6 +195,7 @@ class Runners:
             return 'runners on second and third'
         if self.runners == [True, True, True]:
             return 'bases loaded'
+
 
     def __repr__(self) -> str:
         """

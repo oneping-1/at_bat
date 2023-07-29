@@ -46,8 +46,8 @@ class Scoreboard:
                 scorebox[1] = 'DL'
                 scorebox[3] = f'{game.liveData.linescore.currentInning}'
             elif 'Preview' in game.gameData.status.abstractGameState or 'Warmup' in game.gameData.status.detailedState:
-                scorebox[0] = f'{game.gameData.datetime.startHour}'
-                scorebox[1] = f'{game.gameData.datetime.startMin}'
+                scorebox[0] = f'{game.gameData.datetime._startHour}'
+                scorebox[1] = f'{game.gameData.datetime._startMin}'
             elif 'Final' in game.gameData.status.abstractGameState:
                 scorebox[0] = f'{game.liveData.linescore.teams.away.runs}'
                 scorebox[2] = f'{game.liveData.linescore.teams.home.runs}'

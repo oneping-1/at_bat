@@ -1,6 +1,6 @@
 
 *.pyc
-json.txt
+*.json
 .vscode
 .__pycache__
 .pytest_cache

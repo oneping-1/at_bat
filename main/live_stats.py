@@ -8,7 +8,6 @@ numbers in the url.
 """
 
 import curses
-import sys
 import argparse
 from typing import Tuple
 from get.game import Game, PlayEvents, AllPlays
@@ -17,8 +16,7 @@ from get.umpire import Umpire
 from get.runners import Runners
 
 
-def print_last_pitch(gamePk: int = None,
-                     delay: float = 0):
+def print_last_pitch(gamePk: int = None, delay: float = 0):
     """
     Prints the following for the latest pitch:
     
@@ -30,13 +28,12 @@ def print_last_pitch(gamePk: int = None,
     Pitch Details:
     5. Pitch Result
     6. Pitch Speed + Name
-    7. Spin Rate
-    8. If pitch was in zone + home favor if missed call
+    7. If pitch was in zone + home favor if missed call
 
     Hit Details:
-    9. Exit Velocity
-    10. Launch Angle
-    11. Total Distance
+    8. Exit Velocity
+    9. Launch Angle
+    10. Total Distance
 
     Args:
         gamePk (int): The gamePk for the desired
@@ -53,41 +50,38 @@ def print_last_pitch(gamePk: int = None,
     god = curses.initscr()
 
     while True:
-        try:
-            game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay))
-            at_bat = game.liveData.plays.allPlays[-1]
+        game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay))
+        at_bat = game.liveData.plays.allPlays[-1]
 
-            if len(at_bat.playEvents) > 0:
-                pitch = at_bat.playEvents[-1]
+        if len(at_bat.playEvents) > 0:
+            pitch = at_bat.playEvents[-1]
 
-                i = 0
-                for line in _get_game_details(game, at_bat):
-                    god.addstr(i, 0, f'{line} {clr}')
-                    i += 1
-
-                for line in _get_at_bat_details(at_bat, pitch):
-                    god.addstr(i, 0, f'{line} {clr}')
-                    i += 1
-
+            i = 0
+            for line in _get_game_details(game, at_bat):
+                god.addstr(i, 0, f'{line} {clr}')
                 i += 1
-                for line in _get_run_details(game, at_bat, pitch):
-                    god.addstr(i, 0, f'{line} {clr}')
-                    i += 1
 
+            for line in _get_at_bat_details(at_bat, pitch):
+                god.addstr(i, 0, f'{line} {clr}')
                 i += 1
-                for line in _get_pitch_details(pitch):
-                    god.addstr(i, 0, f'{line} {clr}')
-                    i += 1
 
+            i += 1
+            for line in _get_run_details(game, at_bat, pitch):
+                god.addstr(i, 0, f'{line} {clr}')
                 i += 1
-                for line in _get_hit_details(pitch):
-                    god.addstr(i, 0, f'{line} {clr}')
-                    i += 1
 
-                god.refresh()
+            i += 1
+            for line in _get_pitch_details(pitch):
+                god.addstr(i, 0, f'{line} {clr}')
+                i += 1
 
-        except KeyboardInterrupt:
-            sys.exit()
+            i += 1
+            for line in _get_hit_details(pitch):
+                god.addstr(i, 0, f'{line} {clr}')
+                i += 1
+
+            god.refresh()
+
 
 
 def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:

@@ -168,7 +168,7 @@ def get_color_scoreboard(game) -> Tuple[Fore, Fore]:
         home = Fore.LIGHTBLUE_EX
 
     bet_teams = ('DET', 'NYY', 'LAA', 'WSH', 'MIL', 'OAK', 'MIL', 'MIN', 'CHC',
-                 'TEX', 'BOS')
+                'TEX', 'BOS')
     if game.gameData.teams.away.abbreviation in bet_teams:
         away = Fore.LIGHTGREEN_EX
 

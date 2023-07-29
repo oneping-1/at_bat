@@ -33,7 +33,7 @@ MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 class Game:
     """
     Initial class that the user interacts with to get the class started.
-    The argument for this class is the dictionary returned by 
+    The argument for this class is the dictionary returned by
     either statsapi.get() or get_game_dict() (both return the same
     thing).
     """
@@ -82,8 +82,8 @@ class Datetime:
     def __init__(self, times):
         self.dateTime = times.get('dateTime', None)
         self.officialDate = times['officialDate']
-        self.startHour, self.startMin = _convert_zulu_to_local(self.dateTime)
-        self.startTime = f'{self.startHour} {self.startMin}'
+        self._startHour, self._startMin = _convert_zulu_to_local(self.dateTime)
+        self.startTime = f'{self._startHour} {self._startMin}'
         # no children
 
 
@@ -91,6 +91,9 @@ class Status:
     def __init__(self, status):
         self.abstractGameState = status['abstractGameState']
         self.detailedState = status['detailedState']
+        self.codedGameState = status.get('codedGameState', None)
+        self.statusCode = status.get('statusCode', None)
+        self.abstractGameCode = status.get('abstractGameCode', None)
         # no children
 
 

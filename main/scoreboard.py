@@ -12,102 +12,20 @@ get spoiled of scores before they happen on devices
 """
 
 import argparse
-from colorama import just_fix_windows_console
-from get.game import Game
-from get.runners import Runners
-import get.statsapi_plus as sp
-
-just_fix_windows_console()
-
-
-def loop(delay_seconds:int = 0):
-    prnt = ''
-
-    gamePks = sp.get_daily_gamePks()
-    games = []
-    for gamePk in gamePks:
-        data = sp.get_game_dict(gamePk, delay_seconds=delay_seconds)
-        game = Game(data)
-        games.append(game)
-
-        is_first = game.liveData.linescore.offense.is_first
-        is_second = game.liveData.linescore.offense.is_second
-        is_third = game.liveData.linescore.offense.is_third
-        runners_list = [is_first, is_second, is_third]
-
-        runners = Runners()
-        runners.set_bases(runners_list)
-
-        game_data = _get_gameData(game)
-        away_color, home_color, away_team, home_team, detailed_state, abstract_state = game_data
-
-        live_data = _get_liveData(game)
-        away_score, home_score, inning, outs, inning_state = live_data
-
-        if 'Final' in abstract_state:
-            if inning == 9:
-                prnt += (f'{away_color}{away_team:4s} {away_score:2d}  F\n')
-                prnt += (f'{home_color}{home_team:4s} {home_score:2d}\n')
-            else:
-                prnt += (f'{away_color}{away_team:4s} {away_score:2d}  F\n')
-                prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
-        elif 'Delay' in detailed_state:
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d}  D\n')
-            prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
-        elif 'Suspended' in detailed_state:
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d}  S\n')
-            prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
-        elif 'Preview' in abstract_state or 'Warmup' in detailed_state:
-            prnt += (f'{away_color}{away_team:4s} {game.gameData.datetime.startTime}\n')
-            prnt += (f'{home_color}{home_team:4s}\n')
-        elif inning_state in ('Top', 'Middle'):
-            prnt += (f'{away_color}{away_team:3s}= {away_score:2d} o{outs:1d} {repr(runners)}\n')
-            prnt += (f'{home_color}{home_team:4s} {home_score:2d} {inning:2d}\n')
-        elif inning_state in ('Bottom', 'End'):
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d} o{outs:1d} {repr(runners)}\n')
-            prnt += (f'{home_color}{home_team:3s}= {home_score:2d} {inning:2d}\n')
-        else:
-            prnt += (f'{away_color}{away_team:4s} {away_score:2d}\n')
-            prnt += (f'{home_color}{home_team:4s} {home_score:2d}\n')
-
-        prnt += '\n'
-
-    print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-    print(prnt)
-
-
-def _get_gameData(game):
-    # need to update get_colors for curses
-    # this color code is placeholder
-    away_color, home_color = sp.get_color_scoreboard(game)
-    away_team = game.gameData.teams.away.abbreviation
-    home_team = game.gameData.teams.home.abbreviation
-
-    detailed_state = game.gameData.status.detailedState
-    abstract_state = game.gameData.status.abstractGameState
-
-    return(away_color, home_color, away_team, home_team, detailed_state, abstract_state)
-
-
-def _get_liveData(game: Game):
-    away_score = game.liveData.linescore.teams.away.runs
-    home_score = game.liveData.linescore.teams.home.runs
-
-    inning = game.liveData.linescore.currentInning
-    outs = game.liveData.linescore.outs
-
-    inning_state = game.liveData.linescore.inningState
-
-    return (away_score, home_score, inning, outs, inning_state)
+from get.scoreboard import Scoreboard
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--delay', help='delay in seconds', type=float, default=0)
+    parser.add_argument('--delay', help='Delay in seconds', type=int)
     args = parser.parse_args()
 
-    while True:
-        loop(delay_seconds=args.delay)
+    if args.delay is None:
+        args.delay = 0
+
+    scoreboard = Scoreboard(args.delay)
+    scoreboard.print_games()
+
 
 if __name__ == '__main__':
     main()
