@@ -1,3 +1,23 @@
+"""
+Module holds the umpire class which is responsible for calculating
+and holding information for missed calls in a MLB game. Trying to
+reverse engineer the results from Ump Scorecards.
+
+Classes:
+    Umpire: Represents missed calls in a MLB game. Has the ability
+        to calculate and find missed calls in the game
+
+Example:
+
+umpire = Umpire(gamePk = 717404)
+umpire.calculate(print_missed_calls = True)
+
+#or
+
+num_miss, favor, missed_list = Umpire.find_missed_calls(gamePk = 717404,
+                                            print_missed_calls = True)
+"""
+
 from typing import List, Tuple
 import random
 import math
@@ -16,13 +36,35 @@ BUFFER_FEET = BUFFER_INCH / 12
 
 
 class Umpire():
+    """
+    Class that represents missed calls made by the umpire in a game
+
+    Arguments:
+        game: Game: The Game class that represents the given game. Takes
+            priority over gamePk argument. Defaults to None
+        gamePk: int: The gamePk number for the given game. The Game class
+            will be automatically generated if game argument is not
+            provided
+
+    Attributes:
+        gamePk (int): gamePk for given game
+        game (Game): Game class for the given game. Automatically
+            generated if gamePk argument is provided
+        num_missed_calls (int): The number of missed calls in the game
+        home_favor (float): The number of runs the home team were
+            favored/gained from missed calls
+        missed_calls (List[PlayEvents]): List of pitches that were
+            called wrong throughout the game
+
+    Raises:
+        ValueError: If game and gamePk arguments are not provided in
+            instance class initialized
+    """
     hmoe = HAWKEYE_MARGIN_OF_ERROR
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
 
-    def __init__(self,
-                 gamePk: int = None,
-                 game: Game = None):
+    def __init__(self, game: Game = None, gamePk: int = None):
 
         if game is not None:
             self.game = game
@@ -36,17 +78,17 @@ class Umpire():
         self.num_missed_calls = 0
         self.missed_calls: List[PlayEvents] = []
         self.home_favor = 0
-        self.away_abv = game.gameData.teams.away.abbreviation
-        self.home_abv = game.gameData.teams.home.abbreviation
 
-    def set(self, print_missed_calls: bool = False
+    def calculate(self, print_missed_calls: bool = False
             ) -> Tuple[int, float, List[PlayEvents]]:
         """
         A instance method that runs the Umpire.find_missed_calls class
         method and inputs the results directly into the Umpire instance
 
         Args:
-            print_missed_calls (bool, optional): _description_.
+            print_missed_calls (bool, optional): Whether to print the
+                missed pitch details to console. Including, batter and
+                pitcher names, count, runners, and pitch location.
                 Defaults to False.
         """
 
@@ -60,10 +102,11 @@ class Umpire():
                           print_missed_calls: bool = False
                           ) -> Tuple[int, float, List[PlayEvents]]:
         """
-        Calculates total favored runs for the home team for a given
-        team. Itterates through every pitch in a given game and finds
-        pitches that the umpire missed. When home_favor >0, umpire gave
-        the home team runs. When <0, gave runs to the away team
+        find_missed_calls calculates total favored runs for the home
+        team for a given team. Iterates through every pitch in a given
+        game and finds pitches that the umpire missed. When home_favor
+        >0, umpire gave the home team runs. When <0, gave runs to the
+        away team.
 
         Args:
             game (Game, optional): A Game class from get.game. Takes
@@ -98,7 +141,7 @@ class Umpire():
         runners = Runners()
 
         for at_bat in game.liveData.plays.allPlays:
-            runners.new_batter(at_bat)
+            runners.new_at_bat(at_bat)
             isTopInning = at_bat.about.isTopInning
 
             for i in at_bat.pitchIndex:
@@ -115,7 +158,7 @@ class Umpire():
                             at_bat, runners, pitch, home_delta,j))
                         j += 1
 
-            runners.end_batter(at_bat)
+            runners.end_at_bat(at_bat)
 
         return (len(missed_calls), home_favor, missed_calls)
 
@@ -168,8 +211,9 @@ class Umpire():
                          runners: Runners = None, runners_int: int = None,
                          ) -> float:
         """
-        Calculates the favored runs the umpire gave the home team if
-        a pitch is missed based of the zone number of the pitch.
+        delta_favor_zone calculates the favored runs the umpire gave the
+        home team if a pitch is missed based of the zone number of the
+        pitch.
 
         The zone number is a single digit (1-9) if the pitch is a strike
         and a two digit number (11-14) if the pitch is a ball. MLB
@@ -199,7 +243,7 @@ class Umpire():
             TypeError: If isTopInning argument is not type bool
 
         Returns:
-            floa): The amount of runs the umpire gave for a pitch. 0 if
+            float: The amount of runs the umpire gave for a pitch. 0 if
                 pitch is swung or correct call was made.
         """
         if runners_int is None and runners is None:
@@ -244,9 +288,9 @@ class Umpire():
                          runners: Runners = None, runners_int: int = None
                          ) -> float:
         """
-        Calculates the favored runs the umpire gave the home team if
-        a pitch is missed based of the distance the pitch was from the
-        edges of the zone
+        delta_favor_dist calculates the favored runs the umpire gave the
+        home team if a pitch is missed based of the distance the pitch
+        was from the edges of the zone
 
         Most places that calculate missed calls made by umpires define
         a grace area that a pitch can land on and the correct call be
@@ -307,8 +351,9 @@ class Umpire():
                           runners: Runners = None, runners_int: int = None
                           ) -> float:
         """
-        Claculates the favored runs the umpire gave the home team if
-        a pitch is missed based off potential pitch locations
+        delta_favor_monteClaculates the favored runs the umpire gave the
+        home team if a pitch is missed based off potential pitch
+        locations.
 
         The Hawkeye tracking system is not perfect and can miss a
         pitches real location by up to a quarter of an inch. This method
@@ -488,3 +533,6 @@ class Umpire():
         prt_str += f'{self.home_favor} Home Favor'
 
         return prt_str
+
+    def __int__(self):
+        return self.num_missed_calls

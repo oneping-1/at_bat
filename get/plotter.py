@@ -1,7 +1,7 @@
 """
 Module that prints a list of pitches' location using matplotlib library.
 The plotter method takes in a list of get.Game.PlayEvents. The
-PlayEvents class represents pitches in a game. 
+PlayEvents class represents pitches in a game.
 
 Example:
 from get.plotter import Plotter
@@ -16,21 +16,36 @@ from get.game import PlayEvents
 
 class Plotter:
     """
-    Plots the pitch using matplotlib. Main method is Plotter.plot()
-    which does most of the heavy lifting
+    Plots missed pitches in a game similar to the box provided by Ump
+    Scorecards.
+
+    Class Attributes:
+        PLATE_WIDTH_INCH (int): Plate width in inches
+        BALL_RADIUS_INCH (int): Ball width in inches
+
+    Instance Attributes:
+        sZ_top (float): The top of the strike zone. If only one pitch
+            is provided in plot method, the top will change to the top
+            of the strike zone for that specific pitch. Defaults to 3.5
+        sZ_bot (float): The bottom of the strike zone. If only one pitch
+            is provided in plot method, the top will change to the
+            bottom of the strike zone for that specific pitch. Defaults
+            to 1.5
     """
-    PLATE_WIDTH_INCHES = 17
-    PLATE_WIDTH_FEET = PLATE_WIDTH_INCHES / 12
-    sX_min: float = -PLATE_WIDTH_FEET / 2
-    sX_max: float = PLATE_WIDTH_FEET / 2
-    BALL_RADIUS_INCHES = 1.437
-    BALL_RADIUS_FEET = BALL_RADIUS_INCHES / 12
+    PLATE_WIDTH_INCH = 17
+    _PLATE_WIDTH_FEET = PLATE_WIDTH_INCH / 12
+    sX_min: float = -_PLATE_WIDTH_FEET / 2
+    sX_max: float = _PLATE_WIDTH_FEET / 2
+    BALL_RADIUS_INCH = 1.437
+    _BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
 
     def __init__(self):
         # default top and bottom strike zone
         self.sZ_top: float = 3.5
         self.sZ_bot: float = 1.5
-        self.zone_height = self.sZ_top - self.sZ_bot
+        self._zone_height = self.sZ_top - self.sZ_bot
+
+        self.pitches: List[PlayEvents] = None
 
         self.axis = None
 
@@ -39,7 +54,7 @@ class Plotter:
         """
         Plots a list of pitches using matplot lib. Input is a list of
         pitches so that multiple pitches can be printed
-        
+
         Arg:
             pitches (List[PlayEvents]): List of pitches
                 (game.PlayEvents) that want to be plotted
@@ -47,18 +62,20 @@ class Plotter:
                 do calculations. Default = True
         """
 
+        self.pitches: List[PlayEvents] = pitches.copy()
+
         # normalized strike zone
-        if len(pitches) == 1:
-            self.sZ_top = pitches[0].pitchData.coordinates.sZ_top
-            self.sZ_bot = pitches[0].pitchData.coordinates.sZ_bot
-            self.zone_height = self.sZ_top - self.sZ_bot
+        if len(self.pitches) == 1:
+            self.sZ_top = self.pitches[0].pitchData.coordinates.sZ_top
+            self.sZ_bot = self.pitches[0].pitchData.coordinates.sZ_bot
+            self._zone_height = self.sZ_top - self.sZ_bot
 
         _, self.axis = plt.subplots()
 
         # creates strike zone box
         zone = patches.Rectangle((self.sX_min, self.sZ_bot),
-                                 width=self.PLATE_WIDTH_FEET,
-                                 height=self.zone_height,
+                                 width=self._PLATE_WIDTH_FEET,
+                                 height=self._zone_height,
                                  facecolor='none',
                                  edgecolor='black')
 
@@ -66,9 +83,9 @@ class Plotter:
         self.axis.add_patch(zone)
 
         # creates and prints each pitch in list
-        for i, pitch in enumerate(pitches):
+        for i, pitch in enumerate(self.pitches):
             pX, pZ, color = self._get_normalized_pitch_location(pitch)
-            pitch = patches.Circle((pX, pZ), radius=self.BALL_RADIUS_FEET,
+            pitch = patches.Circle((pX, pZ), radius=self._BALL_RADIUS_FEET,
                                     facecolor='none', edgecolor=color)
             self.axis.add_patch(pitch)
             self.axis.text(pX, pZ, str(i+1), ha='center', va='center')

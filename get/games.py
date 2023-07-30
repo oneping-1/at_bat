@@ -3,21 +3,20 @@ Handles logic to make a out-of-town like scoreboard for MLB games.
 Useful to keep track of all games going on with the ability add a
 delay to avoid spoilers
 
-Raises:
-    ValueError: If game and gamePk are not provided in
-        GameScoreboard class
+Classes:
+    Games: Represents all games in a day in a single place
 
 """
 
 from typing import List, Tuple
-from tqdm import tqdm
 import curses
+from tqdm import tqdm
 from get.game import Game
 from get.runners import Runners
 from get.statsapi_plus import get_daily_gamePks
 
 
-class Scoreboard:
+class Games:
     """
     Holds info for all games in a day. Held in a list so it's easily
     itterable. Can be printed using the curses library using the
@@ -49,7 +48,7 @@ class Scoreboard:
         self.gamePks = get_daily_gamePks()
 
         for gamePk in tqdm(self.gamePks):
-            game = Game.get_Game(gamePk, self._delay_seconds)
+            game = Game.get_game_from_pk(gamePk, self._delay_seconds)
             self.games.append(game)
 
     def update(self):
@@ -59,10 +58,10 @@ class Scoreboard:
         """
         self.games: List[Game] = []
         for gamePk in tqdm(self.gamePks):
-            game = Game.get_Game(gamePk, self._delay_seconds)
+            game = Game.get_game_from_pk(gamePk, self._delay_seconds)
             self.games.append(game)
 
-    def print_games(self):
+    def scoreboard(self):
         """
         Continuously prints scores for all games live in the format of
         a out-of-town scoreboard.
@@ -211,5 +210,5 @@ class Scoreboard:
         return (away_color, home_color)
 
 if __name__ == '__main__':
-    scoreboard = Scoreboard()
-    scoreboard.print_games()
+    scoreboard = Games()
+    scoreboard.scoreboard()

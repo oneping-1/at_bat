@@ -12,7 +12,7 @@ get spoiled of scores before they happen on devices
 """
 
 import argparse
-from get.scoreboard import Scoreboard
+from get.games import Games
 
 
 def main():
@@ -23,8 +23,8 @@ def main():
     if args.delay is None:
         args.delay = 0
 
-    scoreboard = Scoreboard(args.delay)
-    scoreboard.print_games()
+    scoreboard = Games(args.delay)
+    scoreboard.scoreboard()
 
 
 if __name__ == '__main__':

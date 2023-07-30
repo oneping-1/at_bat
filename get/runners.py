@@ -1,8 +1,24 @@
 """
-Module that holds the Runners class that is reposnible for keeping track
-of which bases are occupied on the bases. Two public methods that need
-to be run at the beginning and end of each at bat when itterating
-through at bats in a game
+This module provides the Runners class, which represents runners on the
+base paths and which bases are occupied in a baseball game. The class
+provides methods to manage the state of the bases through the course of
+a game, automatically clearing the bases when a new half inning starts,
+updating the bases after each at bat, manually clearing or setting the
+bases, and providing string representations of the current state of the
+bases.
+
+Classes:
+    Runners: Represents runners on the base paths and which bases
+        are occupied in a game
+
+Example:
+
+    game = Game.get_game_from_pk(717239)
+    runners = Runners()
+
+    runners.set_bases_offenese(game.liveData.linescore.offense)
+    # or
+    runners.set_bases([True, False, False]) # set runners on first
 """
 
 from typing import List
@@ -11,7 +27,7 @@ from get.game import AllPlays, Offense
 
 class Runners:
     """
-    Handles runners on base paths
+    Represents runners on the base paths and which bases are occupied
 
     Attributes:
         runners (List[bool]): A list of length 3 where each element
@@ -22,21 +38,6 @@ class Runners:
             half of the inning. True if it is the top half, false if it
             is not
         inning (int): The current inning number
-
-    Methods:
-        new_batter(at_bat: AllPlays): Checks if a new inning has started
-            in the game module and clears bases if new half inning has
-            started
-        end_batter(at_bat: AllPlays): Sets Runners.runners based off the
-            current position of the batters at the end of an at bat
-        clear_bases(): Clears the bases of runners. Mainly used if a new
-            half inning has started and want to manually clear bases
-        set_bases(runners_list: List[bool]): Argument is a list of bools
-            that indicate where runners are. Useful if want to manually
-            set runner position on bases
-        set_bases_offense(offense: Offense): Method to adjust runners
-            instance variable automatically based off live runner
-            locations in the game class
     """
 
     def __init__(self):
@@ -48,7 +49,7 @@ class Runners:
         self.isTopInning = None
         self.inning = 0
 
-    def new_batter(self, at_bat: AllPlays):
+    def new_at_bat(self, at_bat: AllPlays):
         """
         Checks if a new half inning has started. If so, will clear the
         bases. This method should be run at the start of an at bat. If
@@ -67,7 +68,7 @@ class Runners:
             self.inning = inning
             self.runners = [False, False, False].copy()
 
-    def end_batter(self, at_bat: AllPlays):
+    def end_at_bat(self, at_bat: AllPlays):
         """
         Update class instance at the end of an at bat. Places the
         runners based off the outcome of the at bat.

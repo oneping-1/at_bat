@@ -49,7 +49,7 @@ class Game:
         self.liveData = LiveData(self.liveData)
 
     @classmethod
-    def get_Game(cls, gamePk: int, delay_seconds: int) -> 'Game':
+    def get_game_from_pk(cls, gamePk: int, delay_seconds: int) -> 'Game':
         game_dict = get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds)
         return Game(game_dict)
 

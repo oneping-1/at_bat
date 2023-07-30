@@ -19,8 +19,8 @@ def daily_ump_scorecards(date: str,
     Finds the missed calls and favor for each game in a given day
 
     Gets the gamePks for all games on a given day gathers missed call
-    and favored run infomation. Returns a list of class Umpire with 
-    missed call and favored run info. Will also print all info if 
+    and favored run infomation. Returns a list of class Umpire with
+    missed call and favored run info. Will also print all info if
     function argument is provided
 
     Args:
@@ -28,7 +28,7 @@ def daily_ump_scorecards(date: str,
             (YYYY-MM-DD)
         print_daily_stats (bool, optional): Set to True to print all
             missed call info. Defaults to False
-    
+
     Returns:
         games (List[Umpire]): List of games with missed calls and
             favor easily accessable as well as the full Game class
@@ -44,7 +44,7 @@ def daily_ump_scorecards(date: str,
         game = Game(game_dict)
 
         games.append(Umpire(game=game))
-        games[-1].set()
+        games[-1].calculate()
 
     if print_daily_stats is True:
         for game in games:
