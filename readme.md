@@ -15,9 +15,10 @@ Incomplete:
 - [ ] More pytests
 - [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
-- [ ] Make scoreboard.py return something. Maybe move to another module?
 - [ ] Setters and Getters in runners class
 - [ ] Fine tune delta_favor_dist() even more
+- [ ] Fix curses to be able to resize window
+- [ ] Get rid of GameScoreboard class and just use Game class?
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -52,3 +53,4 @@ Complete:
 - [X] Integrate plotter with rest of code
 - [X] Check if runners variable in live_stats.py has issues with walks
 - [X] Fine tune delta_favor_dist()
+- [X] Make scoreboard.py return something. Maybe move to another module?

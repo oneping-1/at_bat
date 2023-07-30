@@ -20,7 +20,6 @@ class Umpire():
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
 
-
     def __init__(self,
                  gamePk: int = None,
                  game: Game = None):
@@ -39,7 +38,6 @@ class Umpire():
         self.home_favor = 0
         self.away_abv = game.gameData.teams.away.abbreviation
         self.home_abv = game.gameData.teams.home.abbreviation
-
 
     def set(self, print_missed_calls: bool = False
             ) -> Tuple[int, float, List[PlayEvents]]:
@@ -121,7 +119,6 @@ class Umpire():
 
         return (len(missed_calls), home_favor, missed_calls)
 
-
     @classmethod
     def _missed_pitch_details(cls, at_bat: AllPlays, runners: Runners,
                               pitch: PlayEvents, home_delta: float, i: int
@@ -165,7 +162,6 @@ class Umpire():
         to_print_str += f'Home Favor: {home_delta:4.2f}\n'
 
         return to_print_str
-
 
     @classmethod
     def delta_favor_zone(cls, pitch: PlayEvents, isTopInning: bool,
@@ -243,7 +239,6 @@ class Umpire():
             return home_delta
         return -home_delta
 
-
     @classmethod
     def delta_favor_dist(cls, pitch: PlayEvents, isTopInning: bool,
                          runners: Runners = None, runners_int: int = None
@@ -306,7 +301,6 @@ class Umpire():
         return Umpire.delta_favor_zone(pitch=pitch,
                                        runners_int=runners_int,
                                        isTopInning=isTopInning)
-
 
     @classmethod
     def delta_favor_monte(cls, pitch: PlayEvents, isTopInning: bool,
@@ -393,7 +387,6 @@ class Umpire():
             return home_delta
         return -home_delta
 
-
     @classmethod
     def _is_correct_call_zone_num(cls, pitch: PlayEvents) -> bool:
         """Helper method to delta_favor_zone"""
@@ -402,7 +395,6 @@ class Umpire():
         if pitch.details.code == 'B' and 1 <= pitch.pitchData.zone <= 9:
             return False
         return True
-
 
     @classmethod
     def _is_correct_call_monte_carlo(cls, pitch: PlayEvents) -> bool:
@@ -430,7 +422,6 @@ class Umpire():
         if pitch.details.code =='C' and ((ball / total) > 0.90):
             return False
         return True
-
 
     @classmethod
     def _in_buffer_zone(cls, pitch: PlayEvents) -> bool:
@@ -467,7 +458,6 @@ class Umpire():
 
         return False
 
-
     @classmethod
     def _generage_random_pitch_location(cls, pitch: PlayEvents
                                         ) -> Tuple[float, float]:
@@ -488,10 +478,8 @@ class Umpire():
 
         return (rand_x, rand_z)
 
-
     def __len__(self):
         return len(self.missed_calls)
-
 
     def __str__(self):
         prt_str = ''

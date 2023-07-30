@@ -3,6 +3,10 @@ import csv
 import os
 
 class Team:
+    """
+    Holds info for each team including id code, abbreviation, division,
+    and opponent stats. Useful when you need all info at once place
+    """
     def __init__(self, team_id: int, abv: str, div: str):
         self.id = int(team_id)
         self.abv = abv
@@ -10,10 +14,27 @@ class Team:
         self.opponent = None
 
     def oppo(self, wins:int, losses:int, above_500:float):
-        self.opponent = Opponent(wins, losses, above_500)
+        """
+        Sets the opponents info for the instance
+
+        Args:
+            wins (int): The sum of wins the opponent has over a specific
+                length of time
+            losses (int): The sum of losses the opponent has over a
+                specific length of time
+            above_500 (float): The percentage of opponents whose win/
+                loss records are above .500
+        """
+        self.opponent = _Opponent(wins, losses, above_500)
 
     @classmethod
     def get_teams_list(cls) -> List['Team']:
+        """
+        Returns a list of Team class for all the teams.
+
+        Returns:
+            List[Team]: The list of Team class
+        """
         current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_path = os.path.join(current_dir, '..', 'csv')
         csv_file_path = os.path.join(csv_path, 'teams.csv')
@@ -28,7 +49,11 @@ class Team:
 
         return teams
 
-class Opponent:
+class _Opponent:
+    """
+    Holds opponent info for the Team class. Seperates info from the team
+    and their opponent
+    """
     def __init__(self, wins:int, losses:int, above_500:float):
         self.wins = wins
         self.losses = losses

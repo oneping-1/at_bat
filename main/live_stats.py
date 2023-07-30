@@ -19,7 +19,7 @@ from get.runners import Runners
 def print_last_pitch(gamePk: int = None, delay: float = 0):
     """
     Prints the following for the latest pitch:
-    
+
     1. Away/Home teams + score
     2. Inning
     3. Count
@@ -81,7 +81,6 @@ def print_last_pitch(gamePk: int = None, delay: float = 0):
                 i += 1
 
             god.refresh()
-
 
 
 def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:

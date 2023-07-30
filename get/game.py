@@ -27,6 +27,7 @@ import statsapi
 from tqdm import tqdm
 from get.statsapi_plus import get_daily_gamePks
 from get.statsapi_plus import get_run_expectency_difference_numpy
+from get.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
@@ -46,6 +47,11 @@ class Game:
     def _children(self):
         self.gameData = GameData(self.gameData)
         self.liveData = LiveData(self.liveData)
+
+    @classmethod
+    def get_Game(cls, gamePk: int, delay_seconds: int) -> 'Game':
+        game_dict = get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds)
+        return Game(game_dict)
 
 
 class GameData:

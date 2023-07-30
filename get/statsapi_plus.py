@@ -31,12 +31,12 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
     Raises:
         ValueError: If gamePk argument is not defined
         ConnectionError: If connection to API fails
-        TypeError: If delay_seconds is not valid 
+        TypeError: If delay_seconds is not valid
 
     Returns:
         dict: The game dictionary recieved with the given delay. Can be
             turned into a Game object by using this dict as the only
-            argument to Game. Example: 
+            argument to Game. Example:
             data = get_game_dict(717404, delay_seconds=45)
             game_class = Game(data)
 

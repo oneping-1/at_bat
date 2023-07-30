@@ -1,101 +1,66 @@
+"""
+Handles logic to make a out-of-town like scoreboard for MLB games.
+Useful to keep track of all games going on with the ability add a
+delay to avoid spoilers
+
+Raises:
+    ValueError: If game and gamePk are not provided in
+        GameScoreboard class
+
+"""
+
 from typing import List, Tuple
+from tqdm import tqdm
 import curses
 from get.game import Game
 from get.runners import Runners
-from get.statsapi_plus import get_daily_gamePks, get_game_dict
-
-
-class Game_Scoreboard:
-    def __init__(self, gamePk:int, delay_seconds: int = 0):
-        self.gamePk: int = gamePk
-        self._delay_seconds: int = delay_seconds
-        self._game_dict: dict = get_game_dict(self.gamePk, delay_seconds)
-        self.game = Game(self._game_dict)
-
-        # gameData
-        self.abstract_state = self.game.gameData.status.abstractGameState
-        self.detailed_state = self.game.gameData.status.detailedState
-
-        self.coded_game_state = self.game.gameData.status.codedGameState
-
-        self.away_team = self.game.gameData.teams.away.abbreviation
-        self.home_team = self.game.gameData.teams.home.abbreviation
-
-        self._away_div = self.game.gameData.teams.away.division
-        self._home_div = self.game.gameData.teams.home.division
-
-        self.start_time = self.game.gameData.datetime.startTime
-
-        # linescore
-        self.away_score = self.game.liveData.linescore.teams.away.runs
-        self.home_score = self.game.liveData.linescore.teams.home.runs
-
-        self.outs = self.game.liveData.linescore.outs
-        self._offense = self.game.liveData.linescore.offense
-        self.runners: Runners = Runners()
-        self.runners.set_bases_offense(self._offense)
-
-        self.inning = self.game.liveData.linescore.currentInning
-        self.inning_state = self.game.liveData.linescore.inningState
-
-        # other
-        self.away_color = 7
-        self.home_color = 7
-
-        self._get_colors()
-
-    def __str__(self):
-        ...
-
-    def _get_colors(self):
-        """
-        0: Black/Dark Grey
-        1: Darker Blue
-        2: Green
-        3: Lighter Blue
-        4: Red
-        5: Pink
-        6: Yellow
-        7: White
-        (At least for me)
-        ...
-        """
-
-        if self.abstract_state in ('Final', 'Preview'):
-            self.away_color = 0
-            self.home_color = 0
-
-        if self.detailed_state in ('Warmup', 'Suspended'):
-            self.away_color = 0
-            self.home_color = 0
-
-        if self._away_div == 'AW':
-            self.away_color = 4
-
-        if self._home_div == 'AW':
-            self.home_color = 4
-
-        if self.away_team == 'TEX':
-            self.away_color = 1
-
-        if self.home_team == 'TEX':
-            self.home_color = 1
-
-        bet_teams = ()
-        if self.away_team in bet_teams:
-            self.away_color = 2
-
-        if self.home_team in bet_teams:
-            self.home_color = 2
+from get.statsapi_plus import get_daily_gamePks
 
 
 class Scoreboard:
-    def __init__(self, delay_seconds: int = 0):
-        self.games: List[Game_Scoreboard] = []
-        gamePks = get_daily_gamePks()
+    """
+    Holds info for all games in a day. Held in a list so it's easily
+    itterable. Can be printed using the curses library using the
+    print_game() method
 
-        for gamePk in gamePks:
-            self.games.append(Game_Scoreboard(gamePk, delay_seconds))
+    Arguments:
+        delay_seconds(int): The number of seconds the scoreboard should
+            be delayed by. Useful when watching games live and do not
+            want to get spoiled
+
+    Attributes:
+        gamePks (List[int]): A list of the gamePks for that days slate
+            of games. The games list is then created using this list
+        games (List[Game]): A list of the GameScoreboard class
+            that holds info that would be required for a scoreboard
+
+    Methods:
+        update(): Updates the game data for each game in the games
+            instance variable. Required so that scores can be updated
+            throughout the night
+        print_games(): A loop that will keep printing the scores to
+            the console via the curses library. The loop will only break
+            if ctrl+c is commanded
+    """
+    def __init__(self, delay_seconds: int = 0):
+        self._delay_seconds = delay_seconds
+
+        self.games: List[Game] = []
+        self.gamePks = get_daily_gamePks()
+
+        for gamePk in tqdm(self.gamePks):
+            game = Game.get_Game(gamePk, self._delay_seconds)
+            self.games.append(game)
+
+    def update(self):
+        """
+        Updates the list of GameScoreboards so that the scoreboard can
+        get the most recent info.
+        """
+        self.games: List[Game] = []
+        for gamePk in tqdm(self.gamePks):
+            game = Game.get_Game(gamePk, self._delay_seconds)
+            self.games.append(game)
 
     def print_games(self):
         """
@@ -112,60 +77,138 @@ class Scoreboard:
         stdscr.clear()
 
         while True:
+
             line = 1
             for game in self.games:
-                line_0, line_1 = self._get_text(game)
+                away_color, home_color = self._get_colors(game)
+                away_line, home_line = self._get_text(game)
 
-                curses.init_pair(line, game.away_color, 0)
-                stdscr.addstr(line, 0, line_0, curses.color_pair(line))
+                curses.init_pair(line, away_color, 0)
+                stdscr.addstr(line, 0, away_line, curses.color_pair(line))
                 line += 1
 
-                curses.init_pair(line, game.home_color, 0)
-                stdscr.addstr(line, 0, line_1, curses.color_pair(line))
+                curses.init_pair(line, home_color, 0)
+                stdscr.addstr(line, 0, home_line, curses.color_pair(line))
                 line += 2
 
             stdscr.refresh()
+            self.update()
 
-    def _get_text(self, game: Game_Scoreboard) -> Tuple[str, str]:
-        line_0 = f'{game.away_team:3s}'
-        line_1 = f'{game.home_team:3s}'
+    def _get_text(self, game: Game) -> Tuple[str, str]:
+        away_team = game.gameData.teams.away.abbreviation
+        home_team = game.gameData.teams.home.abbreviation
+
+        away_score = game.liveData.linescore.teams.away.runs
+        home_score = game.liveData.linescore.teams.home.runs
+
+        start_time = game.gameData.datetime.startTime
+
+        coded_game_state = game.gameData.status.codedGameState
+        detailed_state = game.gameData.status.detailedState
+        #abstract_state = game.gameData.status.abstractGameState
+
+        inning_state = game.liveData.linescore.inningState
+        inning = game.liveData.linescore.currentInning
+        outs = game.liveData.linescore.outs
+
+        runners = Runners()
+        runners.set_bases_offense(game.liveData.linescore.offense)
+
+        line_0 = f'{away_team:3s}  '
+        line_1 = f'{home_team:3s}  '
 
         # Pregame
-        if game.coded_game_state == 'P':
-            line_0 += f'  {game.start_time}'
+        if coded_game_state == 'P':
+            line_0 += f'  {start_time}'
             return (line_0, line_1)
 
-        if game.inning_state in ('Top', 'Middle'):
-            line_0 += '= '
-            line_1 += '  '
-        elif game.inning_state in ('Bottom', 'End'):
-            line_0 += '  '
-            line_1 += '= '
+        # Scores
+        line_0 += f'{away_score:2d} '
+        line_1 += f'{home_score:2d} '
 
-        line_0 += f'{game.away_score:2d} '
-        line_1 += f'{game.home_score:2d} '
+        # Final
+        if coded_game_state == 'F':
+            line_0 += ' F'
+            if inning != 9:
+                line_1 += f'{inning:2d}'
+            return (line_0, line_1)
 
-        if game.detailed_state in 'Delay':
+        # Top/Bottom of inning
+        #if inning_state in ('Top', 'Middle'):
+        #    line_0 += '= '
+        #    line_1 += '  '
+        #elif inning_state in ('Bottom', 'End'):
+        #    line_0 += '  '
+        #    line_1 += '= '
+
+        # Delay
+        if detailed_state in 'Delay':
             line_0 += ' D'
             line_1 += f'{game.inning:2d}'
             return (line_0, line_1)
 
-        if game.detailed_state in 'Suspended':
+        # Suspended
+        if detailed_state in 'Suspended':
             line_0 += ' S'
             line_1 += f'{game.inning:2d}'
             return (line_0, line_1)
 
-        if game.abstract_state in 'Final':
-            line_0 += ' F'
-            if game.inning != 9:
-                line_1 += f'{game.inning:2d}'
-            return (line_0, line_1)
-
-        line_0 += f'o{game.outs} {repr(game.runners)}'
-        line_1 += f'{game.inning:2d}'
+        # Live
+        line_0 += f'o{outs} {repr(runners)}'
+        line_1 += f'{inning:2d}'
 
         return (line_0, line_1)
 
+    def _get_colors(self, game: Game):
+        """
+        0: Black/Dark Grey
+        1: Darker Blue
+        2: Green
+        3: Lighter Blue
+        4: Red
+        5: Pink
+        6: Yellow
+        7: White
+        (At least for me)
+        ...
+        """
+        away_team = game.gameData.teams.away.abbreviation
+        home_team = game.gameData.teams.home.abbreviation
+
+        away_div = game.gameData.teams.away.division
+        home_div = game.gameData.teams.home.division
+
+        detailed_state = game.gameData.status.detailedState
+        coded_game_state = game.gameData.status.codedGameState
+
+        if coded_game_state in ('P', 'F'):
+            away_color = 0
+            home_color = 0
+
+        if detailed_state in ('Warmup', 'Suspended'):
+            away_color = 0
+            home_color = 0
+
+        if away_div == 'AW':
+            away_color = 4
+
+        if home_div == 'AW':
+            home_color = 4
+
+        if away_team == 'TEX':
+            away_color = 1
+
+        if home_team == 'TEX':
+            home_color = 1
+
+        bet_teams = ()
+        if away_team in bet_teams:
+            away_color = 2
+
+        if home_team in bet_teams:
+            home_color = 2
+
+        return (away_color, home_color)
 
 if __name__ == '__main__':
     scoreboard = Scoreboard()

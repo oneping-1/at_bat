@@ -20,9 +20,9 @@ class Runners:
             runners[2] is third.
         isTopInning (bool): Variable that describes if it is the top
             half of the inning. True if it is the top half, false if it
-            isn't
+            is not
         inning (int): The current inning number
-        
+
     Methods:
         new_batter(at_bat: AllPlays): Checks if a new inning has started
             in the game module and clears bases if new half inning has
@@ -39,7 +39,6 @@ class Runners:
             locations in the game class
     """
 
-
     def __init__(self):
         """
         Initializes Runners class. Also holds inning info so that it
@@ -48,7 +47,6 @@ class Runners:
         self.runners = [False, False, False]
         self.isTopInning = None
         self.inning = 0
-
 
     def new_batter(self, at_bat: AllPlays):
         """
@@ -68,7 +66,6 @@ class Runners:
             self.isTopInning = isTopInning
             self.inning = inning
             self.runners = [False, False, False].copy()
-
 
     def end_batter(self, at_bat: AllPlays):
         """
@@ -95,14 +92,12 @@ class Runners:
         else:
             self.runners[2] = True
 
-
     def clear_bases(self):
         """
         Manually clear the bases
         Can be used for a new half inning
         """
         self.runners = [False, False, False].copy()
-
 
     def set_bases(self, runners_list: List[bool]):
         """
@@ -127,7 +122,6 @@ class Runners:
 
         self.runners = runners_list.copy()
 
-
     def set_bases_offense(self, offense: Offense):
         """
         Set the runners instance variable based off the Offense class
@@ -146,7 +140,6 @@ class Runners:
 
         runners_list = [is_first, is_second, is_third]
         self.runners = runners_list.copy()
-
 
     def __int__(self) -> int:
         """
@@ -168,7 +161,6 @@ class Runners:
             i += 4
 
         return i
-
 
     def __str__(self) -> str:
         """
@@ -195,7 +187,6 @@ class Runners:
             return 'runners on second and third'
         if self.runners == [True, True, True]:
             return 'bases loaded'
-
 
     def __repr__(self) -> str:
         """
