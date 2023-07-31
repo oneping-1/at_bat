@@ -75,6 +75,8 @@ class Games:
         curses.use_default_colors()
         stdscr.clear()
 
+        gap = ' ' * 15
+
         while True:
 
             line = 1
@@ -83,11 +85,11 @@ class Games:
                 away_line, home_line = self._get_text(game)
 
                 curses.init_pair(line, away_color, 0)
-                stdscr.addstr(line, 0, away_line, curses.color_pair(line))
+                stdscr.addstr(line, 0, f'{away_line}{gap}', curses.color_pair(line))
                 line += 1
 
                 curses.init_pair(line, home_color, 0)
-                stdscr.addstr(line, 0, home_line, curses.color_pair(line))
+                stdscr.addstr(line, 0, f'{home_line}{gap}', curses.color_pair(line))
                 line += 2
 
             stdscr.refresh()
@@ -113,8 +115,8 @@ class Games:
         runners = Runners()
         runners.set_bases_offense(game.liveData.linescore.offense)
 
-        line_0 = f'{away_team:3s}  '
-        line_1 = f'{home_team:3s}  '
+        line_0 = f'{away_team:3s} '
+        line_1 = f'{home_team:3s} '
 
         # Pregame
         if coded_game_state == 'P':
@@ -126,19 +128,11 @@ class Games:
         line_1 += f'{home_score:2d} '
 
         # Final
-        if coded_game_state == 'F':
+        if coded_game_state in ('F', 'O'):
             line_0 += ' F'
             if inning != 9:
                 line_1 += f'{inning:2d}'
             return (line_0, line_1)
-
-        # Top/Bottom of inning
-        #if inning_state in ('Top', 'Middle'):
-        #    line_0 += '= '
-        #    line_1 += '  '
-        #elif inning_state in ('Bottom', 'End'):
-        #    line_0 += '  '
-        #    line_1 += '= '
 
         # Delay
         if detailed_state in 'Delay':
@@ -153,8 +147,12 @@ class Games:
             return (line_0, line_1)
 
         # Live
-        line_0 += f'o{outs} {repr(runners)}'
-        line_1 += f'{inning:2d}'
+        if inning_state in ('Top', 'Middle'):
+            line_0 += f'o{outs} {repr(runners)}'
+            line_1 += f'{inning:2d}'
+        else:
+            line_0 += f'{inning:2d}'
+            line_1 += f'o{outs} {repr(runners)}'
 
         return (line_0, line_1)
 
@@ -180,13 +178,18 @@ class Games:
         detailed_state = game.gameData.status.detailedState
         coded_game_state = game.gameData.status.codedGameState
 
-        if coded_game_state in ('P', 'F'):
+        # Pregame, Final, Over?
+        if coded_game_state in ('P', 'F', 'O'):
             away_color = 0
             home_color = 0
 
         if detailed_state in ('Warmup', 'Suspended'):
             away_color = 0
             home_color = 0
+
+        if coded_game_state == 'I':
+            away_color = 7
+            home_color = 7
 
         if away_div == 'AW':
             away_color = 4

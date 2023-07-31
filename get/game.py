@@ -48,6 +48,9 @@ class Game:
         self.gameData = GameData(self.gameData)
         self.liveData = LiveData(self.liveData)
 
+    def __repr__(self):
+        return f'{self.gamePk}'
+
     @classmethod
     def get_game_from_pk(cls, gamePk: int, delay_seconds: int) -> 'Game':
         game_dict = get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds)
@@ -210,6 +213,11 @@ class AllPlays:
             return True
         return False
 
+    def __repr__(self):
+        pitcher = self.matchup.pitcher.fullName
+        batter = self.matchup.batter.fullName
+        return f'{pitcher} to {batter}'
+
 
 class Result:
     def __init__(self, result):
@@ -367,7 +375,7 @@ class Details:
 class PitchType:
     def __init__(self, pitchType):
         self.code = pitchType.get('code', None)
-        self.description = pitchType['description']
+        self.description = pitchType.get('description', None)
         # no children
 
 
@@ -784,4 +792,4 @@ def get_games() -> List[Game]:
 
 
 if __name__ == "__main__":
-    print(_get_delayed_timecode(5))
+    game = Game.get_game_from_pk(gamePk = 717200, delay_seconds = 0)

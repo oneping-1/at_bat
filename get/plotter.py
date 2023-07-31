@@ -63,7 +63,6 @@ class Plotter:
         """
 
         self.pitches: List[PlayEvents] = pitches.copy()
-
         # normalized strike zone
         if len(self.pitches) == 1:
             self.sZ_top = self.pitches[0].pitchData.coordinates.sZ_top
@@ -83,12 +82,12 @@ class Plotter:
         self.axis.add_patch(zone)
 
         # creates and prints each pitch in list
-        for i, pitch in enumerate(self.pitches):
+        for _, pitch in enumerate(self.pitches):
             pX, pZ, color = self._get_normalized_pitch_location(pitch)
             pitch = patches.Circle((pX, pZ), radius=self._BALL_RADIUS_FEET,
                                     facecolor='none', edgecolor=color)
             self.axis.add_patch(pitch)
-            self.axis.text(pX, pZ, str(i+1), ha='center', va='center')
+            #self.axis.text(pX, pZ, str(i+1), ha='center', va='center')
 
         plt.xlim(-1.5, 1.5)
         plt.ylim(1,4)

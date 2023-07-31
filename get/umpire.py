@@ -31,7 +31,7 @@ HAWKEYE_MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # max distance a ball can be from strike zone edge before umpire
 # call becomes incorrect. between 0.320 and 0.505 based of tests
-BUFFER_INCH = .350
+BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
 

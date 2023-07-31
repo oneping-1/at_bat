@@ -14,6 +14,7 @@ from get.game import Game, PlayEvents, AllPlays
 from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
 from get.umpire import Umpire
 from get.runners import Runners
+from get.queue import Queue
 
 
 def print_last_pitch(gamePk: int = None, delay: float = 0):
@@ -46,40 +47,47 @@ def print_last_pitch(gamePk: int = None, delay: float = 0):
     if gamePk is None:
         raise ValueError('gamePk not provided')
 
-    clr = ' ' * 40
+    clr_short = ' ' * 40
+
     god = curses.initscr()
+    fifo = Queue(5)
 
     while True:
         game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay))
         at_bat = game.liveData.plays.allPlays[-1]
+
+        if fifo.contains(at_bat) is False:
+            fifo.push(at_bat)
 
         if len(at_bat.playEvents) > 0:
             pitch = at_bat.playEvents[-1]
 
             i = 0
             for line in _get_game_details(game, at_bat):
-                god.addstr(i, 0, f'{line} {clr}')
+                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
 
             for line in _get_at_bat_details(at_bat, pitch):
-                god.addstr(i, 0, f'{line} {clr}')
+                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
 
             i += 1
             for line in _get_run_details(game, at_bat, pitch):
-                god.addstr(i, 0, f'{line} {clr}')
+                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
 
             i += 1
             for line in _get_pitch_details(pitch):
-                god.addstr(i, 0, f'{line} {clr}')
+                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
 
             i += 1
             for line in _get_hit_details(pitch):
-                god.addstr(i, 0, f'{line} {clr}')
+                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
 
+            i += 1
+            god.addstr(i, 0, f'{len(fifo)}')
             god.refresh()
 
 
