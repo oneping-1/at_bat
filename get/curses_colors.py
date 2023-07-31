@@ -15,4 +15,5 @@ def main(stdscr):
         pass
     stdscr.getch()
 
-curses.wrapper(main)
+if __name__ == '__main__':
+    curses.wrapper(main)

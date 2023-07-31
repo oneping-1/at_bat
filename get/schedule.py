@@ -4,6 +4,10 @@
 Converts the standings_data dict returned by statsapi.get('standings')
 into a class for easier data grabbing. 
 
+Classes:
+    Schedule: Represents the schedule for a given team over a certain
+        period of time
+
 Example:
     schedule_data = statsapi.get('schedule', {})
     schedule_data = Standing(schedule_data)

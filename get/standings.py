@@ -4,6 +4,10 @@
 Converts the standings_data dict returned by statsapi.get('standings')
 into a class for easier data grabbing. 
 
+Classes:
+    Standing: Represents the division and league standings for the
+        given league (American and National)
+
 Example:
     standings_data = statsapi.get('schedule', {'leagueId':103})
     standings_class = Standing(standings_data)

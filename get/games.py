@@ -5,7 +5,6 @@ delay to avoid spoilers
 
 Classes:
     Games: Represents all games in a day in a single place
-
 """
 
 from typing import List, Tuple

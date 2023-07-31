@@ -3,7 +3,8 @@ Converts the Python dictionary returned by statsapi.get('game') into
 classes that represent each level in the dictionary returned by
 statsapi.get('game').
 
-Other important classes in this module are:
+Important classes are:
+    Game: Represents the entire game
     AllPlays: A class that is typically stored in a list that represents
         each at bat in a game
     PlayEvents: A class that is again typically stored in a list that

@@ -5,6 +5,14 @@ and MiLB games provided with a gamePk from the MLB/MiLB website
 You can find the gamePk for a given game by going to the 'Gameday'
 section of the desired game and by looking for a string of 6 consecutive
 numbers in the url.
+
+Functions:
+    print_last_pitch(gamePk, delay_seconds): Prints live stats for the
+        given game based off the gamePk argument with a delay in
+        seconds if delay_seconds argument is provided
+    main(): Gets gamePk and delay_seconds from command line arguments
+        and prompts user for input if either command line argument is
+        provided
 """
 
 import curses
@@ -17,7 +25,7 @@ from get.runners import Runners
 from get.queue import Queue
 
 
-def print_last_pitch(gamePk: int = None, delay: float = 0):
+def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     """
     Prints the following for the latest pitch:
 
@@ -42,7 +50,7 @@ def print_last_pitch(gamePk: int = None, delay: float = 0):
             output to be delayed. Useful so that pitch info does not
             show up before pitch is thrown on TV. Defaults to 0
     """
-    print(f'gamePk: {gamePk}, delay: {delay}')
+    print(f'gamePk: {gamePk}, delay: {delay_seconds}')
 
     if gamePk is None:
         raise ValueError('gamePk not provided')
@@ -53,7 +61,7 @@ def print_last_pitch(gamePk: int = None, delay: float = 0):
     fifo = Queue(5)
 
     while True:
-        game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay))
+        game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds))
         at_bat = game.liveData.plays.allPlays[-1]
 
         if fifo.contains(at_bat) is False:
@@ -215,7 +223,7 @@ def main():
     else:
         delay = float(input('delay: '))
 
-    print_last_pitch(gamePk=gamePk, delay=delay)
+    print_last_pitch(gamePk=gamePk, delay_seconds=delay)
 
 
 if __name__ == '__main__':

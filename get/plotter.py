@@ -3,6 +3,10 @@ Module that prints a list of pitches' location using matplotlib library.
 The plotter method takes in a list of get.Game.PlayEvents. The
 PlayEvents class represents pitches in a game.
 
+Classes:
+    Plotter: Framework to plot pitches. Plotter.plot() is the most
+        important method
+
 Example:
 from get.plotter import Plotter
 plotter = Plotter()
@@ -32,12 +36,12 @@ class Plotter:
             bottom of the strike zone for that specific pitch. Defaults
             to 1.5
     """
-    PLATE_WIDTH_INCH = 17
-    _PLATE_WIDTH_FEET = PLATE_WIDTH_INCH / 12
+    PLATE_WIDTH_INCH: float = 17
+    _PLATE_WIDTH_FEET: float = PLATE_WIDTH_INCH / 12
     sX_min: float = -_PLATE_WIDTH_FEET / 2
     sX_max: float = _PLATE_WIDTH_FEET / 2
-    BALL_RADIUS_INCH = 1.437
-    _BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
+    BALL_RADIUS_INCH: float = 1.437
+    _BALL_RADIUS_FEET: float = BALL_RADIUS_INCH / 12
 
     def __init__(self):
         # default top and bottom strike zone
