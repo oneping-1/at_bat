@@ -58,6 +58,17 @@ class Queue:
             bool: Whether there is a match in the list
         """
         return item in self.list
+    
+    def peak(self) -> Optional[Any]:
+        """
+        Peaks at the next item to be removed from the queue list
+
+        Returns:
+            Any: Item next to be removed. Returns None if is empty.
+        """
+        if len(self.list) > 0:
+            return self.list[0]
+        return None
 
     def __len__(self):
         return len(self.list)

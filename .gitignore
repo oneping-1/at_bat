@@ -1,7 +1,9 @@
 
 *.pyc
-*.json
+game.json
+schedule.json
 .vscode
 .__pycache__
 .pytest_cache
 *.egg-info/
+good_themes.txt

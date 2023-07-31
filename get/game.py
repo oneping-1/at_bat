@@ -58,7 +58,11 @@ class Game:
 
 
 class GameData:
+    """
+    doc string
+    """
     def __init__(self, gameData):
+        # comment
         self.game = gameData['game']
         self.datetime = gameData['datetime']
         self.status = gameData['status']
