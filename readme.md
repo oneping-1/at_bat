@@ -17,6 +17,7 @@ Incomplete:
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
 - [ ] Fine tune delta_favor_dist() even more
 - [ ] Fix curses to be able to resize window
+- [ ] Work out Abstract, Detailed, and Coded game states
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function

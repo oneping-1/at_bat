@@ -22,7 +22,7 @@ from get.game import Game, PlayEvents, AllPlays
 from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
 from get.umpire import Umpire
 from get.runners import Runners
-from get.queue import Queue
+from get.fifo import FIFO
 
 
 def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
@@ -59,7 +59,7 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
 
     god = curses.initscr()
     god.clear()
-    fifo = Queue(5)
+    fifo = FIFO(5)
 
     while True:
         game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds))

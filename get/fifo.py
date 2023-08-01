@@ -8,7 +8,7 @@ Classes:
 
 from typing import Any, Optional
 
-class Queue:
+class FIFO:
     """
     Acts as a First In First Out (FIFO) queue
     """

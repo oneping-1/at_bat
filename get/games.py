@@ -13,7 +13,7 @@ from tqdm import tqdm
 from get.game import Game
 from get.runners import Runners
 from get.statsapi_plus import get_daily_gamePks
-from get.queue import Queue
+from get.fifo import FIFO
 
 
 class Games:
@@ -53,7 +53,7 @@ class Games:
             game: Game = Game.get_game_from_pk(gamePk, self._delay_seconds)
             self.games.append(game)
 
-        self.fifo: List[Queue] = [Queue(5) for _ in self.games]
+        self.fifo: List[FIFO] = [FIFO(5) for _ in self.games]
 
     def update(self):
         """
