@@ -17,11 +17,10 @@ from get.games import Games
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--delay', help='Delay in seconds', type=int)
-    args = parser.parse_args()
+    parser.add_argument('--delay', help='Delay in seconds',
+                        type=int, default=0)
 
-    if args.delay is None:
-        args.delay = 0
+    args = parser.parse_args()
 
     scoreboard = Games(args.delay)
     scoreboard.scoreboard()

@@ -58,7 +58,7 @@ class Queue:
             bool: Whether there is a match in the list
         """
         return item in self.list
-    
+
     def peak(self) -> Optional[Any]:
         """
         Peaks at the next item to be removed from the queue list

@@ -13,6 +13,7 @@ from tqdm import tqdm
 from get.game import Game
 from get.runners import Runners
 from get.statsapi_plus import get_daily_gamePks
+from get.queue import Queue
 
 
 class Games:
@@ -43,12 +44,16 @@ class Games:
     def __init__(self, delay_seconds: int = 0):
         self._delay_seconds = delay_seconds
 
+        self.stdscr = curses.initscr()
+
         self.games: List[Game] = []
-        self.gamePks = get_daily_gamePks()
+        self.gamePks: List[int] = get_daily_gamePks()
 
         for gamePk in tqdm(self.gamePks):
-            game = Game.get_game_from_pk(gamePk, self._delay_seconds)
+            game: Game = Game.get_game_from_pk(gamePk, self._delay_seconds)
             self.games.append(game)
+
+        self.fifo: List[Queue] = [Queue(5) for _ in self.games]
 
     def update(self):
         """
@@ -69,30 +74,37 @@ class Games:
             _curses.error: If window size is not big enough. Enlarge the
                 window to fix, needs to be fairly tall to fit all scores
         """
-        stdscr = curses.initscr()
         curses.start_color()
         curses.use_default_colors()
-        stdscr.clear()
-
-        gap = ' ' * 15
+        self.stdscr.clear()
 
         while True:
+            self._process_games()
+            self.stdscr.refresh()
+            self.update()
 
-            line = 1
-            for game in self.games:
+    def _process_games(self):
+        white_space = ' ' * 15
+        line = 1
+        for fifo, game in zip(self.fifo, self.games):
+
+            if fifo.contains(game) is False:
+                fifo.push(game)
+
                 away_color, home_color = self._get_colors(game)
                 away_line, home_line = self._get_text(game)
 
+                # Away Score
                 curses.init_pair(line, away_color, 0)
-                stdscr.addstr(line, 0, f'{away_line}{gap}', curses.color_pair(line))
+                self.stdscr.addstr(line, 0, f'{away_line}{white_space}',
+                                    curses.color_pair(line))
                 line += 1
 
+                # Home Score
                 curses.init_pair(line, home_color, 0)
-                stdscr.addstr(line, 0, f'{home_line}{gap}', curses.color_pair(line))
+                self.stdscr.addstr(line, 0, f'{home_line}{white_space}',
+                                    curses.color_pair(line))
                 line += 2
-
-            stdscr.refresh()
-            self.update()
 
     def _get_text(self, game: Game) -> Tuple[str, str]:
         away_team = game.gameData.teams.away.abbreviation
@@ -101,7 +113,7 @@ class Games:
         away_score = game.liveData.linescore.teams.away.runs
         home_score = game.liveData.linescore.teams.home.runs
 
-        start_time = game.gameData.datetime.startTime
+        start_time = game.gameData.datetime.startTime_scoreboard
 
         coded_game_state = game.gameData.status.codedGameState
         detailed_state = game.gameData.status.detailedState
@@ -119,7 +131,7 @@ class Games:
 
         # Pregame
         if coded_game_state == 'P':
-            line_0 += f'  {start_time}'
+            line_0 += f'{start_time}'
             return (line_0, line_1)
 
         # Scores
@@ -157,16 +169,14 @@ class Games:
 
     def _get_colors(self, game: Game):
         """
-        0: Black/Dark Grey
-        1: Darker Blue
-        2: Green
-        3: Lighter Blue
-        4: Red
-        5: Pink
-        6: Yellow
-        7: White
-        (At least for me)
-        ...
+        Colors are different for each console. Use get/curses_colors.py
+        to see which number corresponds to each color
+
+        Args:
+            game (Game): Game class with required data
+
+        Returns:
+            Tuple[int, int]: Away and home colors respectively
         """
         away_team = game.gameData.teams.away.abbreviation
         home_team = game.gameData.teams.home.abbreviation
@@ -177,39 +187,47 @@ class Games:
         detailed_state = game.gameData.status.detailedState
         coded_game_state = game.gameData.status.codedGameState
 
-        # Pregame, Final, Over?
+        # Pregame, Final, Over
         if coded_game_state in ('P', 'F', 'O'):
-            away_color = 0
-            home_color = 0
+            away_color = 8
+            home_color = 8
 
         if detailed_state in ('Warmup', 'Suspended'):
-            away_color = 0
-            home_color = 0
+            away_color = 8
+            home_color = 8
 
+        # In Progress
         if coded_game_state == 'I':
             away_color = 7
             home_color = 7
 
+        # AL West
         if away_div == 'AW':
-            away_color = 4
+            away_color = 12
 
+        # AL West
         if home_div == 'AW':
-            home_color = 4
+            home_color = 12
 
+        # Texas Rangers
         if away_team == 'TEX':
-            away_color = 1
+            away_color = 3
 
+        # Texas Rangers
         if home_team == 'TEX':
-            home_color = 1
+            home_color = 3
 
-        bet_teams = ()
+        # Teams i bet on
+        bet_teams = ('CIN', 'SD', 'BOS')
         if away_team in bet_teams:
-            away_color = 2
+            away_color = 10
 
+        # Teams i bet on
         if home_team in bet_teams:
-            home_color = 2
+            home_color = 10
 
         return (away_color, home_color)
+
 
 if __name__ == '__main__':
     scoreboard = Games()

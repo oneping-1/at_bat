@@ -1,5 +1,5 @@
 """
-Prints the average win percentage and number of opponents who have a 
+Prints the average win percentage and number of opponents who have a
 winning record for a given number of days ahead.
 """
 
@@ -107,7 +107,7 @@ def main():
     parser.add_argument('-d', '--days', '--days_ahead',
                         help = 'Number of days ahead',
                         type = int)
-    
+
     args = parser.parse_args()
 
     if args.days is None:

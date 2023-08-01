@@ -55,9 +55,10 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     if gamePk is None:
         raise ValueError('gamePk not provided')
 
-    clr_short = ' ' * 40
+    clr = ' ' * 40
 
     god = curses.initscr()
+    god.clear()
     fifo = Queue(5)
 
     while True:
@@ -67,36 +68,36 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
         if fifo.contains(at_bat) is False:
             fifo.push(at_bat)
 
-        if len(at_bat.playEvents) > 0:
-            pitch = at_bat.playEvents[-1]
+            if len(at_bat.playEvents) > 0:
+                pitch = at_bat.playEvents[-1]
 
-            i = 0
-            for line in _get_game_details(game, at_bat):
-                god.addstr(i, 0, f'{line} {clr_short}')
+                i = 0
+                for line in _get_game_details(game, at_bat):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
+
+                for line in _get_at_bat_details(at_bat, pitch):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
+
                 i += 1
+                for line in _get_run_details(game, at_bat, pitch):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
 
-            for line in _get_at_bat_details(at_bat, pitch):
-                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
+                for line in _get_pitch_details(pitch):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
 
-            i += 1
-            for line in _get_run_details(game, at_bat, pitch):
-                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
+                for line in _get_hit_details(pitch):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
 
-            i += 1
-            for line in _get_pitch_details(pitch):
-                god.addstr(i, 0, f'{line} {clr_short}')
                 i += 1
-
-            i += 1
-            for line in _get_hit_details(pitch):
-                god.addstr(i, 0, f'{line} {clr_short}')
-                i += 1
-
-            i += 1
-            god.addstr(i, 0, f'{len(fifo)}')
-            god.refresh()
+                god.addstr(i, 0, f'{len(fifo)}')
+                god.refresh()
 
 
 def _get_game_details(game: Game, at_bat: AllPlays) -> Tuple[str, str]:
@@ -134,8 +135,7 @@ def _get_at_bat_details(at_bat: AllPlays,
     return (line_0, line_1, line_2)
 
 
-def _get_run_details(game: Game,
-                     at_bat: AllPlays,
+def _get_run_details(game: Game, at_bat: AllPlays,
                      pitch: PlayEvents) -> Tuple[str, str, str]:
 
     away_team = game.gameData.teams.away.abbreviation
@@ -164,7 +164,7 @@ def _get_run_details(game: Game,
     return (line_0, line_1, line_2)
 
 
-def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
+def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
     if pitch.isPitch is True:
         desc = pitch.details.description
         speed = pitch.pitchData.startSpeed
@@ -174,6 +174,7 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
         line_1 = f'{desc}'
         line_2 = f'{speed} {pitch_type}'
         line_3 = f'Zone: {pitch.pitchData.zone}'
+        line_4 = f'{pitch.pitchData.breaks.spinRate} RPM'
     else:
         desc = pitch.details.description
 
@@ -181,8 +182,9 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
         line_1 = f'{desc}'
         line_2 = ''
         line_3 = ''
+        line_4 = ''
 
-    return (line_0, line_1, line_2, line_3)
+    return (line_0, line_1, line_2, line_3, line_4)
 
 
 def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:

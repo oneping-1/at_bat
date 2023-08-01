@@ -21,7 +21,7 @@ game_class = Game(game_dict)
 # pylint: disable=C0103, C0111
 
 import datetime
-from typing import List
+from typing import List, Tuple
 import math
 import pytz
 import statsapi
@@ -91,13 +91,27 @@ class GameData:
         if self.primaryDatacaster:
             self.primaryDatacaster = PrimaryDatacaster(self.primaryDatacaster)
 
+    def __repr__(self):
+        date = self.datetime.officialDate
+        away_team = self.teams.away.abbreviation
+        home_team = self.teams.home.abbreviation
+
+        return f'{date}: {away_team} at {home_team}'
+
 
 class Datetime:
     def __init__(self, times):
         self.dateTime = times.get('dateTime', None)
         self.officialDate = times['officialDate']
-        self._startHour, self._startMin = _convert_zulu_to_local(self.dateTime)
-        self.startTime = f'{self._startHour} {self._startMin}'
+
+        self.startHour: int
+        self.startMinute: int
+
+        start_time = _convert_zulu_to_local(self.dateTime)
+        self.startHour, self.startMinute = start_time
+
+        self.startTime = f'{self.startHour}:{self.startMinute:2d}'
+        self.startTime_scoreboard = f'{self.startHour:2d} {self.startMinute:2d}'
         # no children
 
 
@@ -110,6 +124,9 @@ class Status:
         self.abstractGameCode = status.get('abstractGameCode', None)
         # no children
 
+    def __repr__(self):
+        return self.detailedState
+
 
 class TeamsGameData:
     def __init__(self, teams):
@@ -121,6 +138,12 @@ class TeamsGameData:
         self.away = TeamGameData(self.away)
         self.home = TeamGameData(self.home)
 
+    def __repr__(self):
+        away_team = self.away.abbreviation
+        home_team = self.home.abbreviation
+
+        return f'{away_team} at {home_team}'
+
 
 class TeamGameData:
     def __init__(self, team):
@@ -130,6 +153,9 @@ class TeamGameData:
         self.division = _get_division(self.id)
         # no children
 
+    def __repr__(self):
+        return self.abbreviation
+
 
 class Weather:
     def __init__(self, weather):
@@ -137,6 +163,12 @@ class Weather:
         self.temp = weather.get('temp', None)
         self.wind = weather.get('wind', None)
         # no children
+
+    def __repr__(self):
+        temp = self.temp
+        condition = self.condition
+
+        return f'{temp}F, {condition}'
 
 
 class GameInfo:
@@ -161,6 +193,9 @@ class OfficialScorer:
         self.link = officialScorer['link']
         # no children
 
+    def __repr__(self):
+        return self.fullName
+
 
 class PrimaryDatacaster:
     def __init__(self, primaryDatacaster):
@@ -168,6 +203,9 @@ class PrimaryDatacaster:
         self.fullName = primaryDatacaster['fullName']
         self.link = primaryDatacaster['link']
         # no children
+
+    def __repr__(self):
+        return self.fullName
 
 
 class LiveData:
@@ -259,6 +297,9 @@ class Count:
         self.strikes = int(count.get('strikes', None))
         self.outs = int(count.get('outs', None))
         # no children
+
+    def __repr__(self):
+        return f'{self.balls}-{self.strikes} {self.outs} outs'
 
 
 class Matchup:
@@ -586,6 +627,15 @@ class Linescore:
         self.defense = Defense(self.defense)
         self.offense = Offense(self.offense)
 
+    def __repr__(self):
+        inn_state = self.inningState
+        inning = self.currentInningOrdinal
+
+        away_score = self.teams.away.runs
+        home_score = self.teams.home.runs
+
+        return f'{inn_state} {inning}. {away_score}-{home_score}'
+
 
 class TeamsLinescore:
     def __init__(self, teams):
@@ -696,7 +746,7 @@ class Decisions:
         self.loser = Player(self.loser)
 
 
-def _convert_zulu_to_local(zulu_time_str):
+def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
     zulu_time = datetime.datetime.strptime(zulu_time_str, '%Y-%m-%dT%H:%M:%SZ')
     zulu_time = pytz.utc.localize(zulu_time)
 
@@ -710,15 +760,7 @@ def _convert_zulu_to_local(zulu_time_str):
 
     t = f'{t[0:2]} {t[3:]}'
 
-    return [t[0:2], t[3:]]
-
-
-def _get_delayed_timecode(delay_seconds):
-    now = datetime.datetime.now()
-    delay = datetime.timedelta(seconds=delay_seconds)
-
-    new_time = now - delay
-    return new_time.strftime('%m%d%Y_%H%M%S')
+    return (int(t[0:2]), int(t[3:]))
 
 
 def _get_division(code:int):

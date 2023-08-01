@@ -4,7 +4,7 @@ Eventually want to get rid of this module by moving these functions to
 more appropriate modules
 """
 
-from typing import List, Tuple
+from typing import List
 import csv
 from datetime import datetime, timedelta
 import os
@@ -117,67 +117,6 @@ def get_daily_gamePks(date: str = None) -> List[int]:
     return gamePks
 
 
-def get_color_scoreboard(game) -> Tuple[Fore, Fore]:
-    """
-    Gets colors for teams in the scoreboard module. I have some basic
-    colors for when games arent live (before or after game). I also have
-    highlighted teams that are important to me. Feel free to change
-    if certain teams are more important to you
-
-    Args:
-        game (get.Game): The Game class from the game module that holds
-            all the data about the game
-
-    Returns:
-        Tuple[Fore, Fore]: A tuple that holds Fore classes for the color
-            of each team. Index 0 is the away team color and index 1 is
-            the home team color
-    """
-    away = Fore.WHITE
-    home = Fore.WHITE
-
-    abstract_state = game.gameData.status.abstractGameState
-    detailed_state = game.gameData.status.detailedState
-
-    if 'Final' in abstract_state:
-        away = Fore.LIGHTBLACK_EX
-        home = Fore.LIGHTBLACK_EX
-
-    if 'Preview' in abstract_state:
-        away = Fore.LIGHTBLACK_EX
-        home = Fore.LIGHTBLACK_EX
-
-    if 'Warmup' in detailed_state:
-        away = Fore.LIGHTBLACK_EX
-        home = Fore.LIGHTBLACK_EX
-
-    if 'Suspended' in detailed_state:
-        away = Fore.LIGHTBLACK_EX
-        home = Fore.LIGHTBLACK_EX
-
-    if game.gameData.teams.away.division == 'AW':
-        away = Fore.LIGHTRED_EX
-
-    if game.gameData.teams.home.division == 'AW':
-        home = Fore.LIGHTRED_EX
-
-    if game.gameData.teams.away.abbreviation == 'TEX':
-        away = Fore.LIGHTBLUE_EX
-
-    if game.gameData.teams.home.abbreviation == 'TEX':
-        home = Fore.LIGHTBLUE_EX
-
-    bet_teams = ('DET', 'NYY', 'LAA', 'WSH', 'MIL', 'OAK', 'MIL', 'MIN', 'CHC',
-                'TEX', 'BOS')
-    if game.gameData.teams.away.abbreviation in bet_teams:
-        away = Fore.LIGHTGREEN_EX
-
-    if game.gameData.teams.home.abbreviation in bet_teams:
-        home = Fore.LIGHTGREEN_EX
-
-    return (away, home)
-
-
 def get_color(team_abv:str, division:str) -> Fore:
     """
     Takes a team and their division and outputs a color. Used for me
@@ -277,6 +216,5 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
     return rednp
 
 
-
 if __name__ == '__main__':
-    get_run_expectency_difference_numpy()
+    statsapi.schedule()
