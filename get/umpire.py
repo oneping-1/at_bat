@@ -97,6 +97,22 @@ class Umpire():
 
         self.num_missed_calls, self.home_favor, self.missed_calls = stats
 
+    def __int__(self):
+        return self.missed_calls
+
+    def __float__(self):
+        return self.home_favor
+
+    def __str__(self):
+        return self.__repr__
+
+    def __repr__(self):
+        if self.home_favor < 0:
+            away_team = self.game.gameData.teams.away.abbreviation
+            return f'+{self.home_favor:.2f} {away_team}'
+        home_team = self.game.gameData.teams.home.abbreviation
+        return f'+{self.home_favor:.2f} {home_team}'
+
     @classmethod
     def find_missed_calls(cls, game: Game = None, gamePk: int = None,
                           print_missed_calls: bool = False

@@ -110,8 +110,8 @@ class Datetime:
         start_time = _convert_zulu_to_local(self.dateTime)
         self.startHour, self.startMinute = start_time
 
-        self.startTime = f'{self.startHour}:{self.startMinute:2d}'
-        self.startTime_scoreboard = f'{self.startHour:2d} {self.startMinute:2d}'
+        self.startTime = f'{self.startHour}:{self.startMinute:02d}'
+        self.startTime_scoreboard = f'{self.startHour:2d} {self.startMinute:02d}'
         # no children
 
 

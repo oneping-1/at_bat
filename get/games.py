@@ -84,7 +84,7 @@ class Games:
             self.update()
 
     def _process_games(self):
-        white_space = ' ' * 15
+        white_space = ' ' * 20
         line = 1
         for fifo, game in zip(self.fifo, self.games):
 
@@ -107,6 +107,7 @@ class Games:
                 line += 2
 
     def _get_text(self, game: Game) -> Tuple[str, str]:
+        """I want to rewrote this method"""
         away_team = game.gameData.teams.away.abbreviation
         home_team = game.gameData.teams.home.abbreviation
 
@@ -126,6 +127,8 @@ class Games:
         runners = Runners()
         runners.set_bases_offense(game.liveData.linescore.offense)
 
+        no_hitter = game.gameData.flags.noHitter
+
         line_0 = f'{away_team:3s} '
         line_1 = f'{home_team:3s} '
 
@@ -141,6 +144,7 @@ class Games:
         # Final
         if coded_game_state in ('F', 'O'):
             line_0 += ' F'
+            line_0 += '*' if no_hitter is True else ''
             if inning != 9:
                 line_1 += f'{inning:2d}'
             return (line_0, line_1)
@@ -149,21 +153,26 @@ class Games:
         if detailed_state in 'Delay':
             line_0 += ' D'
             line_1 += f'{game.inning:2d}'
+            line_1 += '*' if no_hitter is True else ''
             return (line_0, line_1)
 
         # Suspended
         if detailed_state in 'Suspended':
             line_0 += ' S'
+            line_0 += '*' if no_hitter is True else ''
             line_1 += f'{game.inning:2d}'
+            line_1 += '*' if no_hitter is True else ''
             return (line_0, line_1)
 
         # Live
         if inning_state in ('Top', 'Middle'):
             line_0 += f'o{outs} {repr(runners)}'
             line_1 += f'{inning:2d}'
+            line_1 += '*' if no_hitter is True else ''
         else:
             line_0 += f'{inning:2d}'
             line_1 += f'o{outs} {repr(runners)}'
+            line_1 += '*' if no_hitter is True else ''
 
         return (line_0, line_1)
 
@@ -186,6 +195,10 @@ class Games:
 
         detailed_state = game.gameData.status.detailedState
         coded_game_state = game.gameData.status.codedGameState
+
+        # Color to if nothing is activated
+        away_color = 5
+        home_color = 5
 
         # Pregame, Final, Over
         if coded_game_state in ('P', 'F', 'O'):
@@ -218,7 +231,7 @@ class Games:
             home_color = 3
 
         # Teams i bet on
-        bet_teams = ('CIN', 'SD', 'BOS')
+        bet_teams = ('TB', 'MIL', 'LAA', 'CIN', 'OAK', 'SEA')
         if away_team in bet_teams:
             away_color = 10
 

@@ -18,6 +18,8 @@ Incomplete:
 - [ ] Fine tune delta_favor_dist() even more
 - [ ] Fix curses to be able to resize window
 - [ ] Work out Abstract, Detailed, and Coded game states
+- [ ] Add miss_distance variable or something to indicate how far a pitch was from the edge of the zone in class PitchCoordinates
+- [ ] Add colors as private instance variable in games module. Update in self.update()
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function

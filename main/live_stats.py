@@ -95,8 +95,6 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
                     god.addstr(i, 0, f'{line} {clr}')
                     i += 1
 
-                i += 1
-                god.addstr(i, 0, f'{len(fifo)}')
                 god.refresh()
 
 
