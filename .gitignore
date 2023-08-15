@@ -1,9 +1,11 @@
 
 *.pyc
-game.json
-schedule.json
 .vscode
 .__pycache__
 .pytest_cache
 *.egg-info/
 good_themes.txt
+main/game.json
+main/standings.json
+long_term_storage/
+csv/sv_top_bot.csv

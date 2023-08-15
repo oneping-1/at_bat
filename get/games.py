@@ -222,6 +222,15 @@ class Games:
         if home_div == 'AW':
             home_color = 12
 
+        # Teams i bet on
+        bet_teams = ('MIL', 'SF')
+        if away_team in bet_teams:
+            away_color = 10
+
+        # Teams i bet on
+        if home_team in bet_teams:
+            home_color = 10
+
         # Texas Rangers
         if away_team == 'TEX':
             away_color = 3
@@ -229,15 +238,6 @@ class Games:
         # Texas Rangers
         if home_team == 'TEX':
             home_color = 3
-
-        # Teams i bet on
-        bet_teams = ('TB', 'MIL', 'LAA', 'CIN', 'OAK', 'SEA')
-        if away_team in bet_teams:
-            away_color = 10
-
-        # Teams i bet on
-        if home_team in bet_teams:
-            home_color = 10
 
         return (away_color, home_color)
 

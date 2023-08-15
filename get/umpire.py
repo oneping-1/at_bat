@@ -18,6 +18,8 @@ num_miss, favor, missed_list = Umpire.find_missed_calls(gamePk = 717404,
                                             print_missed_calls = True)
 """
 
+import csv
+import os
 from typing import List, Tuple
 import random
 import math
@@ -27,10 +29,16 @@ from get.statsapi_plus import get_game_dict
 from get.statsapi_plus import get_run_expectency_numpy
 from get.statsapi_plus import get_run_expectency_difference_numpy
 
-HAWKEYE_MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
+# center of ball needs to be .6870488261 hawkeye margin of errors away
+# from the edge of the strike zone for the 90% rule to apply
+
+# Margin of Error for Hawkeye pitch tracking system.
+# around 0.670" based off tests
+HAWKEYE_MARGIN_OF_ERROR_INCH = .675
+HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 
 # max distance a ball can be from strike zone edge before umpire
-# call becomes incorrect. between 0.320 and 0.505 based of tests
+# call becomes incorrect. between 0.325 and 0.505 based of tests
 BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
@@ -60,7 +68,7 @@ class Umpire():
         ValueError: If game and gamePk arguments are not provided in
             instance class initialized
     """
-    hmoe = HAWKEYE_MARGIN_OF_ERROR
+    hmoe = HAWKEYE_MARGIN_OF_ERROR_FEET
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
 
@@ -114,8 +122,8 @@ class Umpire():
         return f'+{self.home_favor:.2f} {home_team}'
 
     @classmethod
-    def find_missed_calls(cls, game: Game = None, gamePk: int = None,
-                          print_missed_calls: bool = False
+    def find_missed_calls(cls, delta_favor_func = None, game: Game = None,
+                          gamePk: int = None, print_missed_calls: bool = False
                           ) -> Tuple[int, float, List[PlayEvents]]:
         """
         find_missed_calls calculates total favored runs for the home
@@ -150,6 +158,10 @@ class Umpire():
         elif game is None and gamePk is None:
             raise ValueError('game and gamePk not provided')
 
+        # Default to delta_favor_dist if no function provided
+        if delta_favor_func is None:
+            delta_favor_func = Umpire.delta_favor_monte
+
         j = 1
 
         home_favor: float = 0
@@ -162,7 +174,7 @@ class Umpire():
 
             for i in at_bat.pitchIndex:
                 pitch: PlayEvents = at_bat.playEvents[i]
-                home_delta = Umpire.delta_favor_dist(pitch, isTopInning,
+                home_delta = delta_favor_func(pitch, isTopInning,
                                                      runners=runners)
 
                 if home_delta != 0:
@@ -208,6 +220,7 @@ class Umpire():
         elif pitch.details.code == 'B':
             to_print_str += f'{balls-1}-{strikes}, strike called ball\n'
 
+        to_print_str += f'Zone: {pitch.pitchData.zone}\n'
 
         to_print_str += (f'pX = {pitch.pitchData.coordinates.pX:.5f} | '
                         f'pZ = {pitch.pitchData.coordinates.pZ:.5f}\n')
@@ -407,7 +420,7 @@ class Umpire():
         """
         if runners is None and runners_int is None:
             raise ValueError('runners and runners_int were not provided')
-        if isinstance(runners_int, int) is False:
+        if isinstance(runners_int, int) is False and runners_int is not None:
             raise TypeError('runners_int should be type int')
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
@@ -463,8 +476,8 @@ class Umpire():
         strike = 0
         ball = 0
 
-        pX_left = pitch.PX_MIN
-        pX_right = pitch.PX_MAX
+        pX_left = pitch.pitchData.coordinates.PX_MIN
+        pX_right = pitch.pitchData.coordinates.PX_MAX
         pZ_top = pitch.pitchData.coordinates.pZ_top
         pZ_bot = pitch.pitchData.coordinates.pZ_bot
 
@@ -523,7 +536,7 @@ class Umpire():
     def _generage_random_pitch_location(cls, pitch: PlayEvents
                                         ) -> Tuple[float, float]:
         """Helper method to delta_favor_zone"""
-        moe = HAWKEYE_MARGIN_OF_ERROR
+        moe = HAWKEYE_MARGIN_OF_ERROR_FEET
         pX = pitch.pitchData.coordinates.pX
         pZ = pitch.pitchData.coordinates.pZ
 
@@ -539,16 +552,46 @@ class Umpire():
 
         return (rand_x, rand_z)
 
-    def __len__(self):
-        return len(self.missed_calls)
 
-    def __str__(self):
-        prt_str = ''
+def sv_top_bot(gamePk: int):
+    """
+    Used to print top and bottom of strike zone so I can compare them to
+    Baseball Savant since I think they might not match
 
-        prt_str += f'{len(self.missed_calls)} Missed Calls. '
-        prt_str += f'{self.home_favor} Home Favor'
+    Args:
+        gamePk (int): gamePk for the given game
+    """
+    game = get_game_dict(gamePk)
+    game = Game(game)
 
-        return prt_str
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'csv')
+    csv_file_path = os.path.join(csv_path, 'sv_top_bot.csv')
 
-    def __int__(self):
-        return self.num_missed_calls
+    with open(csv_file_path, 'w', newline='') as file:
+        field_names = ['speed', 'pX', 'pZ', 'sZ_top', 'sZ_bot', 'zone']
+
+        writer = csv.DictWriter(file, fieldnames=field_names)
+        writer.writeheader()
+
+        for ab in game.liveData.plays.allPlays:
+            for pitch in ab.playEvents:
+                if pitch.isPitch is True:
+                    speed = pitch.pitchData.startSpeed
+                    zone = pitch.pitchData.zone
+
+                    pX = f'{pitch.pitchData.coordinates.pX:.2f}'
+                    pZ = f'{pitch.pitchData.coordinates.pZ:.2f}'
+
+                    sZ_top = f'{pitch.pitchData.coordinates.sZ_top:.2f}'
+                    sZ_bot = f'{pitch.pitchData.coordinates.sZ_bot:.2f}'
+
+                    writer.writerow({'speed': speed,
+                                    'pX': pX,
+                                    'pZ': pZ,
+                                    'sZ_top': sZ_top,
+                                    'sZ_bot': sZ_bot,
+                                    'zone': zone})
+
+if __name__ == '__main__':
+    sv_top_bot(716997)

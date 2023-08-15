@@ -17,7 +17,7 @@ def main():
     """
     Function that gets system arguments and runs function to get
     missed call information such as number of missed calls and total
-    favor. This function is essentially a front for 
+    favor. This function is essentially a front for
     get.umpire.get_total_favored_runs
     """
     parser = argparse.ArgumentParser()
@@ -32,7 +32,9 @@ def main():
 
     plotter = Plotter()
 
-    results = Umpire.find_missed_calls(gamePk=gamePk, print_missed_calls=True)
+    method = Umpire.delta_favor_zone
+    results = Umpire.find_missed_calls(gamePk=gamePk, print_missed_calls=True,
+                                       delta_favor_func=method)
     _, favor, missed_list = results
 
     print(f'{favor:.2f}')
