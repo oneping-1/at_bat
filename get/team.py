@@ -1,3 +1,11 @@
+"""
+Holds basic info for each team including team name, abbreviaiton,
+division, and id.
+
+Classes:
+    Team: Holds basic info for each team
+"""
+
 from typing import List
 import csv
 import os

@@ -112,7 +112,7 @@ class Umpire():
         return self.home_favor
 
     def __str__(self):
-        return self.__repr__
+        return f'{self.__repr__()}'
 
     def __repr__(self):
         if self.home_favor < 0:
@@ -568,14 +568,14 @@ def sv_top_bot(gamePk: int):
     csv_path = os.path.join(current_dir, '..', 'csv')
     csv_file_path = os.path.join(csv_path, 'sv_top_bot.csv')
 
-    with open(csv_file_path, 'w', newline='') as file:
+    with open(csv_file_path, 'w', newline='', encoding='utf-8') as file:
         field_names = ['speed', 'pX', 'pZ', 'sZ_top', 'sZ_bot', 'zone']
 
         writer = csv.DictWriter(file, fieldnames=field_names)
         writer.writeheader()
 
-        for ab in game.liveData.plays.allPlays:
-            for pitch in ab.playEvents:
+        for at_bat in game.liveData.plays.allPlays:
+            for pitch in at_bat.playEvents:
                 if pitch.isPitch is True:
                     speed = pitch.pitchData.startSpeed
                     zone = pitch.pitchData.zone

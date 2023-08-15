@@ -14,7 +14,6 @@ Example:
 """
 
 from typing import List
-import statsapi
 
 
 class Schedule:
@@ -28,15 +27,6 @@ class Schedule:
         for date in sch['dates']:
             self.dates.append(Dates(date))
 
-    @classmethod
-    def get_standing(cls, American: bool = False, National: bool = False):
-        if American is False and National is False:
-            raise ValueError('League not specified')
-        if American is True and National is True:
-            raise ValueError('Both leagues not specified')
-
-        if American is True:
-            schedule_data = statsapi.schedule('schedule', {})
 
 class Dates:
     def __init__(self, date:dict):
