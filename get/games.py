@@ -114,7 +114,7 @@ class Games:
         away_score = game.liveData.linescore.teams.away.runs
         home_score = game.liveData.linescore.teams.home.runs
 
-        start_time = game.gameData.datetime.startTime_scoreboard
+        start_time = game.gameData.datetime.startTime_sb
 
         coded_game_state = game.gameData.status.codedGameState
         detailed_state = game.gameData.status.detailedState

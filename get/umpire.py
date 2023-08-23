@@ -33,8 +33,8 @@ from get.statsapi_plus import get_run_expectency_difference_numpy
 # from the edge of the strike zone for the 90% rule to apply
 
 # Margin of Error for Hawkeye pitch tracking system.
-# around 0.670" based off tests
-HAWKEYE_MARGIN_OF_ERROR_INCH = .675
+# around 0.625"-0.700" based off tests
+HAWKEYE_MARGIN_OF_ERROR_INCH = 0.690
 HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 
 # max distance a ball can be from strike zone edge before umpire
@@ -87,8 +87,9 @@ class Umpire():
         self.missed_calls: List[PlayEvents] = []
         self.home_favor = 0
 
-    def calculate(self, print_missed_calls: bool = False
-            ) -> Tuple[int, float, List[PlayEvents]]:
+    def calculate(self, delta_favor_func = None,
+                  print_missed_calls: bool = False
+                  ) -> Tuple[int, float, List[PlayEvents]]:
         """
         A instance method that runs the Umpire.find_missed_calls class
         method and inputs the results directly into the Umpire instance
@@ -101,12 +102,15 @@ class Umpire():
         """
 
         stats = self.find_missed_calls(game=self.game,
-                                     print_missed_calls=print_missed_calls)
+                                       print_missed_calls=print_missed_calls,
+                                       delta_favor_func=delta_favor_func)
 
         self.num_missed_calls, self.home_favor, self.missed_calls = stats
 
     def __int__(self):
-        return self.missed_calls
+        if self.num_missed_calls != len(self.missed_calls):
+            raise ValueError('num_missed_calls and missed_calls do not match')
+        return self.num_missed_calls
 
     def __float__(self):
         return self.home_favor
@@ -117,7 +121,7 @@ class Umpire():
     def __repr__(self):
         if self.home_favor < 0:
             away_team = self.game.gameData.teams.away.abbreviation
-            return f'+{self.home_favor:.2f} {away_team}'
+            return f'+{-self.home_favor:.2f} {away_team}'
         home_team = self.game.gameData.teams.home.abbreviation
         return f'+{self.home_favor:.2f} {home_team}'
 
@@ -536,11 +540,11 @@ class Umpire():
     def _generage_random_pitch_location(cls, pitch: PlayEvents
                                         ) -> Tuple[float, float]:
         """Helper method to delta_favor_zone"""
-        moe = HAWKEYE_MARGIN_OF_ERROR_FEET
+
         pX = pitch.pitchData.coordinates.pX
         pZ = pitch.pitchData.coordinates.pZ
 
-        delta_radius = random.uniform(-moe, moe)
+        delta_radius = random.uniform(-cls.hmoe, cls.hmoe)
         angle = random.uniform(0, 360)
         angle = math.radians(angle)
 

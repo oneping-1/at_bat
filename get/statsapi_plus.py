@@ -156,7 +156,7 @@ def get_run_expectency_numpy() -> np.ndarray:
     Returns:
         numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
     """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')
     csv_file_path = os.path.join(csv_path, 're_fangraph.csv')
 

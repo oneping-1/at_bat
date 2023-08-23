@@ -53,7 +53,17 @@ class Game:
         return f'{self.gamePk}'
 
     @classmethod
-    def get_game_from_pk(cls, gamePk: int, delay_seconds: int) -> 'Game':
+    def get_game_from_pk(cls, gamePk: int, delay_seconds: int = 0) -> 'Game':
+        """
+        Returns a game instance for the given game based of the gamePk
+
+        Args:
+            gamePk (int): gamePk of the game
+            delay_seconds (int): Delay in seconds
+
+        Returns:
+            Game: Game class instance
+        """
         game_dict = get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds)
         return Game(game_dict)
 
@@ -111,7 +121,7 @@ class Datetime:
         self.startHour, self.startMinute = start_time
 
         self.startTime = f'{self.startHour}:{self.startMinute:02d}'
-        self.startTime_scoreboard = f'{self.startHour:2d} {self.startMinute:02d}'
+        self.startTime_sb = f'{self.startHour:2d} {self.startMinute:02d}'
         # no children
 
 
@@ -469,7 +479,7 @@ class PitchData:
 
 
 class PitchCoordinates:
-    BALL_CIRCUMFERENCE_INCH = 9.125
+    BALL_CIRCUMFERENCE_INCH = 9.25
     BALL_RADIUS_INCH = BALL_CIRCUMFERENCE_INCH / (2 * math.pi)
     BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
 
