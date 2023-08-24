@@ -43,6 +43,7 @@ class Game:
         self.gameData = data['gameData']
         self.liveData = data['liveData']
         self.gamePk = data.get('gamePk', None)
+        self._game_dict = data
         self._children()
 
     def _children(self):
@@ -51,6 +52,11 @@ class Game:
 
     def __repr__(self):
         return f'{self.gamePk}'
+
+    def __eq__(self, other):
+        if self._game_dict == other._game_dict:
+            return True
+        return False
 
     @classmethod
     def get_game_from_pk(cls, gamePk: int, delay_seconds: int = 0) -> 'Game':

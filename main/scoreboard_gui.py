@@ -14,6 +14,12 @@ class GameFrame(tk.Frame):
     _FONT_BIG = ('Consolas', 22, 'bold')
     _FONT_SMALL = ('Consolas', 12)
 
+    _NOT_LIVE_COLOR = '#0162FF'
+    _LIVE_COLOR = '#02CEFE'
+
+    known_statusCodes = ('S', 'P', 'PR', 'PW', 'I', 'MF', 'MA', 'NH', 'IO',
+                         'IR', 'TR', 'UR', 'O', 'F')
+
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -86,88 +92,111 @@ class GameFrame(tk.Frame):
         self.outs.place(anchor='center', relx=0.5, rely=0.5)
 
     def update_from_gamepk(self, gamePk:int, delay_seconds: int = 0):
+        self._gamePk = get_daily_gamePks
+        self._delay_seconds = delay_seconds
 
         game: Game = Game.get_game_from_pk(gamePk, delay_seconds=delay_seconds)
+        abstractGameState = game.gameData.status.abstractGameState
+        abstractGameCode = game.gameData.status.abstractGameCode
+        detailedState = game.gameData.status.detailedState
+        codedGameState = game.gameData.status.codedGameState
+        statusCode = game.gameData.status.statusCode
 
         # Team Abbreviations
         self.away_name.config(text=game.gameData.teams.away.abbreviation)
         self.home_name.config(text=game.gameData.teams.home.abbreviation)
 
-        # Scores
-        self.away_score.config(text=game.liveData.linescore.teams.away.runs)
-        self.home_score.config(text=game.liveData.linescore.teams.home.runs)
-
         # gamePk + Umpire
         self.gamepk.config(text=f'pk = {game.gamePk}')
 
-        # Live / In Progress
-        if game.gameData.status.abstractGameState in ('Live', 'In Progress'):
-            self._live_game(game)
-
-        # Scheduled / Pre-Game
-        elif game.gameData.status.detailedState in ('Scheduled', 'Pre-Game', 'Warmup', 'Preview'):
+        # Pre-Game
+        if codedGameState in ('S', 'P'):
             self._pregame(game)
-            self.umpire.config(text='')
 
         # Final / Game Over
-        elif game.gameData.status.detailedState in ('Final', 'Game Over'):
+        elif codedGameState in ('O', 'F'):
             self._completed_game(game)
 
-        # Q: Should I use detailed or abstract game states?
+        # Delayed
+        elif 'Delayed' in detailedState:
+            self._delayed(game)
 
+        # Suspended
+        elif 'Suspended' in detailedState:
+            self._suspended(game)
 
-        # How do you know all the possible values for detailedState?
-        # print(set([game.gameData.status.detailedState for game in games]))
+        # Live / In Progress
+        elif codedGameState in ('I', 'M', 'N'):
+            self._live_game(game)
+
+        # Other
+        if statusCode not in self.known_statusCodes:
+            self._unknown(game)
 
     def _pregame(self, game: Game):
+        self._frame_bg(self._NOT_LIVE_COLOR)
+        self.umpire.config(text='')
+        self.away_score.config(text='')
+        self.home_score.config(text='')
         self.outs.config(text='')
         self.inning.config(text='')
+        self.umpire.config(text='')
         self.runners.config(text=game.gameData.datetime.startTime)
 
-    def _live_game(self, game: Game):
-        monte = Umpire.delta_favor_monte
-        umpire: Umpire = Umpire(game=game)
-        umpire.calculate(delta_favor_func=monte)
-
-        # Runners
-        runners = Runners()
-        runners.set_bases_offense(game.liveData.linescore.offense)
-        self.runners.config(text=repr(runners))
-
-        # Umpire
-        self.umpire.config(text=f'{str(umpire)} ({int(umpire)})')
-
-        # Outs
-        outs = game.liveData.linescore.outs
-        if outs == 1:
-            self.outs.config(text='1 Out')
-        else:
-            self.outs.config(text=f'{outs} Outs')
-
-        # Inning State
-        if game.liveData.linescore.inningState in ('Top', 'Middle'):
-            self.top_inning.config(text='•')
-            self.bot_inning.config(text='')
-        elif game.liveData.linescore.inningState in ('Bottom', 'End'):
-            self.top_inning.config(text='')
-            self.bot_inning.config(text='•')
-
-        # Inning logic
-        # self.inning.config(text='13')
-        self.inning.config(text=game.liveData.linescore.currentInning)
-
     def _completed_game(self, game: Game):
-        monte = Umpire.delta_favor_monte
-        umpire: Umpire = Umpire(game=game)
-        umpire.calculate(delta_favor_func=monte)
+        self._frame_bg(self._NOT_LIVE_COLOR)
 
-        self.umpire.config(text=f'{str(umpire)} ({int(umpire)})')
-
+        self._umpire(game)
+        self._scores(game)
         self.runners.config(text='')
         self.outs.config(text='')
         self.inning.config(text='F')
         self.bot_inning.config(text='')
         self.top_inning.config(text='')
+
+    def _delayed(self, game: Game):
+        self._frame_bg(self._NOT_LIVE_COLOR)
+        self.inning.config(text=game.liveData.linescore.currentInning)
+        self.runners.config(text='Delay')
+        self._outs(game)
+        self._inning_state(game)
+        self._umpire(game)
+        self._scores(game)
+
+    def _suspended(self, game: Game):
+        self._frame_bg(self._NOT_LIVE_COLOR)
+        self.inning.config(text=game.liveData.linescore.currentInning)
+        self.runners.config(text='Susp')
+        self._outs(game)
+        self._inning_state(game)
+        self._umpire(game)
+        self._scores(game)
+
+    def _live_game(self, game: Game):
+        self._frame_bg(self._LIVE_COLOR)
+        self._umpire(game)
+        self._runners(game)
+        self._outs(game)
+        self._inning_state(game)
+        self._scores(game)
+        self.inning.config(text=game.liveData.linescore.currentInning)
+
+    def _unknown(self, game: Game):
+        abstractGameState = game.gameData.status.abstractGameState
+        abstractGameCode = game.gameData.status.abstractGameCode
+        detailedState = game.gameData.status.detailedState
+        codedGameState = game.gameData.status.codedGameState
+
+        time = time_seconds_ago(delay_seconds=self._delay_seconds)
+        gamepk = game.gamePk
+
+        print()
+        print(f'gamepk: {gamepk}')
+        print(f'time: {time}')
+        print(f'abstractGameState: {abstractGameState}')
+        print(f'abstractGameCode: {abstractGameCode}')
+        print(f'detailedState: {detailedState}')
+        print(f'codedGameState: {codedGameState}')
 
     def clear_frame(self):
         """Clears all labels in the frame"""
@@ -179,6 +208,69 @@ class GameFrame(tk.Frame):
         self.umpire.config(text='')
         self.runners.config(text='')
         self.outs.config(text='')
+
+    def _frame_bg(self, bg_color: str):
+        if bg_color == 'dark blue':
+            bg_color = '#0056c0'
+        elif bg_color == 'light blue':
+            bg_color = '#029EFE'
+
+        self.away_team_frame.config(bg=bg_color)
+        self.home_team_frame.config(bg=bg_color)
+        self.away_score_frame.config(bg=bg_color)
+        self.home_score_frame.config(bg=bg_color)
+        self.inning_frame.config(bg=bg_color)
+        self.gamepk_frame.config(bg=bg_color)
+        self.umpire_frame.config(bg=bg_color)
+        self.runners_frame.config(bg=bg_color)
+        self.outs_frame.config(bg=bg_color)
+
+        self.away_name.config(bg=bg_color)
+        self.home_name.config(bg=bg_color)
+        self.away_score.config(bg=bg_color)
+        self.home_score.config(bg=bg_color)
+        self.inning.config(bg=bg_color)
+        self.gamepk.config(bg=bg_color)
+        self.umpire.config(bg=bg_color)
+        self.runners.config(bg=bg_color)
+        self.outs.config(bg=bg_color)
+        self.top_inning.config(bg=bg_color)
+        self.bot_inning.config(bg=bg_color)
+
+        pass
+
+    def _outs(self, game: Game):
+        # Outs
+        outs = game.liveData.linescore.outs
+        if outs == 1:
+            self.outs.config(text='1 Out')
+        else:
+            self.outs.config(text=f'{outs} Outs')
+
+    def _runners(self, game: Game):
+        runners = Runners()
+        runners.set_bases_offense(game.liveData.linescore.offense)
+        self.runners.config(text=repr(runners))
+
+    def _umpire(self, game: Game):
+        monte = Umpire.delta_favor_monte
+
+        umpire: Umpire = Umpire(game=game)
+        umpire.calculate(delta_favor_func=monte)
+        self.umpire.config(text=f'{str(umpire)} ({int(umpire)})')
+
+    def _inning_state(self, game: Game):
+        # Inning State
+        if game.liveData.linescore.inningState in ('Top', 'Middle'):
+            self.top_inning.config(text='•')
+            self.bot_inning.config(text='')
+        elif game.liveData.linescore.inningState in ('Bottom', 'End'):
+            self.top_inning.config(text='')
+            self.bot_inning.config(text='•')
+
+    def _scores(self, game: Game):
+        self.away_score.config(text=game.liveData.linescore.teams.away.runs)
+        self.home_score.config(text=game.liveData.linescore.teams.home.runs)
 
 class TimeFrame(tk.Frame):
     _FRAME_BORDER = 0
@@ -200,27 +292,27 @@ class TimeFrame(tk.Frame):
         self.time.place(anchor='n', relx=0.5, rely=0.0)
 
     def abcdef(self, delay_seconds: int = 0):
-        date, time = self._time_seconds_ago(delay_seconds)
+        date, time = time_seconds_ago(delay_seconds)
 
         self.date.config(text=date)
         self.time.config(text=time)
 
-    def _time_seconds_ago(self, delay_seconds: int):
-        # Fetch the current local time
-        now = datetime.now()
+def time_seconds_ago(delay_seconds: int):
+    # Fetch the current local time
+    now = datetime.now()
 
-        # Subtract the given number of seconds to get the time from x seconds ago
-        delayed = now - timedelta(seconds=delay_seconds)
+    # Subtract the given number of seconds to get the time from x seconds ago
+    delayed = now - timedelta(seconds=delay_seconds)
 
-        delay_date = delayed.isoformat()[:10]
+    delay_date = delayed.isoformat()[:10]
 
-        # Format the resulting time
-        delay_time = delayed.strftime('%I:%M:%S %p')
+    # Format the resulting time
+    delay_time = delayed.strftime('%I:%M:%S %p')
 
-        if delay_time[0] == '0':
-            delay_time = delay_time[1:]
+    if delay_time[0] == '0':
+        delay_time = delay_time[1:]
 
-        return (delay_date, delay_time)
+    return (delay_date, delay_time)
 
 class GUI:
     def __init__(self, update_timer_seconds:int = 0, delay_seconds: int = 0):
@@ -284,4 +376,4 @@ class GUI:
         self.time_frame.abcdef(self.delay_seconds)
 
 if __name__ == '__main__':
-    gui = GUI(update_timer_seconds=10, delay_seconds=60)
+    gui = GUI(update_timer_seconds=10, delay_seconds=0)
