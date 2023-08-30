@@ -13,7 +13,7 @@ from colorama import Fore
 import numpy as np
 
 
-def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
+def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
     """
     Returns the game dictionary for given game
 
@@ -44,12 +44,12 @@ def get_game_dict(gamePk=None, delay_seconds=0) -> dict:
         game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
         game_class = Game(game_dict)
     """
-    if gamePk is None:
+    if gamepk is None:
         raise ValueError('gamePk not provided')
 
     delay_time = _get_utc_time(delay_seconds=delay_seconds)
     data = statsapi.get('game',
-                        {'gamePk': gamePk, 'timecode': delay_time},
+                        {'gamePk': gamepk, 'timecode': delay_time},
                         force=True)
     return data
 
@@ -83,7 +83,7 @@ def _get_utc_time(delay_seconds: int = 0):
     return formatted_time
 
 
-def get_daily_gamePks(date: str = None) -> List[int]:
+def get_daily_gamepks(date: str = None) -> List[int]:
     """
     Returns a list of gamePks for a given day in ISO 8601 format
     (YYYY-MM-DD).

@@ -72,17 +72,20 @@ class Umpire():
     renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
 
-    def __init__(self, game: Game = None, gamePk: int = None):
+    def __init__(self, game: Game = None, gamepk: int = None,
+                 delay_seconds: int = 0):
+
+        self.delay_seconds: int = round(delay_seconds)
 
         if game is not None:
             self.game = game
-        elif gamePk is not None:
-            game_dict = get_game_dict(gamePk)
-            self.game = Game(game_dict)
+        elif gamepk is not None:
+            self.game = Game.get_game_from_pk(gamepk=gamepk,
+                                              delay_seconds=self.delay_seconds)
         else:
             raise ValueError('gamePk and game arguments not provided')
 
-        self.gamePk = game.gamePk
+        self.gamepk = self.game.gamepk
         self.num_missed_calls = 0
         self.missed_calls: List[PlayEvents] = []
         self.home_favor = 0
@@ -127,7 +130,7 @@ class Umpire():
 
     @classmethod
     def find_missed_calls(cls, delta_favor_func = None, game: Game = None,
-                          gamePk: int = None, print_missed_calls: bool = False
+                          gamepk: int = None, print_missed_calls: bool = False
                           ) -> Tuple[int, float, List[PlayEvents]]:
         """
         find_missed_calls calculates total favored runs for the home
@@ -156,10 +159,10 @@ class Umpire():
                 calls, the home favor, and a list of pitches that were
                 all called wrong in the given game
         """
-        if game is None and gamePk is not None:
-            game_dict = get_game_dict(gamePk)
+        if game is None and gamepk is not None:
+            game_dict = get_game_dict(gamepk)
             game = Game(game_dict)
-        elif game is None and gamePk is None:
+        elif game is None and gamepk is None:
             raise ValueError('game and gamePk not provided')
 
         # Default to delta_favor_dist if no function provided

@@ -9,17 +9,11 @@ Live MLB and MiLB game stats.
 ## To-Do
 
 Incomplete:
-- [ ] Add restructured text doc strings for functions, classes (In Progress)
-- [ ] Pylint code (In Progress)
-- [ ] Make scoreboard.py use curses library
-- [ ] More pytests
 - [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
-- [ ] Fine tune delta_favor_dist() even more
-- [ ] Fix curses to be able to resize window
 - [ ] Work out Abstract, Detailed, and Coded game states
 - [ ] Add miss_distance variable or something to indicate how far a pitch was from the edge of the zone in class PitchCoordinates
-- [ ] Add colors as private instance variable in games module. Update in self.update()
+- [ ] Make scoreboard_gui.py load images in fetch data to try and minimize stuttering when loading frames
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -56,3 +50,8 @@ Complete:
 - [X] Fine tune delta_favor_dist()
 - [X] Make scoreboard.py return something. Maybe move to another module?
 - [X] Get rid of GameScoreboard class and just use Game class?
+- [X] Add restructured text doc strings for functions, classes
+- [X] Pylint code
+- [X] Make scoreboard.py use curses library
+- [X] More pytests
+- [X] Fine tune delta_favor_dist() even more

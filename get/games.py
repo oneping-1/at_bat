@@ -12,7 +12,7 @@ import curses
 from tqdm import tqdm
 from get.game import Game
 from get.runners import Runners
-from get.statsapi_plus import get_daily_gamePks
+from get.statsapi_plus import get_daily_gamepks
 from get.fifo import FIFO
 
 
@@ -47,7 +47,7 @@ class Games:
         self.stdscr = curses.initscr()
 
         self.games: List[Game] = []
-        self.gamePks: List[int] = get_daily_gamePks()
+        self.gamePks: List[int] = get_daily_gamepks()
 
         for gamePk in tqdm(self.gamePks):
             game: Game = Game.get_game_from_pk(gamePk, self._delay_seconds)

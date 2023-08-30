@@ -31,16 +31,16 @@ def load_gamePk_known_misses():
 
 @pytest.mark.parametrize('test_data', load_gamePk_known_misses())
 def test_gamePk_known_misses(test_data):
-    gamePk = int(test_data['gamePk'])
+    gamepk = int(test_data['gamePk'])
     misses = int(test_data['misses'])
 
     monte = Umpire.delta_favor_monte
     dist = Umpire.delta_favor_dist
 
-    num_misses_monte, _, misses_monte = Umpire.find_missed_calls(gamePk=gamePk,
+    num_misses_monte, _, misses_monte = Umpire.find_missed_calls(gamepk=gamepk,
                                                       delta_favor_func=monte)
 
-    num_misses_dist, _, misses_dist = Umpire.find_missed_calls(gamePk=gamePk,
+    num_misses_dist, _, misses_dist = Umpire.find_missed_calls(gamepk=gamepk,
                                                      delta_favor_func=dist)
 
     # if num_misses_monte != misses:
@@ -97,7 +97,7 @@ def test_random_moe(test_data):
 def test_pat_hoberg_perfect_game():
     func = Umpire.delta_favor_monte
 
-    results = Umpire.find_missed_calls(gamePk=715723, delta_favor_func=func)
+    results = Umpire.find_missed_calls(gamepk=715723, delta_favor_func=func)
     num_misses, home_favor, missed_calls = results
 
     assert num_misses == 0

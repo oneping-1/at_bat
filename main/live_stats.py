@@ -62,7 +62,7 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     fifo = FIFO(5)
 
     while True:
-        game = Game(get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds))
+        game = Game(get_game_dict(gamepk=gamePk, delay_seconds=delay_seconds))
         at_bat = game.liveData.plays.allPlays[-1]
 
         if fifo.contains(at_bat) is False:

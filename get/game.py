@@ -26,7 +26,7 @@ import math
 import pytz
 import statsapi
 from tqdm import tqdm
-from get.statsapi_plus import get_daily_gamePks
+from get.statsapi_plus import get_daily_gamepks
 from get.statsapi_plus import get_run_expectency_difference_numpy
 from get.statsapi_plus import get_game_dict
 
@@ -42,7 +42,7 @@ class Game:
     def __init__(self, data:dict):
         self.gameData = data['gameData']
         self.liveData = data['liveData']
-        self.gamePk = data.get('gamePk', None)
+        self.gamepk = data.get('gamePk', None)
         self._game_dict = data
         self._children()
 
@@ -51,7 +51,7 @@ class Game:
         self.liveData = LiveData(self.liveData)
 
     def __repr__(self):
-        return f'{self.gamePk}'
+        return f'{self.gamepk}'
 
     def __eq__(self, other):
         if self._game_dict == other._game_dict:
@@ -59,18 +59,21 @@ class Game:
         return False
 
     @classmethod
-    def get_game_from_pk(cls, gamePk: int, delay_seconds: int = 0) -> 'Game':
+    def get_game_from_pk(cls, gamepk: int, delay_seconds: int = 0) -> 'Game':
         """
         Returns a game instance for the given game based of the gamePk
 
         Args:
-            gamePk (int): gamePk of the game
+            gamepk (int): gamepk of the game
             delay_seconds (int): Delay in seconds
 
         Returns:
             Game: Game class instance
         """
-        game_dict = get_game_dict(gamePk=gamePk, delay_seconds=delay_seconds)
+        if gamepk is None:
+            raise ValueError('gamePk not provided')
+
+        game_dict = get_game_dict(gamepk=gamepk, delay_seconds=delay_seconds)
         return Game(game_dict)
 
 
@@ -80,6 +83,7 @@ class GameData:
     """
     def __init__(self, gameData):
         # comment
+        self._gameData = gameData
         self.game = gameData['game']
         self.datetime = gameData['datetime']
         self.status = gameData['status']
@@ -113,6 +117,11 @@ class GameData:
         home_team = self.teams.home.abbreviation
 
         return f'{date}: {away_team} at {home_team}'
+
+    def __eq__(self, other):
+        if self._gameData == other._gameData:
+            return True
+        return False
 
 
 class Datetime:
@@ -226,6 +235,7 @@ class PrimaryDatacaster:
 
 class LiveData:
     def __init__(self, liveData):
+        self._liveData = liveData
         self.plays = liveData['plays']
         self.linescore = liveData['linescore']
         self.boxscore = liveData['boxscore']
@@ -235,6 +245,11 @@ class LiveData:
     def _children(self):
         self.plays = Plays(self.plays)
         self.linescore = Linescore(self.linescore)
+
+    def __eq__(self, other):
+        if self._liveData == other._liveData:
+            return True
+        return False
 
 
 class Plays:
@@ -485,7 +500,7 @@ class PitchData:
 
 
 class PitchCoordinates:
-    BALL_CIRCUMFERENCE_INCH = 9.25
+    BALL_CIRCUMFERENCE_INCH = 9.125
     BALL_RADIUS_INCH = BALL_CIRCUMFERENCE_INCH / (2 * math.pi)
     BALL_RADIUS_FEET = BALL_RADIUS_INCH / 12
 
@@ -630,6 +645,9 @@ class Linescore:
         self.currentInning = linescore.get('currentInning', None)
         self.currentInningOrdinal = linescore.get('currentInningOrdinal', None)
         self.inningState = linescore.get('inningState', None)
+        self.inningHalf = linescore.get('inningHalf', None)
+        self.isTopInning = linescore.get('isTopInning', None)
+        self.scheduledInnings = linescore.get('scheduledInnings', None)
         self.teams = linescore['teams']
         self.defense = linescore['defense']
         self.offense = linescore['offense']
@@ -844,15 +862,15 @@ def _get_division(code:int):
 
 
 def get_games() -> List[Game]:
-    gamePks = get_daily_gamePks()
+    gamepks = get_daily_gamepks()
     games = []
 
-    for Pk in tqdm(gamePks):
-        data = statsapi.get('game', {'gamePk': Pk})
+    for pk in tqdm(gamepks):
+        data = statsapi.get('game', {'gamePk': pk})
         games.append(Game(data))
 
     return games
 
 
 if __name__ == "__main__":
-    game = Game.get_game_from_pk(gamePk = 717200, delay_seconds = 0)
+    game = Game.get_game_from_pk(gamepk = 717200, delay_seconds = 0)

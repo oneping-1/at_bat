@@ -7,14 +7,14 @@ along with favored runs (>0 = home favored/gained runs)
 from typing import List
 import argparse
 from tqdm import tqdm
-from get.statsapi_plus import get_game_dict, get_daily_gamePks
+from get.statsapi_plus import get_game_dict, get_daily_gamepks
 from get.game import Game
 from get.umpire import Umpire
 
 
 def daily_ump_scorecards(date: str,
-                        print_daily_stats: bool = False
-                        ) -> List[Umpire]:
+                         print_daily_stats: bool = False
+                         ) -> List[Umpire]:
     """
     Finds the missed calls and favor for each game in a given day
 
@@ -36,7 +36,7 @@ def daily_ump_scorecards(date: str,
     Raises
         ConnectionError: Connection to API fails
     """
-    daily_games_pk = get_daily_gamePks(date=date)
+    daily_games_pk = get_daily_gamepks(date=date)
     games: List[Umpire] = []
 
     for game_pk in tqdm(daily_games_pk):
@@ -51,7 +51,7 @@ def daily_ump_scorecards(date: str,
             away_team_abv = game.game.gameData.teams.away.abbreviation
             home_team_abv = game.game.gameData.teams.home.abbreviation
 
-            print(f'pk: {game.gamePk}')
+            print(f'pk: {game.gamepk}')
             print(f'{away_team_abv} at {home_team_abv}')
             print(f'Misses: {game.num_missed_calls}')
 
