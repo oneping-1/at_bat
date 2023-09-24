@@ -130,7 +130,7 @@ class GameFrame(tk.Frame):
     LIVE_COLOR = 'white'
     NOT_LIVE_COLOR = 'light grey'
 
-    RIVAL_TEAMS = ('SEA', 'HOU', 'TB', 'TOR', 'BOS')
+    RIVAL_TEAMS = ('SEA', 'HOU', 'TOR')
     RIVAL_COLOR = 'firebrick1'
     FAV_TEAMS = 'TEX'
     FAV_COLOR = 'blue'
@@ -138,7 +138,8 @@ class GameFrame(tk.Frame):
     BET_COLOR = 'green'
 
     KNOWN_STATUSCODES = ('S', 'P', 'PR', 'PW', 'I', 'IO', 'IR', 'MA', 'MC',
-                         'MF', 'MI', 'NH', 'TR', 'UR', 'O', 'F')
+                         'ME', 'MF', 'MG', 'MI', 'MT', 'MU', 'MV', 'NF', 'NH',
+                         'TR', 'UR', 'O', 'F', 'DR', 'DI')
 
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -260,7 +261,7 @@ class GameFrame(tk.Frame):
         # Update gamepk + codedGameState
         if self.diff.gamepk is not None or self.diff.codedGameState is not None:
             self._status()
-        # Different Game States
+
         # Pregame
         if self.new_data.codedGameState in ('S', 'P'):
             self._pregame()
@@ -277,6 +278,10 @@ class GameFrame(tk.Frame):
         # Final
         elif self.new_data.codedGameState in ('F', 'O'):
             self._final()
+
+        # Just Started
+        elif (self.old_data is not None and self.new_data is not None and self.old_data.codedGameState == 'P' and self.new_data.codedGameState == 'I'):
+            self._just_started()
 
         # In Progress
         elif self.new_data.codedGameState in ('I', 'M', 'N'):
@@ -330,6 +335,19 @@ class GameFrame(tk.Frame):
         self.top_inning.config(text='')
         self.bot_inning.config(text='')
 
+    def _just_started(self):
+        self._frame_color(self.LIVE_COLOR)
+        # Update Scores
+        self.away_score.config(text=f'{self.new_data.away_score}')
+        self.home_score.config(text=f'{self.new_data.home_score}')
+
+        self.inning.config(text=f'{self.new_data.inning}')
+        self.umpire.config(text=f'{self.new_data.umpire}')
+
+        self._outs(self.new_data.outs)
+        self._runners(self.new_data.runners)
+        self._inning_state(self.new_data.inningState)
+
     def _in_progress(self):
         self._frame_color(self.LIVE_COLOR)
         # Update Scores
@@ -338,16 +356,9 @@ class GameFrame(tk.Frame):
         if self.diff.home_score is not None:
             self.home_score.config(text=f'{self.new_data.home_score}')
 
-        if self.old_data is not None:
-            if self.old_data.codedGameState == 'P':
-                print('t')
-
         # Update Inning
         if self.diff.inning is not None:
             self.inning.config(text=self.new_data.inning)
-
-        if self.diff.runners is not None:
-            self.runners.config(text=self.new_data.runners)
 
         if self.diff.umpire is not None:
             self.umpire.config(text=self.new_data.umpire)
@@ -417,6 +428,15 @@ class GameFrame(tk.Frame):
             self.home_score.config(fg=self.RIVAL_COLOR)
             self.bot_inning.config(fg=self.RIVAL_COLOR)
 
+        if away_team in self.BET_TEAMS:
+            self.away_team.config(fg=self.BET_COLOR)
+            self.away_score.config(fg=self.BET_COLOR)
+            self.top_inning.config(fg=self.BET_COLOR)
+        if home_team in self.BET_TEAMS:
+            self.home_team.config(fg=self.BET_COLOR)
+            self.home_score.config(fg=self.BET_COLOR)
+            self.bot_inning.config(fg=self.BET_COLOR)
+
         if away_team in self.FAV_TEAMS:
             self.away_team.config(fg=self.FAV_COLOR)
             self.away_score.config(fg=self.FAV_COLOR)
@@ -426,14 +446,6 @@ class GameFrame(tk.Frame):
             self.home_score.config(fg=self.FAV_COLOR)
             self.bot_inning.config(fg=self.FAV_COLOR)
 
-        if away_team in self.BET_TEAMS:
-            self.away_team.config(fg=self.BET_COLOR)
-            self.away_score.config(fg=self.BET_COLOR)
-            self.top_inning.config(fg=self.BET_COLOR)
-        if home_team in self.BET_TEAMS:
-            self.home_team.config(fg=self.BET_COLOR)
-            self.home_score.config(fg=self.BET_COLOR)
-            self.bot_inning.config(fg=self.BET_COLOR)
 
     def _frame_color(self, bg_color: str):
         # Frames
@@ -480,6 +492,15 @@ class GameFrame(tk.Frame):
             file.write(f'codedGameState: {data.codedGameState}\n')
             file.write(f'statusCode: {data.statusCode}\n')
             file.write('\n')
+
+        print(f'gamepk: {self.new_data.gamepk}')
+        print(f'time: {time}')
+        print(f'astractGameState: {data.abstractGameState}')
+        print(f'abstractGameCode: {data.abstractGameCode}')
+        print(f'detailedState: {data.detailedState}')
+        print(f'codedGameState: {data.codedGameState}')
+        print(f'statusCode: {data.statusCode}')
+        print('\n')
 
     @property
     def delay_seconds(self):
@@ -547,7 +568,7 @@ class TimeFrame(tk.Frame):
         return (date, time)
 
 class Scoreboard:
-    def __init__(self, delay_seconds: int = 0):
+    def __init__(self, delay_seconds: int = 0, date: str = None):
         self.delay_seconds = delay_seconds
 
         self.update_games_lock = threading.Lock()
@@ -559,7 +580,7 @@ class Scoreboard:
         self.window.title('MLB Scoreboard')
         self.window.geometry('1024x600')
 
-        self.gamepks: List[int] = get_daily_gamepks()
+        self.gamepks: List[int] = get_daily_gamepks(date=date)
 
         if len(self.gamepks) > 16:
             self.gamepks = self.gamepks[:16]
@@ -625,12 +646,15 @@ class Scoreboard:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--delay', type=int, default=30,
+    parser.add_argument('--delay', type=int, default=60,
                         help='Delay in seconds')
+
+    parser.add_argument('--date', type=str, default=None,
+                        help='Date in ISO8601 format')
 
     args = parser.parse_args()
 
-    Scoreboard(delay_seconds=args.delay)
+    Scoreboard(delay_seconds=args.delay, date=args.date)
 
 if __name__ == '__main__':
     main()

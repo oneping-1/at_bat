@@ -32,7 +32,7 @@ def main():
 
     plotter = Plotter()
 
-    method = Umpire.delta_favor_zone
+    method = Umpire.delta_favor_monte
     results = Umpire.find_missed_calls(gamepk=gamePk, print_missed_calls=True,
                                        delta_favor_func=method)
     _, favor, missed_list = results
