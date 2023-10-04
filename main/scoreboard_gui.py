@@ -130,16 +130,18 @@ class GameFrame(tk.Frame):
     LIVE_COLOR = 'white'
     NOT_LIVE_COLOR = 'light grey'
 
-    RIVAL_TEAMS = ('SEA', 'HOU', 'TOR')
+    RIVAL_TEAMS = 'HOU'
     RIVAL_COLOR = 'firebrick1'
     FAV_TEAMS = 'TEX'
     FAV_COLOR = 'blue'
     BET_TEAMS = ()
     BET_COLOR = 'green'
 
-    KNOWN_STATUSCODES = ('S', 'P', 'PR', 'PW', 'I', 'IO', 'IR', 'MA', 'MC',
-                         'ME', 'MF', 'MG', 'MI', 'MT', 'MU', 'MV', 'NF', 'NH',
-                         'TR', 'UR', 'O', 'F', 'DR', 'DI')
+    # I could read these from game states.xlsx but ¯\_(ツ)_/¯
+    KNOWN_STATUSCODES = ('S', 'P', 'PR', 'PY', 'PW', 'I', 'IO', 'IR', 'MA',
+                         'MC', 'ME', 'MF', 'MG', 'MI', 'MP', 'MT', 'MU', 'MV',
+                         'NF', 'NH', 'TR', 'UR', 'O', 'OR', 'F', 'FR', 'DR',
+                         'DI')
 
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
