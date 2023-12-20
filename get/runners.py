@@ -123,7 +123,7 @@ class Runners:
 
         self.runners = runners_list.copy()
 
-    def set_bases_offense(self, offense: Offense):
+    def set_bases_from_offense(self, offense: Offense):
         """
         Set the runners instance variable based off the Offense class
         in the game module. Can input the game.liveData.linescore.offense

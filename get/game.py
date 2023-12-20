@@ -147,6 +147,20 @@ class Status:
         self.codedGameState = status.get('codedGameState', None)
         self.statusCode = status.get('statusCode', None)
         self.abstractGameCode = status.get('abstractGameCode', None)
+
+        # Handle game_state easily
+        if self.codedGameState in ('S', 'P'):
+            self.game_state = 'P' # Pre-game
+        elif self.codedGameState in ('I', 'M', 'N'):
+            self.game_state = 'L' # Live
+        elif self.codedGameState in ('F', 'O'):
+            self.game_state = 'F' # Final
+        elif self.statusCode in ('IO', 'IR'):
+            self.game_state = 'D' # Delayed
+        elif self.statusCode in ('TR', 'UR', 'DR', 'DI'):
+            self.game_state = 'S' # Suspended/Postponed
+        else:
+            self.game_state = 'U' # Unknown
         # no children
 
     def __repr__(self):

@@ -125,7 +125,7 @@ class Games:
         outs = game.liveData.linescore.outs
 
         runners = Runners()
-        runners.set_bases_offense(game.liveData.linescore.offense)
+        runners.set_bases_from_offense(game.liveData.linescore.offense)
 
         no_hitter = game.gameData.flags.noHitter
 

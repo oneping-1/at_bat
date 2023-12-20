@@ -217,4 +217,4 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
 
 
 if __name__ == '__main__':
-    statsapi.schedule()
+    print(_get_utc_time(delay_seconds=17640000+7200))
