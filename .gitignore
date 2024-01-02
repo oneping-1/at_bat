@@ -46,3 +46,5 @@ game_state/game states.xlsx
 main/Print Json.ipynb
 get/__pycache__/schedule.cpython-311.pyc
 get/__pycache__/team.cpython-311.pyc
+main/offset.py
+main/scoreboard_matrix.py
