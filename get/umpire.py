@@ -31,6 +31,7 @@ from get.statsapi_plus import get_run_expectency_difference_numpy
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
 # from the edge of the strike zone for the 90% rule to apply
+# accoding to math
 
 # Margin of Error for Hawkeye pitch tracking system.
 # around 0.625"-0.700" based off tests

@@ -1,3 +1,4 @@
+from typing import Tuple
 import copy
 from get.game import Game
 from get.runners import Runners
@@ -8,6 +9,7 @@ class ScoreboardData:
             'abstractGameCode',
             'detailedState',
             'codedGameState',
+            'delay_seconds',
             'statusCode',
             'game_state',
             'away_abv',
@@ -47,7 +49,13 @@ class ScoreboardData:
         self.start_time: str = self.game.gameData.datetime.startTime
 
         self.inning: int = self.game.liveData.linescore.currentInning
-        self.inning_state: str = self.game.liveData.linescore.inningState
+
+        isTopInning = self.game.liveData.linescore.isTopInning
+
+        if isTopInning is True:
+            self.inning_state: str = 'T'
+        else:
+            self.inning_state: str = 'B'
 
         self.outs: int = self.game.liveData.linescore.outs
 
@@ -60,21 +68,25 @@ class ScoreboardData:
         umpire.calculate(delta_favor_func=Umpire.delta_favor_monte)
         self.umpire: str = f'{repr(umpire)} ({umpire.num_missed_calls:d})'
 
-    def update(self) -> 'ScoreboardData':
+    def update_and_return_new(self) -> Tuple['ScoreboardData', bool]:
         new_game = ScoreboardData(gamepk=self.gamepk,
                                   delay_seconds=self.delay_seconds)
 
         differences = copy.deepcopy(self)
 
+        new_info: bool = False
+
         for key in ScoreboardData.keys:
             old_value = getattr(self, key)
             new_value = getattr(new_game, key)
             if old_value != new_value:
+                setattr(self, key, new_value)
                 setattr(differences, key, new_value)
+                new_info = True
             else:
                 setattr(differences, key, None)
 
-        return differences
+        return (differences, new_info)
 
     def to_dict(self) -> dict:
         diff = {}

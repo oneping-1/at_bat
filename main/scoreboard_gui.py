@@ -166,7 +166,7 @@ class GameFrame(tk.Frame):
         if self.gamepk is None:
             return
 
-        self.diff = self.data.update()
+        self.diff, _ = self.data.update_and_return_new()
 
         if self.data.statusCode not in self.KNOWN_STATUSCODES:
             self._unknown_statuscode()
@@ -179,7 +179,7 @@ class GameFrame(tk.Frame):
             return
 
         # Update Team Abbreviations
-        if self.diff.away_abv is not None or self.diff.home_team is not None:
+        if self.diff.away_abv is not None or self.diff.home_abv is not None:
             self._team_labels(self.diff.away_abv, self.diff.home_abv)
 
         # Update gamepk + codedGameState

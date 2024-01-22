@@ -4,7 +4,14 @@ Live MLB and MiLB game stats.
 
 ## Table of Contents
 
+- [Installation](#Installation)
 - [To-Do](#to-do)
+
+## Installation
+
+In the command prompt, navigate to the directory and type
+- pip install -r requirements.txt
+- pip install -e .
 
 ## To-Do
 
