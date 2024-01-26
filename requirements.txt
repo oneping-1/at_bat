@@ -5,8 +5,10 @@ contourpy==1.2.0
 cycler==0.12.1
 fonttools==4.47.2
 idna==3.6
+importlib-resources==6.1.1
 kiwisolver==1.4.5
 matplotlib==3.8.2
+-e git+https://github.com/oneping-1/MLB.git@f7215048bd90d8091c70e906bca60cf882dc642f#egg=MLB_Stats
 MLB-StatsAPI==1.7.1
 numpy==1.26.3
 packaging==23.2
@@ -15,8 +17,8 @@ pyparsing==3.1.1
 python-dateutil==2.8.2
 pytz==2023.3.post1
 requests==2.31.0
-setuptools==68.2.2
 six==1.16.0
 tqdm==4.66.1
 urllib3==2.1.0
-wheel==0.41.2
+windows-curses==2.3.2
+zipp==3.17.0
