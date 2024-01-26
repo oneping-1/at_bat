@@ -148,7 +148,7 @@ class GameFrame(tk.Frame):
             self.outs.config(image='')
             self.top_inning.config(text='')
             self.bot_inning.config(text='')
-        elif ('D', 'S') in self.data.game_state: # Delayed
+        elif self.data.game_state in ('D', 'S'): # Delayed
             self._frame_color(self.NOT_LIVE_COLOR)
             self.away_score.config(text=f'{self.data.away_score}')
             self.home_score.config(text=f'{self.data.home_score}')
@@ -180,19 +180,18 @@ class GameFrame(tk.Frame):
         if self.diff.gamepk is not None or self.diff.codedGameState is not None:
             self._status()
 
-        match self.data.game_state:
-            case 'P':
-                self._pregame()
-            case 'D' | 'S':
-                self._delayed()
-            case 'F':
-                self._final()
-            case 'L':
-                self._in_progress()
-            case _:
-                print('Unknown statusCode.')
-                print(f'gamepk: {self.data.gamepk}')
-                print(f'game_state: {self.data.game_state}')
+        if self.data.game_state in 'P':
+            self._pregame()
+        elif self.data.game_state in ('D', 'S'):
+            self._delayed()
+        elif self.data.game_state in 'F':
+            self._final()
+        elif self.data.game_state in 'L':
+            self._in_progress()
+        else:
+            print('Unknown statusCode.')
+            print(f'gamepk: {self.data.gamepk}')
+            print(f'game_state: {self.data.game_state}')
 
     def _pregame(self):
         self._frame_color(self.NOT_LIVE_COLOR)

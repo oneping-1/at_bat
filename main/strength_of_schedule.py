@@ -8,13 +8,9 @@ from datetime import datetime
 from datetime import timedelta
 from typing import List
 import statsapi
-from colorama import just_fix_windows_console
 from tqdm import tqdm
-from get.statsapi_plus import get_color
 from get.team import Team
 from get.schedule import Schedule
-
-just_fix_windows_console()
 
 
 def sos(days_ahead=15, print_results = False):
@@ -93,7 +89,7 @@ def _print_winpct_above500(days_ahead:int, teams: List[Team]):
 
     sorted_teams = sorted(teams, key=lambda x: x.opponent.win_pct, reverse=True)
     for i, team in enumerate(sorted_teams):
-        print(f'{get_color(team.abv, team.division)}{i+1:2d} | ', end='')
+        print(f'{i+1:2d} | ', end='')
         print(f'{team.abv:4s} | ', end='')
         print(f'{team.opponent.win_pct:.3f} | ', end='')
         print(f'{team.opponent.above_500:2d}')

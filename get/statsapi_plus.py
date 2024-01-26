@@ -9,7 +9,6 @@ import csv
 from datetime import datetime, timedelta
 import os
 import statsapi
-from colorama import Fore
 import numpy as np
 
 
@@ -115,25 +114,6 @@ def get_daily_gamepks(date: str = None) -> List[int]:
         gamePks.append(game['game_id'])
 
     return gamePks
-
-
-def get_color(team_abv:str, division:str) -> Fore:
-    """
-    Takes a team and their division and outputs a color. Used for me
-    because these are the teams that are important to me
-
-    Args:
-        team_abv (str): The team abbreviations
-        division (str): The division of the team
-
-    Returns:
-        Fore: A colorama Fore class for the given color
-    """
-    if team_abv == 'TEX':
-        return Fore.LIGHTBLUE_EX
-    if division == 'AW':
-        return Fore.LIGHTRED_EX
-    return Fore.WHITE
 
 
 def get_run_expectency_numpy() -> np.ndarray:

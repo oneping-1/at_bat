@@ -2,7 +2,7 @@
 
 """
 Converts the standings_data dict returned by statsapi.get('standings')
-into a class for easier data grabbing. 
+into a class for easier data grabbing.
 
 Classes:
     Standing: Represents the division and league standings for the
@@ -16,7 +16,6 @@ Example:
 import os
 from typing import List
 import csv
-from colorama import Fore
 
 
 class Standing:
@@ -261,11 +260,3 @@ class ExpectedRecordsDetailed:
         self.type = erd['type']
         self.pct = float(erd['pct'])
 
-
-def get_color(team:Team):
-    if team.abv == 'TEX':
-        return Fore.LIGHTBLUE_EX
-    elif team.division == 'AW':
-        return Fore.LIGHTRED_EX
-    else:
-        return Fore.WHITE
