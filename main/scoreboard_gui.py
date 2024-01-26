@@ -124,43 +124,37 @@ class GameFrame(tk.Frame):
         self._team_labels(self.data.away_abv, self.data.home_abv)
         self._status()
 
-        match self.data.game_state:
-            case 'L': # In Progress
-                self._frame_color(self.LIVE_COLOR)
-                # Update Scores
-                self.away_score.config(text=f'{self.data.away_score}')
-                self.home_score.config(text=f'{self.data.home_score}')
-
-                self.inning.config(text=f'{self.data.inning}')
-                self.umpire.config(text=f'{self.data.umpire}')
-
-                self._outs(self.data.outs)
-                self._runners(self.data.runners)
-                self._inning_state(self.data.inning_state)
-            case 'P': # Pregame
-                self.runners.config(text=f'{self.data.start_time}')
-                self._pregame() # Nothing to update. Empty labels
-            case 'F': # Final
-                self._frame_color(self.NOT_LIVE_COLOR)
-
-                self.away_score.config(text=f'{self.data.away_score}')
-                self.home_score.config(text=f'{self.data.home_score}')
-                self.umpire.config(text=f'{self.data.umpire}')
-
-                self.inning.config(text='F')
-
-                self.runners.config(image='')
-                self.runners.config(text='')
-                self.outs.config(image='')
-                self.top_inning.config(text='')
-                self.bot_inning.config(text='')
-            case 'D' | 'S': # Delayed
-                self._frame_color(self.NOT_LIVE_COLOR)
-                self.away_score.config(text=f'{self.data.away_score}')
-                self.home_score.config(text=f'{self.data.home_score}')
-                self.umpire.config(text=f'{self.data.umpire}')
-                self._runners(self.data.runners)
-                self._outs(self.data.outs)
+        if 'L' == self.data.game_state: # In Progress
+            self._frame_color(self.LIVE_COLOR)
+            # Update Scores
+            self.away_score.config(text=f'{self.data.away_score}')
+            self.home_score.config(text=f'{self.data.home_score}')
+            self.inning.config(text=f'{self.data.inning}')
+            self.umpire.config(text=f'{self.data.umpire}')
+            self._outs(self.data.outs)
+            self._runners(self.data.runners)
+            self._inning_state(self.data.inning_state)
+        elif 'P' == self.data.game_state: # Pregame
+            self.runners.config(text=f'{self.data.start_time}')
+            self._pregame() # Nothing to update. Empty labels
+        elif 'F' == self.data.game_state: # Final
+            self._frame_color(self.NOT_LIVE_COLOR)
+            self.away_score.config(text=f'{self.data.away_score}')
+            self.home_score.config(text=f'{self.data.home_score}')
+            self.umpire.config(text=f'{self.data.umpire}')
+            self.inning.config(text='F')
+            self.runners.config(image='')
+            self.runners.config(text='')
+            self.outs.config(image='')
+            self.top_inning.config(text='')
+            self.bot_inning.config(text='')
+        elif ('D', 'S') in self.data.game_state: # Delayed
+            self._frame_color(self.NOT_LIVE_COLOR)
+            self.away_score.config(text=f'{self.data.away_score}')
+            self.home_score.config(text=f'{self.data.home_score}')
+            self.umpire.config(text=f'{self.data.umpire}')
+            self._runners(self.data.runners)
+            self._outs(self.data.outs)
 
     def fetch_data(self):
         if self.gamepk is None:

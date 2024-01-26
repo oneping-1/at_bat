@@ -812,67 +812,66 @@ def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
 
 
 def _get_division(code:int):
-    match code:
-        case 108: # LAA
-            return 'AW'
-        case 109: # ARI
-            return 'NW'
-        case 110: # BAL
-            return 'AE'
-        case 111: # BOS
-            return 'AE'
-        case 112: # CHC
-            return 'NC'
-        case 113: # CIN
-            return 'NC'
-        case 114: # CLE
-            return 'AC'
-        case 115: # COL
-            return 'NW'
-        case 116: # DET
-            return 'AC'
-        case 117: # HOU
-            return 'AW'
-        case 118: # KC
-            return 'AC'
-        case 119: # LAD
-            return 'NW'
-        case 120: # WSH
-            return 'NE'
-        case 121: # NYM
-            return 'NE'
-        case 133: # OAK
-            return 'AW'
-        case 134: # PIT
-            return 'NC'
-        case 135: # SD
-            return 'NW'
-        case 136: # SEA
-            return 'AW'
-        case 137: # SF
-            return 'NW'
-        case 138: # STL
-            return 'NC'
-        case 139: # TB
-            return 'AE'
-        case 140: # TEX
-            return 'AW'
-        case 141: # TOR
-            return 'AE'
-        case 142: # MIN
-            return 'AC'
-        case 143: # PHI
-            return 'NE'
-        case 144: # ATL
-            return 'NE'
-        case 145: # CWS
-            return 'AC'
-        case 146: # MIA
-            return 'NE'
-        case 147: # NYY
-            return 'AE'
-        case 158: # MIL
-            return 'NC'
+    if (108 == code): # LAA
+        return 'AW'
+    if (109 == code): # ARI
+      return 'NW'
+    if (110 == code): # BAL
+      return 'AE'
+    if (111 == code): # BOS
+      return 'AE'
+    if (112 == code): # CHC
+      return 'NC'
+    if (113 == code): # CIN
+      return 'NC'
+    if (114 == code): # CLE
+      return 'AC'
+    if (115 == code): # COL
+      return 'NW'
+    if (116 == code): # DET
+      return 'AC'
+    if (117 == code): # HOU
+      return 'AW'
+    if (118 == code): # KC
+      return 'AC'
+    if (119 == code): # LAD
+      return 'NW'
+    if (120 == code): # WSH
+      return 'NE'
+    if (121 == code): # NYM
+      return 'NE'
+    if (133 == code): # OAK
+      return 'AW'
+    if (134 == code): # PIT
+      return 'NC'
+    if (135 == code): # SD
+      return 'NW'
+    if (136 == code): # SEA
+      return 'AW'
+    if (137 == code): # SF
+      return 'NW'
+    if (138 == code): # STL
+      return 'NC'
+    if (139 == code): # TB
+      return 'AE'
+    if (140 == code): # TEX
+      return 'AW'
+    if (141 == code): # TOR
+      return 'AE'
+    if (142 == code): # MIN
+      return 'AC'
+    if (143 == code): # PHI
+      return 'NE'
+    if (144 == code): # ATL
+      return 'NE'
+    if (145 == code): # CHW
+      return 'AC'
+    if (146 == code): # MIA
+      return 'NE'
+    if (147 == code): # NYY
+      return 'AE'
+    if (158 == code): # MIL
+      return 'NC'
 
 
 def get_games() -> List[Game]:
