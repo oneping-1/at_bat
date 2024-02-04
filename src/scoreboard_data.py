@@ -1,17 +1,11 @@
 from typing import Tuple
 import copy
-from get.game import Game
-from get.runners import Runners
-from get.umpire import Umpire
+from src.game import Game
+from src.runners import Runners
+from src.umpire import Umpire
 
 class ScoreboardData:
-    keys = ['abstractGameState',
-            'abstractGameCode',
-            'detailedState',
-            'codedGameState',
-            'delay_seconds',
-            'statusCode',
-            'game_state',
+    keys = ['game_state',
             'away_abv',
             'home_abv',
             'away_score',
@@ -21,7 +15,6 @@ class ScoreboardData:
             'inning_state',
             'outs',
             'runners',
-            'umpire',
             'gamepk']
 
     def __init__(self, gamepk: int = None, delay_seconds: int = 0):

@@ -5,8 +5,8 @@ import argparse
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
-from get.statsapi_plus import get_daily_gamepks
-from get.scoreboard_data import ScoreboardData
+from src.statsapi_plus import get_daily_gamepks
+from src.scoreboard_data import ScoreboardData
 
 class GameFrame(tk.Frame):
     _BOARDER_WIDTH = 0

@@ -12,8 +12,8 @@ Important classes are:
         mound visits, pitching changes, and pinch players
 
 Example
-from get.statsapi_plus import get_game_dict
-from get.game import Game
+from src.statsapi_plus import get_game_dict
+from src.game import Game
 
 game_dict = get_game_dict(gamePk)
 game_class = Game(game_dict)
@@ -26,9 +26,9 @@ import math
 import pytz
 import statsapi
 from tqdm import tqdm
-from get.statsapi_plus import get_daily_gamepks
-from get.statsapi_plus import get_run_expectency_difference_numpy
-from get.statsapi_plus import get_game_dict
+from src.statsapi_plus import get_daily_gamepks
+from src.statsapi_plus import get_run_expectency_difference_numpy
+from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 

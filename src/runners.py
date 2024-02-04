@@ -22,7 +22,7 @@ Example:
 """
 
 from typing import List
-from get.game import AllPlays, Offense
+from src.game import AllPlays, Offense
 
 
 class Runners:
@@ -56,7 +56,7 @@ class Runners:
         its not, then runners will not be cleared each half inning
 
         Args:
-            at_bat (get.game.AllPlays): The current AllPlays (at bat)
+            at_bat (src.game.AllPlays): The current AllPlays (at bat)
                 instance variable that holds the current half inning,
                 and inning status
         """
@@ -74,7 +74,7 @@ class Runners:
         runners based off the outcome of the at bat.
 
         Args:
-            at_bat (get.game.AllPlays): The current AllPlays (at bat)
+            at_bat (src.game.AllPlays): The current AllPlays (at bat)
                 instance variable that holds the runners location
                 post at bat.
         """
@@ -131,7 +131,7 @@ class Runners:
         correctly
 
         Args:
-            offense (Offense): The Offense class from get.game that
+            offense (Offense): The Offense class from src.game that
                 holds live data on where the runners are on the base
                 paths.
         """

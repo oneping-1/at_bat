@@ -7,9 +7,9 @@ along with favored runs (>0 = home favored/gained runs)
 from typing import List
 import argparse
 from tqdm import tqdm
-from get.statsapi_plus import get_game_dict, get_daily_gamepks
-from get.game import Game
-from get.umpire import Umpire
+from src.statsapi_plus import get_game_dict, get_daily_gamepks
+from src.game import Game
+from src.umpire import Umpire
 
 
 def daily_ump_scorecards(date: str,

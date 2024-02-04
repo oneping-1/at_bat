@@ -9,8 +9,8 @@ from datetime import timedelta
 from typing import List
 import statsapi
 from tqdm import tqdm
-from get.team import Team
-from get.schedule import Schedule
+from src.team import Team
+from src.schedule import Schedule
 
 
 def sos(days_ahead=15, print_results = False):
@@ -25,7 +25,7 @@ def sos(days_ahead=15, print_results = False):
             printed or not. Defaults to False
 
     Returns:
-        teams (List[get.team.Team]): List of teams using the Team class.
+        teams (List[src.team.Team]): List of teams using the Team class.
             The team class has a opponent instance variable with much
             of the relevant info this function returns
 

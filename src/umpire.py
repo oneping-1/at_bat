@@ -23,11 +23,11 @@ import os
 from typing import List, Tuple
 import random
 import math
-from get.game import Game, AllPlays, PlayEvents
-from get.runners import Runners
-from get.statsapi_plus import get_game_dict
-from get.statsapi_plus import get_run_expectency_numpy
-from get.statsapi_plus import get_run_expectency_difference_numpy
+from src.game import Game, AllPlays, PlayEvents
+from src.runners import Runners
+from src.statsapi_plus import get_game_dict
+from src.statsapi_plus import get_run_expectency_numpy
+from src.statsapi_plus import get_run_expectency_difference_numpy
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
 # from the edge of the strike zone for the 90% rule to apply
@@ -141,7 +141,7 @@ class Umpire():
         away team.
 
         Args:
-            game (Game, optional): A Game class from get.game. Takes
+            game (Game, optional): A Game class from src.game. Takes
                 priority over gamePk argument. Defaults to None.
             gamePk (int, optional): A gamePk for the desired game.
                 Useful to avoid manually creating Game class before

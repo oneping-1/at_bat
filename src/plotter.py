@@ -1,6 +1,6 @@
 """
 Module that prints a list of pitches' location using matplotlib library.
-The plotter method takes in a list of get.Game.PlayEvents. The
+The plotter method takes in a list of src.Game.PlayEvents. The
 PlayEvents class represents pitches in a game.
 
 Classes:
@@ -8,7 +8,7 @@ Classes:
         important method
 
 Example:
-from get.plotter import Plotter
+from src.plotter import Plotter
 plotter = Plotter()
 plotter.plot([GameEvents])
 """
@@ -16,7 +16,7 @@ plotter.plot([GameEvents])
 from typing import List
 from matplotlib import pyplot as plt
 from matplotlib import patches
-from get.game import PlayEvents
+from src.game import PlayEvents
 
 class Plotter:
     """

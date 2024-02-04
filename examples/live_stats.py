@@ -18,11 +18,11 @@ Functions:
 import curses
 import argparse
 from typing import Tuple
-from get.game import Game, PlayEvents, AllPlays
-from get.statsapi_plus import get_game_dict, get_run_expectency_numpy
-from get.umpire import Umpire
-from get.runners import Runners
-from get.fifo import FIFO
+from src.game import Game, PlayEvents, AllPlays
+from src.statsapi_plus import get_game_dict, get_run_expectency_numpy
+from src.umpire import Umpire
+from src.runners import Runners
+from src.fifo import FIFO
 
 
 def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):

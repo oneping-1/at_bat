@@ -1,6 +1,6 @@
 """
 Prints the division standings for the given league.
-Uses get.standings.Standing class
+Uses src.standings.Standing class
 
 leagueID:
 American League: 103
@@ -8,7 +8,7 @@ National League: 104
 """
 
 import statsapi
-from get.standings import Standing
+from src.standings import Standing
 
 # leagueID:
 # 103 - American League
