@@ -150,7 +150,7 @@ def main():
     time.sleep(5)
 
     ip = get_ip()
-    games = start_games_simple(ip, date=None, delay_seconds=0)
+    games = start_games_simple(ip, date=None, delay_seconds=60)
 
     while True:
         for i, game, in enumerate(games):
