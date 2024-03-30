@@ -3,6 +3,7 @@ Sends data to an ESP32 so that it can be displayed on a
 scoreboard matrix.
 """
 
+import time
 import sys
 from typing import List
 from datetime import datetime, timezone, timedelta
@@ -143,6 +144,11 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
 def main():
     """Main function that runs the scoreboard matrix"""
+    response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
+    if response.status_code != 200:
+        print(f'Error: {response.status_code} {response.reason}')
+    time.sleep(5)
+
     ip = get_ip()
     games = start_games_simple(ip, date=None, delay_seconds=0)
 
