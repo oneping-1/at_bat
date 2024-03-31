@@ -144,10 +144,11 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
 def main():
     """Main function that runs the scoreboard matrix"""
+    time.sleep(5)
     response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
     if response.status_code != 200:
         print(f'Error: {response.status_code} {response.reason}')
-    time.sleep(5)
+    time.sleep(10)
 
     ip = get_ip()
     games = start_games_simple(ip, date=None, delay_seconds=60)
