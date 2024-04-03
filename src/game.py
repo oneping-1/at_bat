@@ -33,6 +33,7 @@ from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
+# Update Class Status for new game states for custom game_state attribute
 KNOWN_GAMESTATES = ('S','P','PI','PR','PY','PW','I','IO','IR','MA','MC',
                     'ME','MF','MG','MI','MP','MT','MU','MV','NF','NH',
                     'TR','UR','O','OR','F','FR','DI','DC')
@@ -183,10 +184,6 @@ class Datetime:
 
 class Status:
     def __init__(self, status):
-        self._known_game_states = ('S','P','PR','PY','PW' 'I','IO','IR',
-                                   'MA','MC','ME','MF','MG','MI','MP',
-                                   'MT','MU','MV','NF','NH','TR','UR',
-                                   'O','OR','F','FR','DI','DR')
 
         self.abstractGameState = status['abstractGameState']
         self.detailedState = status['detailedState']
@@ -195,16 +192,16 @@ class Status:
         self.abstractGameCode = status.get('abstractGameCode', None)
 
         # Handle game_state easily
-        if self.codedGameState in ('S', 'P'):
+        if self.statusCode in ('IO', 'IR', 'PI', 'PR', 'PY'):
+            self.game_state = 'D' # Delayed
+        elif self.statusCode in ('TR', 'UR', 'DC', 'DR', 'DI'):
+            self.game_state = 'S' # Suspended/Postponed
+        elif self.codedGameState in ('S', 'P'):
             self.game_state = 'P' # Pre-game
         elif self.codedGameState in ('I', 'M', 'N'):
             self.game_state = 'L' # Live
         elif self.codedGameState in ('F', 'O'):
             self.game_state = 'F' # Final
-        elif self.statusCode in ('IO', 'IR'):
-            self.game_state = 'D' # Delayed
-        elif self.statusCode in ('TR', 'UR', 'DR', 'DI'):
-            self.game_state = 'S' # Suspended/Postponed
         else:
             self.game_state = 'U' # Unknown
         # no children
