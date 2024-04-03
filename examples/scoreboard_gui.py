@@ -162,9 +162,6 @@ class GameFrame(tk.Frame):
 
         self.diff, _ = self.data.update_and_return_new()
 
-        if self.data.statusCode not in self.KNOWN_STATUSCODES:
-            self._unknown_statuscode()
-
     def update_data(self):
         if self.gamepk is None:
             self._frame_color(self.NOT_LIVE_COLOR)
@@ -364,35 +361,6 @@ class GameFrame(tk.Frame):
         self.outs.config(bg=bg_color)
         self.status.config(bg=bg_color)
         self.umpire.config(bg=bg_color)
-
-    def _unknown_statuscode(self):
-        current_dir = os.path.dirname(os.path.relpath(__file__))
-        csv_folder = os.path.join(current_dir, '..', 'csv')
-        path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
-
-        now = datetime.now()
-        time = now.isoformat()
-
-        data: ScoreboardData = self.data
-
-        with open(path, 'a', encoding='utf-8') as file:
-            file.write(f'gamepk: {self.data.gamepk}\n')
-            file.write(f'time: {time}\n')
-            file.write(f'astractGameState: {data.abstractGameState}\n')
-            file.write(f'abstractGameCode: {data.abstractGameCode}\n')
-            file.write(f'detailedState: {data.detailedState}\n')
-            file.write(f'codedGameState: {data.codedGameState}\n')
-            file.write(f'statusCode: {data.statusCode}\n')
-            file.write('\n')
-
-        print(f'gamepk: {self.data.gamepk}')
-        print(f'time: {time}')
-        print(f'astractGameState: {data.abstractGameState}')
-        print(f'abstractGameCode: {data.abstractGameCode}')
-        print(f'detailedState: {data.detailedState}')
-        print(f'codedGameState: {data.codedGameState}')
-        print(f'statusCode: {data.statusCode}')
-        print('\n')
 
 class TimeFrame(tk.Frame):
     _BOARDER_WIDTH = 0

@@ -20,6 +20,7 @@ game_class = Game(game_dict)
 """
 # pylint: disable=C0103, C0111
 
+import os
 import datetime
 from typing import List, Tuple
 import math
@@ -31,6 +32,10 @@ from src.statsapi_plus import get_run_expectency_difference_numpy
 from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
+
+KNOWN_GAMESTATES = ('S','P','PI','PR','PY','PW','I','IO','IR','MA','MC',
+                    'ME','MF','MG','MI','MP','MT','MU','MV','NF','NH',
+                    'TR','UR','O','OR','F','FR','DI','DC')
 
 class Game:
     """
@@ -46,9 +51,45 @@ class Game:
         self._game_dict = data
         self._children()
 
+        if self.gameData.status.statusCode not in KNOWN_GAMESTATES:
+            self._unknown_statuscode()
+
     def _children(self):
         self.gameData = GameData(self.gameData)
         self.liveData = LiveData(self.liveData)
+
+    def _unknown_statuscode(self):
+        abstractGameState = self.gameData.status.abstractGameState
+        abstractGameCode = self.gameData.status.abstractGameCode
+        detailedState = self.gameData.status.detailedState
+        codedGameState = self.gameData.status.codedGameState
+        statusCode = self.gameData.status.statusCode
+
+        current_dir = os.path.dirname(os.path.relpath(__file__))
+        csv_folder = os.path.join(current_dir, '..', 'csv')
+        path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
+
+        now = datetime.datetime.now()
+        time = now.isoformat()
+
+        with open(path, 'a', encoding='utf-8') as file:
+            file.write(f'gamepk: {self.gamepk}\n')
+            file.write(f'time: {time}\n')
+            file.write(f'astractGameState: {abstractGameState}\n')
+            file.write(f'abstractGameCode: {abstractGameCode}\n')
+            file.write(f'detailedState: {detailedState}\n')
+            file.write(f'codedGameState: {codedGameState}\n')
+            file.write(f'statusCode: {statusCode}\n')
+            file.write('\n')
+
+        print(f'gamepk: {self.gamepk}')
+        print(f'time: {time}')
+        print(f'astractGameState: {abstractGameState}')
+        print(f'abstractGameCode: {abstractGameCode}')
+        print(f'detailedState: {detailedState}')
+        print(f'codedGameState: {codedGameState}')
+        print(f'statusCode: {statusCode}')
+        print('\n')
 
     def __repr__(self):
         return f'{self.gamepk}'
@@ -142,6 +183,11 @@ class Datetime:
 
 class Status:
     def __init__(self, status):
+        self._known_game_states = ('S','P','PR','PY','PW' 'I','IO','IR',
+                                   'MA','MC','ME','MF','MG','MI','MP',
+                                   'MT','MU','MV','NF','NH','TR','UR',
+                                   'O','OR','F','FR','DI','DR')
+
         self.abstractGameState = status['abstractGameState']
         self.detailedState = status['detailedState']
         self.codedGameState = status.get('codedGameState', None)
