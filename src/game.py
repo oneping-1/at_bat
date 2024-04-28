@@ -33,10 +33,11 @@ from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
-# Update Class Status for new game states for custom game_state attribute
+# Update for new game states for custom game_state attribute
 KNOWN_GAMESTATES = ('S','P','PI','PR','PY','PW','I','IO','IR','MA','MC',
-                    'ME','MF','MG','MI','MP','MT','MU','MV','NF','NH',
-                    'TR','UR','O','OR','F','FR','DI','DC')
+                    'ME','MF','MG','MH','MI','MO','MP','MS','MT','MU',
+                    'MV','MQ','MY','NF','NJ','NN','NH','TR','UR','O',
+                    'OR','F','FG','FR','DI','DC','DR')
 
 class Game:
     """
@@ -75,6 +76,9 @@ class Game:
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
+            file.write(f'inning: {self.gameData.linescore.currentInning}\n')
+            file.write(f'inningState: {self.gameData.linescore.inningState}\n')
+            file.write(f'outs: {self.gameData.linescore.outs}\n')
             file.write(f'time: {time}\n')
             file.write(f'astractGameState: {abstractGameState}\n')
             file.write(f'abstractGameCode: {abstractGameCode}\n')

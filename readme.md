@@ -16,11 +16,8 @@ In the command prompt, navigate to the directory and type
 ## To-Do
 
 Incomplete:
-- [ ] Example Code
 - [ ] Move strenght_of_schedule.py calculations into own method in get.teams.py
 - [ ] Add miss_distance variable or something to indicate how far a pitch was from the edge of the zone in class PitchCoordinates
-- [ ] Make scoreboard_gui.py load images in fetch data to try and minimize stuttering when loading frames
-- [ ] Add something to catch new coded gamestates in scoreboard stuff
 
 Complete:
 - [X] Add delta_seconds parameter to umpire.print_last_pitch() function
@@ -63,3 +60,6 @@ Complete:
 - [X] More pytests
 - [X] Fine tune delta_favor_dist() even more
 - [X] Work out Abstract, Detailed, and Coded game states
+- [X] Add something to catch new coded gamestates in scoreboard stuff
+- [X] Make scoreboard_gui.py load images in fetch data to try and minimize stuttering when loading frames
+- [X] Example Code

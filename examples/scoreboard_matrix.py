@@ -153,6 +153,10 @@ def main():
     ip = get_ip()
     games = start_games_simple(ip, date=None, delay_seconds=60)
 
+    # Get new games for the day
+    current_gamepks = get_daily_gamepks()
+    last_gamepk_check = time.time()
+
     while True:
         for i, game, in enumerate(games):
             try:
@@ -162,6 +166,18 @@ def main():
                 sys.exit()
             except:
                 pass
+
+        if (time.time() - last_gamepk_check) > 600:
+            last_gamepk_check = time.time()
+            new_gamepks = get_daily_gamepks()
+
+            if new_gamepks != current_gamepks:
+                current_gamepks = new_gamepks
+                games = start_games_simple(ip, date=None, delay_seconds=60)
+                response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
+                if response.status_code != 200:
+                    print(f'Error: {response.status_code} {response.reason}')
+                time.sleep(10)
 
 if '__main__' == __name__:
     main()
