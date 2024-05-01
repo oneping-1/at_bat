@@ -117,11 +117,40 @@ def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[Scoreboar
     return games
 
 def get_request_dict(game: ScoreboardData) -> dict:
+    """
+    Returns a dictionary with the keys and values of the game object
+
+    Args:
+        game (ScoreboardData): ScoreboardData object
+
+    Returns:
+        dict: Dictionary with the keys and values of the game object
+    """
     d = {}
     for key in request_keys:
         d[key] = getattr(game, key)
 
     return d
+
+def start(ip: str, delay_seconds: int):
+    """
+    Restarts the ESP32 and initializes the games list with the games
+
+    Args:
+        ip (str): Local IP address of the ESP32
+        delay_seconds (int): Delay in seconds from live data
+
+    Returns:
+        list: List of ScoreboardData objects
+    """
+    time.sleep(5)
+    response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
+    if response.status_code != 200:
+        print(f'Error: {response.status_code} {response.reason}')
+    time.sleep(10)
+
+    games = start_games_simple(ip, date=None, delay_seconds=delay_seconds)
+    return games
 
 def loop(ip: str, i: int, game: ScoreboardData):
     """Update the scoreboard matrix with the current game data.
@@ -144,14 +173,8 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
 def main():
     """Main function that runs the scoreboard matrix"""
-    time.sleep(5)
-    response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
-    if response.status_code != 200:
-        print(f'Error: {response.status_code} {response.reason}')
-    time.sleep(10)
-
     ip = get_ip()
-    games = start_games_simple(ip, date=None, delay_seconds=60)
+    games = start(ip, 60)
 
     # Get new games for the day
     current_gamepks = get_daily_gamepks()
@@ -172,12 +195,7 @@ def main():
             new_gamepks = get_daily_gamepks()
 
             if new_gamepks != current_gamepks:
-                current_gamepks = new_gamepks
-                games = start_games_simple(ip, date=None, delay_seconds=60)
-                response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
-                if response.status_code != 200:
-                    print(f'Error: {response.status_code} {response.reason}')
-                time.sleep(10)
+                games = start(ip, 60)
 
 if '__main__' == __name__:
     main()
