@@ -8,3 +8,4 @@ long_term_storage/
 csv/sv_top_bot.csv
 game_state/game_state_test.py
 game_state/game states.xlsx
+csv/unknown_statusCodes 2024-04-28.txt

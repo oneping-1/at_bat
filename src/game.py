@@ -76,9 +76,10 @@ class Game:
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
-            file.write(f'inning: {self.gameData.linescore.currentInning}\n')
-            file.write(f'inningState: {self.gameData.linescore.inningState}\n')
-            file.write(f'outs: {self.gameData.linescore.outs}\n')
+
+            file.write(f'inning: {self.liveData.linescore.currentInning}\n')
+            file.write(f'inningState: {self.liveData.linescore.inningState}\n')
+            file.write(f'outs: {self.liveData.linescore.outs}\n')
             file.write(f'time: {time}\n')
             file.write(f'astractGameState: {abstractGameState}\n')
             file.write(f'abstractGameCode: {abstractGameCode}\n')
