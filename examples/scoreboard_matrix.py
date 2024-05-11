@@ -12,7 +12,7 @@ from src.statsapi_plus import get_daily_gamepks
 from src.game import Game
 from src.scoreboard_data import ScoreboardData
 
-PORT = 8080 # Defined on ESP32's side. Cant really change it.
+PORT = 8080 # Defined on the ESP32's side
 request_keys = ['game_state',
                 'away_abv',
                 'home_abv',
@@ -90,6 +90,23 @@ def time_from_seconds_ago_with_offset(seconds_ago, offset_hours):
 
     return past_datetime_no_micro.isoformat()
 
+def check_postponed(date: str):
+    """
+    Checks if the start date is after the current date to know if a
+    game is postponed since the original game dict does not include that
+    information. Returns true if game is postponed
+
+    Args:
+        date (str): Start time for the game. Easily obtained from the
+        game class object game.gameData.datetime
+
+    Returns:
+        bool: is the game postponed? Yes if true, no if false
+    """
+    game_start = datetime.fromisoformat(date.rstrip('Z'))
+    current_time = datetime.now(timezone.utc)
+    return game_start.date() > current_time.date()
+
 def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
     """Initalizes the games list with the games from the current day.
     Sends initial data to the ESP32.
@@ -132,7 +149,7 @@ def get_request_dict(game: ScoreboardData) -> dict:
 
     return d
 
-def start(ip: str, delay_seconds: int):
+def start(ip: str, delay_seconds: int) -> List[ScoreboardData]:
     """
     Restarts the ESP32 and initializes the games list with the games
 
@@ -160,6 +177,11 @@ def loop(ip: str, i: int, game: ScoreboardData):
         i (int): Index of the game in the games list
         game (GameSimple): GameSimple object
     """
+
+    # check postponed
+    if check_postponed(game.game.gameData.datetime):
+        game.game_state = 'S'
+
     diff, new_info = game.update_and_return_new()
 
     if new_info is True:
@@ -187,8 +209,6 @@ def main():
                 # print(time_from_seconds_ago_with_offset(delay_seconds, -5))
             except KeyboardInterrupt:
                 sys.exit()
-            except:
-                pass
 
         if (time.time() - last_gamepk_check) > 600:
             last_gamepk_check = time.time()

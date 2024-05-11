@@ -197,4 +197,4 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
 
 
 if __name__ == '__main__':
-    print(_get_utc_time(delay_seconds=17640000+7200))
+    print(get_game_dict(745995))

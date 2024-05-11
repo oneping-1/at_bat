@@ -24,6 +24,7 @@ import os
 import datetime
 from typing import List, Tuple
 import math
+from tzlocal import get_localzone
 import pytz
 import statsapi
 from tqdm import tqdm
@@ -71,12 +72,10 @@ class Game:
         csv_folder = os.path.join(current_dir, '..', 'csv')
         path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
 
-        now = datetime.datetime.now()
-        time = now.isoformat()
+        time = datetime.now(get_localzone()).isoformat()
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
-
             file.write(f'inning: {self.liveData.linescore.currentInning}\n')
             file.write(f'inningState: {self.liveData.linescore.inningState}\n')
             file.write(f'outs: {self.liveData.linescore.outs}\n')
@@ -87,15 +86,6 @@ class Game:
             file.write(f'codedGameState: {codedGameState}\n')
             file.write(f'statusCode: {statusCode}\n')
             file.write('\n')
-
-        print(f'gamepk: {self.gamepk}')
-        print(f'time: {time}')
-        print(f'astractGameState: {abstractGameState}')
-        print(f'abstractGameCode: {abstractGameCode}')
-        print(f'detailedState: {detailedState}')
-        print(f'codedGameState: {codedGameState}')
-        print(f'statusCode: {statusCode}')
-        print('\n')
 
     def __repr__(self):
         return f'{self.gamepk}'
