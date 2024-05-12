@@ -72,7 +72,7 @@ class Game:
         csv_folder = os.path.join(current_dir, '..', 'csv')
         path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
 
-        time = datetime.now(get_localzone()).isoformat()
+        time = datetime.datetime.now(get_localzone()).isoformat()
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
@@ -126,6 +126,7 @@ class GameData:
         self.status = gameData['status']
         self.teams = gameData['teams']
         self.players = gameData['players']
+        self.venue = gameData['venue']
         self.weather = gameData.get('weather', None)
         self.gameInfo = gameData['gameInfo']
         self.flags = gameData['flags']
@@ -138,6 +139,7 @@ class GameData:
         self.datetime = Datetime(self.datetime)
         self.status = Status(self.status)
         self.teams = TeamsGameData(self.teams)
+        self.venue = Venue(self.venue)
         self.weather = Weather(self.weather)
         self.gameInfo = GameInfo(self.gameInfo)
         self.flags = Flags(self.flags)
@@ -233,6 +235,65 @@ class TeamGameData:
     def __repr__(self):
         return self.abbreviation
 
+class Venue:
+    def __init__(self, venue):
+        self.id: int = venue.get('id', None)
+        self.name: str = venue.get('name', None)
+        self.link: str = venue.get('link', None)
+        self.location = venue.get('location', None)
+        self.timeZone = venue.get('timeZone', None)
+        self.fieldInfo = venue.get('fieldInfo', None)
+        self.active: bool = venue.get('active', None)
+        self.season: int = venue.get('season', None)
+
+        self._children()
+
+    def _children(self):
+        self.location = Location(self.location)
+        self.timeZone = TimeZone(self.timeZone)
+        self.fieldInfo = FieldInfo(self.fieldInfo)
+
+class Location:
+    def __init__(self, location):
+        self.address1: str = location.get('address1', None)
+        self.address2: str = location.get('address2', None)
+        self.city: str = location.get('city', None)
+        self.state: str = location.get('state', None)
+        self.stateAbbrev: str = location.get('stateAbbrev', None)
+        self.postalCode: str = location.get('postalCode', None)
+        self.defaultCoordinates = location.get('defaultCoordinates', None)
+        self.azimuthAngle: float = location.get('azimuthAngle', None)
+        self.elevation: int = location.get('elevation')
+        self.country: str = location.get('country')
+        self.phone: str = location.get('phone')
+
+    def _children(self):
+        self.defaultCoordinates = DefaultCoordinates(self.defaultCoordinates)
+
+class DefaultCoordinates:
+    def __init__(self, defaultCoordinates):
+        self.latitude: float = defaultCoordinates.get('latitude', None)
+        self.longitude: float = defaultCoordinates.get('longitude', None)
+
+class TimeZone:
+    def __init__(self, timeZone):
+        self.id: str = timeZone.get('id', None)
+        self.offset: int = timeZone.get('offset', None)
+        self.offsetAtGameTime: int = timeZone.get('offsetAtGameTime', None)
+        self.tz: str = timeZone.get('tz', None)
+
+class FieldInfo:
+    def __init__(self, fieldInfo):
+        self.capacity: int = fieldInfo.get('capacity', None)
+        self.turfType: str = fieldInfo.get('turfType', None)
+        self.roofType: str = fieldInfo.get('roofType', None)
+        self.leftLine: int = fieldInfo.get('leftLine', None)
+        self.left: int = fieldInfo.get('left', None)
+        self.leftCenter: int = fieldInfo.get('leftCenter', None)
+        self.center: int = fieldInfo.get('center', None)
+        self.rightCenter: int = fieldInfo.get('rightCenter', None)
+        self.right: int = fieldInfo.get('right', None)
+        self.rightLine: int = fieldInfo.get('rightLine', None)
 
 class Weather:
     def __init__(self, weather):
@@ -850,66 +911,66 @@ def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
 
 
 def _get_division(code:int):
-    if (108 == code): # LAA
+    if 108 == code: # LAA
         return 'AW'
-    if (109 == code): # ARI
-      return 'NW'
-    if (110 == code): # BAL
-      return 'AE'
-    if (111 == code): # BOS
-      return 'AE'
-    if (112 == code): # CHC
-      return 'NC'
-    if (113 == code): # CIN
-      return 'NC'
-    if (114 == code): # CLE
-      return 'AC'
-    if (115 == code): # COL
-      return 'NW'
-    if (116 == code): # DET
-      return 'AC'
-    if (117 == code): # HOU
-      return 'AW'
-    if (118 == code): # KC
-      return 'AC'
-    if (119 == code): # LAD
-      return 'NW'
-    if (120 == code): # WSH
-      return 'NE'
-    if (121 == code): # NYM
-      return 'NE'
-    if (133 == code): # OAK
-      return 'AW'
-    if (134 == code): # PIT
-      return 'NC'
-    if (135 == code): # SD
-      return 'NW'
-    if (136 == code): # SEA
-      return 'AW'
-    if (137 == code): # SF
-      return 'NW'
-    if (138 == code): # STL
-      return 'NC'
-    if (139 == code): # TB
-      return 'AE'
-    if (140 == code): # TEX
-      return 'AW'
-    if (141 == code): # TOR
-      return 'AE'
-    if (142 == code): # MIN
-      return 'AC'
-    if (143 == code): # PHI
-      return 'NE'
-    if (144 == code): # ATL
-      return 'NE'
-    if (145 == code): # CHW
-      return 'AC'
-    if (146 == code): # MIA
-      return 'NE'
-    if (147 == code): # NYY
-      return 'AE'
-    if (158 == code): # MIL
-      return 'NC'
+    if 109 == code: # ARI
+        return 'NW'
+    if 110 == code: # BAL
+        return 'AE'
+    if 111 == code: # BOS
+        return 'AE'
+    if 112 == code: # CHC
+        return 'NC'
+    if 113 == code: # CIN
+        return 'NC'
+    if 114 == code: # CLE
+        return 'AC'
+    if 115 == code: # COL
+        return 'NW'
+    if 116 == code: # DET
+        return 'AC'
+    if 117 == code: # HOU
+        return 'AW'
+    if 118 == code: # KC
+        return 'AC'
+    if 119 == code: # LAD
+        return 'NW'
+    if 120 == code: # WSH
+        return 'NE'
+    if 121 == code: # NYM
+        return 'NE'
+    if 133 == code: # OAK
+        return 'AW'
+    if 134 == code: # PIT
+        return 'NC'
+    if 135 == code: # SD
+        return 'NW'
+    if 136 == code: # SEA
+        return 'AW'
+    if 137 == code: # SF
+        return 'NW'
+    if 138 == code: # STL
+        return 'NC'
+    if 139 == code: # TB
+        return 'AE'
+    if 140 == code: # TEX
+        return 'AW'
+    if 141 == code: # TOR
+        return 'AE'
+    if 142 == code: # MIN
+        return 'AC'
+    if 143 == code: # PHI
+        return 'NE'
+    if 144 == code: # ATL
+        return 'NE'
+    if 145 == code: # CHW
+        return 'AC'
+    if 146 == code: # MIA
+        return 'NE'
+    if 147 == code: # NYY
+        return 'AE'
+    if 158 == code: # MIL
+        return 'NC'
 
 
 def get_games() -> List[Game]:
