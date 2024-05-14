@@ -99,18 +99,22 @@ def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[Scoreboar
     """
 
     daily_pks = get_daily_gamepks(date)
-    games: List[ScoreboardData] = []
+    games: List[ScoreboardData] = [None] * 16
 
     for i, pk in enumerate(daily_pks):
         game = Game.get_game_from_pk(pk)
-        game_simple = ScoreboardData(game, delay_seconds=delay_seconds)
-        games.append(game_simple)
+        games[i] = ScoreboardData(game, delay_seconds=delay_seconds)
 
-        response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
-                                params=get_request_dict(game_simple))
+    for i, game in enumerate(games):
+        if game is not None:
+            response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
+                                    params=get_request_dict(game))
+        else:
+            response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
+                                    params={'show': 'false'})
 
-        if response.status_code != 200:
-            print(f'Error: {response.status_code} {response.reason}')
+    if response.status_code != 200:
+        print(f'Error: {response.status_code} {response.reason}')
 
         print(response.url)
 
@@ -131,26 +135,6 @@ def get_request_dict(game: ScoreboardData) -> dict:
         d[key] = getattr(game, key)
 
     return d
-
-def start(ip: str, delay_seconds: int) -> List[ScoreboardData]:
-    """
-    Restarts the ESP32 and initializes the games list with the games
-
-    Args:
-        ip (str): Local IP address of the ESP32
-        delay_seconds (int): Delay in seconds from live data
-
-    Returns:
-        list: List of ScoreboardData objects
-    """
-    time.sleep(5)
-    response = requests.get(f'http://{get_ip()}:{PORT}/restart', timeout=10)
-    if response.status_code != 200:
-        print(f'Error: {response.status_code} {response.reason}')
-    time.sleep(10)
-
-    games = start_games_simple(ip, date=None, delay_seconds=delay_seconds)
-    return games
 
 def loop(ip: str, i: int, game: ScoreboardData):
     """Update the scoreboard matrix with the current game data.
@@ -174,8 +158,9 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
 def main():
     """Main function that runs the scoreboard matrix"""
+    time.sleep(5)
     ip = get_ip()
-    games = start(ip, 60)
+    games = start_games_simple(ip, date=None, delay_seconds=60)
 
     # Get new games for the day
     current_gamepks = get_daily_gamepks()
@@ -185,7 +170,6 @@ def main():
         for i, game, in enumerate(games):
             try:
                 loop(ip, i, game)
-                # print(time_from_seconds_ago_with_offset(delay_seconds, -5))
             except KeyboardInterrupt:
                 sys.exit()
 
@@ -194,7 +178,7 @@ def main():
             new_gamepks = get_daily_gamepks()
 
             if new_gamepks != current_gamepks:
-                games = start(ip, 60)
+                games = start_games_simple(ip, date=None, delay_seconds=60)
 
 if '__main__' == __name__:
     main()
