@@ -66,7 +66,7 @@ class Runners:
         if self.isTopInning != isTopInning or self.inning != inning:
             self.isTopInning = isTopInning
             self.inning = inning
-            self.runners = [False, False, False].copy()
+            self.clear_bases()
 
     def end_at_bat(self, at_bat: AllPlays):
         """
@@ -141,6 +141,39 @@ class Runners:
 
         runners_list = [is_first, is_second, is_third]
         self.runners = runners_list.copy()
+
+    def runner_movement(self, runner_movement):
+
+        if runner_movement.movement.start == '1B':
+            if self.runners[0] is False:
+                raise ValueError('No runner on first base')
+            self.runners[0] = False
+
+        if runner_movement.movement.start == '2B':
+            if self.runners[1] is False:
+                raise ValueError('No runner on second base')
+            self.runners[1] = False
+
+        if runner_movement.movement.start == '3B':
+            if self.runners[2] is False:
+                raise ValueError('No runner on third base')
+            self.runners[2] = False
+
+        if runner_movement.movement.end == '1B' and runner_movement.movement.isOut is False:
+            # Dont think this is possible
+            if self.runners[0] is True:
+                raise ValueError('Runner already on first base')
+            self.runners[0] = True
+
+        if runner_movement.movement.end == '2B' and runner_movement.movement.isOut is False:
+            if self.runners[1] is True:
+                raise ValueError('Runner already on second base')
+            self.runners[1] = True
+
+        if runner_movement.movement.end == '3B' and runner_movement.movement.isOut is False:
+            if self.runners[2] is True:
+                raise ValueError('Runner already on third base')
+            self.runners[2] = True
 
     def __int__(self) -> int:
         """

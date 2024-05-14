@@ -90,35 +90,6 @@ def time_from_seconds_ago_with_offset(seconds_ago, offset_hours):
 
     return past_datetime_no_micro.isoformat()
 
-def check_postponed(date: str, utc_offset: int):
-    """
-    The data source does not indicate if a game is postponed. It only
-    changes the start date of the game. To check if a game is postponed
-    by comparing the local date to the     current date at the stadium.
-    If the game start date is not the same    as the current date, then
-    the function returns true as the game is postponed.
-
-    Args:
-        date (str): Date in iso 8601 format in zulu time of the start
-            time of the game. Can be easily retrived in the game object
-            game.gameData.datetime.dateTime
-        utc_offset (int): Timezone offset of the stadium in question.
-            Eastern Daylight Time (EDT) = -4
-            Pacific Daylight Time (PDT) = -7
-
-    Returns:
-        bool: True if the game is postponed. Otherwise false
-    """
-    utc_offset = timedelta(hours=utc_offset)
-
-    game_start_zulu = datetime.fromisoformat(date.rstrip('Z'))
-    game_start_stadium = game_start_zulu + utc_offset
-
-    local_time_zulu = datetime.now(timezone.utc)
-    local_time_stadium = local_time_zulu + utc_offset
-
-    return game_start_stadium.date() > local_time_stadium.date()
-
 def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
     """Initalizes the games list with the games from the current day.
     Sends initial data to the ESP32.
@@ -189,11 +160,6 @@ def loop(ip: str, i: int, game: ScoreboardData):
         i (int): Index of the game in the games list
         game (GameSimple): GameSimple object
     """
-
-    # check postponed
-    if check_postponed(game.game.gameData.datetime.dateTime,
-                       game.game.gameData.venue.timeZone.offset):
-        game.game_state = 'S'
 
     diff, new_info = game.update_and_return_new()
 

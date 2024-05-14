@@ -1,4 +1,5 @@
 from typing import Tuple
+from datetime import datetime, timedelta, timezone
 import copy
 from src.game import Game
 from src.runners import Runners
@@ -32,6 +33,7 @@ class ScoreboardData:
 
         # See get/game.py/status for more info:
         self.game_state: str = self.game.gameData.status.game_state
+        self.check_postponed()
 
         self.away_abv: str = self.game.gameData.teams.away.abbreviation
         self.home_abv: str = self.game.gameData.teams.home.abbreviation
@@ -50,6 +52,12 @@ class ScoreboardData:
         else:
             self.inning_state: str = 'B'
 
+        # If game is postponed or suspended, inning is None
+        # Could define it in game.py but dont want to mess with other code
+        if self.inning is None:
+            self.inning = 1
+            self.inning_state = 'T'
+
         self.outs: int = self.game.liveData.linescore.outs
 
         runners = Runners()
@@ -64,6 +72,8 @@ class ScoreboardData:
     def update_and_return_new(self) -> Tuple['ScoreboardData', bool]:
         new_game = ScoreboardData(gamepk=self.gamepk,
                                   delay_seconds=self.delay_seconds)
+
+        self.check_postponed()
 
         differences = copy.deepcopy(self)
 
@@ -90,3 +100,26 @@ class ScoreboardData:
                 diff[key] = value
 
         return diff
+
+    def check_postponed(self):
+        """
+        The data source does not indicate if a game is postponed. It only
+        changes the start date of the game. To check if a game is postponed
+        by comparing the local date to the     current date at the stadium.
+        If the game start date is not the same    as the current date, then
+        the function returns true as the game is postponed.
+        """
+
+        date = self.game.gameData.datetime.dateTime
+        utc_offset = self.game.gameData.venue.timeZone.offset
+
+        utc_offset = timedelta(hours=utc_offset)
+
+        game_start_zulu = datetime.fromisoformat(date.rstrip('Z'))
+        game_start_stadium = game_start_zulu + utc_offset
+
+        local_time_zulu = datetime.now(timezone.utc)
+        local_time_stadium = local_time_zulu + utc_offset
+
+        if game_start_stadium.date() > local_time_stadium.date():
+            self.game_state = 'S' # Suspended/Postponed

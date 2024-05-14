@@ -35,8 +35,8 @@ from src.statsapi_plus import get_game_dict
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # Update for new game states for custom game_state attribute
-KNOWN_GAMESTATES = ('S','P','PI','PR','PY','PW','I','IO','IR','MA','MC',
-                    'ME','MF','MG','MH','MI','MO','MP','MS','MT','MU',
+KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR','MA',
+                    'MC','ME','MF','MG','MH','MI','MO','MP','MS','MT','MU',
                     'MV','MQ','MY','NF','NJ','NN','NH','TR','UR','O',
                     'OR','F','FG','FR','DI','DC','DR')
 
@@ -189,15 +189,15 @@ class Status:
         self.abstractGameCode = status.get('abstractGameCode', None)
 
         # Handle game_state easily
-        if self.statusCode in ('IO', 'IR', 'PI', 'PR', 'PY'):
+        if self.statusCode in ('IO','IR','PI','PL','PO','PR','PY'):
             self.game_state = 'D' # Delayed
-        elif self.statusCode in ('TR', 'UR', 'DC', 'DR', 'DI'):
+        elif self.statusCode in ('TR','UR','DC','DR','DI'):
             self.game_state = 'S' # Suspended/Postponed
-        elif self.codedGameState in ('S', 'P'):
+        elif self.codedGameState in ('S','P'):
             self.game_state = 'P' # Pre-game
-        elif self.codedGameState in ('I', 'M', 'N'):
+        elif self.codedGameState in ('I','M','N'):
             self.game_state = 'L' # Live
-        elif self.codedGameState in ('F', 'O'):
+        elif self.codedGameState in ('F','O'):
             self.game_state = 'F' # Final
         else:
             self.game_state = 'U' # Unknown
@@ -383,6 +383,8 @@ class AllPlays:
         self.count = allPlays.get('count', None)
         self.matchup = allPlays.get('matchup', None)
         self.pitchIndex = allPlays.get('pitchIndex', None)
+        self.actionIndex: List[int] = allPlays.get('actionIndex', None)
+        self.runners = allPlays.get('runners', None)
         events = allPlays.get('playEvents', None)
         self.playEvents: List[PlayEvents] = [PlayEvents(i) for i in events]
         self.playEndTime = allPlays.get('playEndTime', None)
@@ -394,6 +396,7 @@ class AllPlays:
         self.about = About(self.about)
         self.count = Count(self.count)
         self.matchup = Matchup(self.matchup)
+        self.runners = [Runners(runner) for runner in self.runners]
 
     def __eq__(self, other):
         if self._allPlays == other._allPlays:
@@ -477,6 +480,38 @@ class Matchup:
         if self.splits is not None:
             self.splits = Splits(self.splits)
 
+class Runners:
+    def __init__(self, runners):
+        self.movement = runners.get('movement', None)
+        self.details = runners.get('details', None)
+        self.create = runners.get('create', None)
+        self._children()
+
+    def _children(self):
+        self.movement = Movement(self.movement)
+        self.details = RunnersDetails(self.details)
+
+class Movement:
+    def __init__(self, movement):
+        self.originBase = movement.get('originBase', None)
+        self.start = movement.get('start', None)
+        self.end = movement.get('end', None)
+        self.outBase = movement.get('outBase', None)
+        self.isOut = movement.get('isOut', None)
+        self.outNumber = movement.get('outNumber', None)
+
+class RunnersDetails:
+    def __init__(self, details):
+        self.event = details.get('event', None)
+        self.eventType = details.get('eventType', None)
+        self.movementReason = details.get('movementReason', None)
+        self.runner = details.get('runner', None)
+        self.responsiblePitcher = details.get('responsiblePitcher', None)
+        self.isScoringEvent = details.get('isScoringEvent', None)
+        self.rbi = details.get('rbi', None)
+        self.earned = details.get('earned', None)
+        self.teamUnearned = details.get('teamUnearned', None)
+        self.playIndex = details.get('playIndex', None)
 
 class Side:
     def __init__(self, side):
@@ -507,6 +542,7 @@ class PlayEvents:
         self.startTime = playEvents.get('startTime', None)
         self.endTime = playEvents.get('endTime', None)
         self.isPitch = bool(playEvents.get('isPitch', None))
+        self.isBaseRunningPlay = bool(playEvents.get('isBaseRunningPlay', None))
         self.type = playEvents.get('type', None)
 
         if self.pitchNumber is not None:
@@ -537,6 +573,8 @@ class PlayEvents:
             return True
         return False
 
+    def __repr__(self):
+        return self.details.description
 
 class Details:
     def __init__(self, details):
@@ -549,7 +587,8 @@ class Details:
         self.code = details.get('code', None)
         self.ballColor = details.get('ballColor', None)
         self.trailColor = details.get('trailColor', None)
-        self.isInPlay = bool(details.get('isPitch', None))
+        self.isPitch = bool(details.get('isPitch', None))
+        self.isBaseRunningPlay = bool(details.get('isBaseRunningPlay', None))
         self.isStrike = bool(details.get('isStrike', None))
         self.isBall = bool(details.get('isBall', None))
         self.type = details.get('type', None)
@@ -579,7 +618,7 @@ class PitchData:
         self.coordinates = pitchData.get('coordinates')
         self.breaks = pitchData.get('breaks', None)
         self.zone = pitchData.get('zone', None)
-        self.typeConfindence = pitchData.get('typeConfidence', None)
+        self.typeConfidence = pitchData.get('typeConfidence', None)
         self.plateTime = pitchData.get('plateTime', None)
         self.extension = pitchData.get('extension', None)
 
@@ -718,6 +757,11 @@ class PitchCoordinates:
 class Breaks:
     def __init__(self, breaks):
         self.breakAngle = breaks.get('breakAngle', None)
+        self.breakLength = breaks.get('breakLength', None)
+        self.breakY = breaks.get('breakY', None)
+        self.breakVertical = breaks.get('breakVertical', None)
+        self.breakVerticalInduced = breaks.get('breakVerticalInduced', None)
+        self.breakHorizontal = breaks.get('breakHorizontal', None)
         self.spinRate = breaks.get('spinRate', None)
         self.spinDirection = breaks.get('spinDirection', None)
         # no children
