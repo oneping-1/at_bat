@@ -123,3 +123,6 @@ class ScoreboardData:
 
         if game_start_stadium.date() > local_time_stadium.date():
             self.game_state = 'S' # Suspended/Postponed
+
+    def __repr__(self):
+        return f'{self.away_abv} {self.away_score} @ {self.home_abv} {self.home_score}'

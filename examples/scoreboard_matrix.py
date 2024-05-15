@@ -113,8 +113,8 @@ def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[Scoreboar
             response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
                                     params={'show': 'false'})
 
-    if response.status_code != 200:
-        print(f'Error: {response.status_code} {response.reason}')
+        if response.status_code != 200:
+            print(f'Error: {response.status_code} {response.reason}')
 
         print(response.url)
 
@@ -144,6 +144,9 @@ def loop(ip: str, i: int, game: ScoreboardData):
         i (int): Index of the game in the games list
         game (GameSimple): GameSimple object
     """
+
+    if game is None:
+        return
 
     diff, new_info = game.update_and_return_new()
 
