@@ -90,7 +90,7 @@ def time_from_seconds_ago_with_offset(seconds_ago, offset_hours):
 
     return past_datetime_no_micro.isoformat()
 
-def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
+def start_games(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
     """Initalizes the games list with the games from the current day.
     Sends initial data to the ESP32.
 
@@ -107,8 +107,9 @@ def start_games_simple(ip: str, date: str, delay_seconds: int) -> List[Scoreboar
 
     for i, game in enumerate(games):
         if game is not None:
+            params = get_request_dict(game) | {'show': 'true'}
             response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
-                                    params=get_request_dict(game))
+                                    params=params)
         else:
             response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
                                     params={'show': 'false'})
@@ -163,7 +164,7 @@ def main():
     """Main function that runs the scoreboard matrix"""
     time.sleep(5)
     ip = get_ip()
-    games = start_games_simple(ip, date=None, delay_seconds=60)
+    games = start_games(ip, date=None, delay_seconds=60)
 
     # Get new games for the day
     current_gamepks = get_daily_gamepks()
@@ -181,7 +182,7 @@ def main():
             new_gamepks = get_daily_gamepks()
 
             if new_gamepks != current_gamepks:
-                games = start_games_simple(ip, date=None, delay_seconds=60)
+                games = start_games(ip, date=None, delay_seconds=60)
 
 if '__main__' == __name__:
     main()
