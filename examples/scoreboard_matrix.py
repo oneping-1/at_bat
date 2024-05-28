@@ -162,7 +162,7 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
 def main():
     """Main function that runs the scoreboard matrix"""
-    time.sleep(5)
+    time.sleep(10) # Let Raspberry Pi connect to the network from boot
     ip = get_ip()
     games = start_games(ip, date=None, delay_seconds=60)
 

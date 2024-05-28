@@ -22,7 +22,7 @@ Example:
 """
 
 from typing import List
-from src.game import AllPlays, Offense
+from src.game import AllPlays, Offense, RunnersMovement
 
 
 class Runners:
@@ -63,7 +63,14 @@ class Runners:
         isTopInning = at_bat.about.isTopInning
         inning = at_bat.about.inning
 
-        if self.isTopInning != isTopInning or self.inning != inning:
+        if (self.isTopInning != isTopInning or self.inning != inning) and inning > 9:
+            # Extra innings
+            # Worried if a 7 inning game that goes into extra innings
+            # but should be fine for MLB
+            self.isTopInning = isTopInning
+            self.inning = inning
+            self.runners = [False, True, False]
+        elif self.isTopInning != isTopInning or self.inning != inning:
             self.isTopInning = isTopInning
             self.inning = inning
             self.clear_bases()
@@ -142,38 +149,73 @@ class Runners:
         runners_list = [is_first, is_second, is_third]
         self.runners = runners_list.copy()
 
-    def runner_movement(self, runner_movement):
+    def process_runner_movement(self, runner_movements: List[RunnersMovement], index: int):
+        """
+        Processes runner movements as you iterate through the pitches
+        in a game. For this method to work properly, you must skip the
+        last pitch of the at bat and use end_at_bat method to update the
+        runners instead.
+
+        This method works by checking if the current playIndex (pitch
+        number from the at bat) matches any of the runner movement
+        indexes. If it does, it will update the runners variable
+
+        Args:
+            runner_movements (List[Runners]): List of runners events
+                during the at bat
+            playIndex (int): Current playIndex number from the at bat
+
+        Raises:
+            ValueError: If a runner is moved away from a base and
+                there is no runner on that base
+            ValueError: If two runners are moved to the same base
+        """
+        runners_delta = [0, 0, 0]
+
+        for i, runner in enumerate(self.runners):
+            if runner is True:
+                runners_delta[i] = 1
+
+        for runner_movement in runner_movements:
+            if index == runner_movement.details.playIndex:
+                runner_delta_return = self._runner_movement(runner_movement)
+                runners_delta = [a + b for a,b in zip(runners_delta, runner_delta_return)]
+
+        for runner in runners_delta:
+            if runner < 0:
+                raise ValueError('Runner movement is negative')
+            if runner > 1:
+                raise ValueError('Runner movement is greater than 1')
+
+        for i, runner in enumerate(runners_delta):
+            if runner == 1:
+                self.runners[i] = True
+
+    def _runner_movement(self, runner_movement) -> List[int]:
+        runner_delta = [0, 0, 0]
 
         if runner_movement.movement.start == '1B':
-            if self.runners[0] is False:
-                raise ValueError('No runner on first base')
-            self.runners[0] = False
+            runner_delta[0] += -1
 
         if runner_movement.movement.start == '2B':
-            if self.runners[1] is False:
-                raise ValueError('No runner on second base')
-            self.runners[1] = False
+            runner_delta[1] += -1
 
         if runner_movement.movement.start == '3B':
-            if self.runners[2] is False:
-                raise ValueError('No runner on third base')
-            self.runners[2] = False
+            runner_delta[2] += -1
 
         if runner_movement.movement.end == '1B' and runner_movement.movement.isOut is False:
-            # Dont think this is possible
-            if self.runners[0] is True:
-                raise ValueError('Runner already on first base')
-            self.runners[0] = True
+            runner_delta[0] += 1
 
         if runner_movement.movement.end == '2B' and runner_movement.movement.isOut is False:
-            if self.runners[1] is True:
-                raise ValueError('Runner already on second base')
+            # if self.runners[1] is True:
+                # raise ValueError('Runner already on second base')
             self.runners[1] = True
+            runner_delta[1] += 1
 
         if runner_movement.movement.end == '3B' and runner_movement.movement.isOut is False:
-            if self.runners[2] is True:
-                raise ValueError('Runner already on third base')
-            self.runners[2] = True
+            runner_delta[2] += 1
+
+        return runner_delta
 
     def __int__(self) -> int:
         """

@@ -35,10 +35,10 @@ from src.statsapi_plus import get_game_dict
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # Update for new game states for custom game_state attribute
-KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR','MA',
-                    'MC','ME','MF','MG','MH','MI','MO','MP','MS','MT','MU',
-                    'MV','MQ','MY','NF','NJ','NN','NH','TR','UR','O',
-                    'OR','F','FG','FR','DI','DC','DR')
+KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
+                    'MA','MC','ME','MF','MG','MH','MI','MN','MO','MP',
+                    'MS','MT','MU','MV','MQ','MW','MY','NF','NJ','NN',
+                    'NH','TR','UR','O','OR','F','FG','FR','DI','DC','DR')
 
 class Game:
     """
@@ -76,10 +76,12 @@ class Game:
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
-            file.write(f'inning: {self.liveData.linescore.currentInning}\n')
-            file.write(f'inningState: {self.liveData.linescore.inningState}\n')
-            file.write(f'outs: {self.liveData.linescore.outs}\n')
             file.write(f'time: {time}\n')
+            file.write(f'away: {self.gameData.teams.away.abbreviation}\n')
+            file.write(f'home: {self.gameData.teams.home.abbreviation}\n')
+            file.write(f'inningState: {self.liveData.linescore.inningState}\n')
+            file.write(f'inning: {self.liveData.linescore.currentInning}\n')
+            file.write(f'outs: {self.liveData.linescore.outs}\n')
             file.write(f'astractGameState: {abstractGameState}\n')
             file.write(f'abstractGameCode: {abstractGameCode}\n')
             file.write(f'detailedState: {detailedState}\n')
@@ -396,7 +398,7 @@ class AllPlays:
         self.about = About(self.about)
         self.count = Count(self.count)
         self.matchup = Matchup(self.matchup)
-        self.runners = [Runners(runner) for runner in self.runners]
+        self.runners = [RunnersMovement(runner) for runner in self.runners]
 
     def __eq__(self, other):
         if self._allPlays == other._allPlays:
@@ -480,7 +482,7 @@ class Matchup:
         if self.splits is not None:
             self.splits = Splits(self.splits)
 
-class Runners:
+class RunnersMovement:
     def __init__(self, runners):
         self.movement = runners.get('movement', None)
         self.details = runners.get('details', None)
@@ -499,6 +501,28 @@ class Movement:
         self.outBase = movement.get('outBase', None)
         self.isOut = movement.get('isOut', None)
         self.outNumber = movement.get('outNumber', None)
+
+        if self.originBase is not None:
+            self.originBaseNum = int(self.originBase[0])
+        else:
+            self.originBaseNum = None
+
+        if self.start is not None:
+            self.startNum = int(self.start[0])
+        else:
+            self.startNum = None
+
+        if self.end in ('score', 'home'):
+            self.endNum = 4
+        elif self.end is not None:
+            self.endNum = int(self.end[0])
+        else:
+            self.endNum = None
+
+        if self.outBase is not None:
+            self.outBaseNum = int(self.outBase[0])
+        else:
+            self.outBaseNum = None
 
 class RunnersDetails:
     def __init__(self, details):
@@ -805,6 +829,7 @@ class Linescore:
         self.inningHalf = linescore.get('inningHalf', None)
         self.isTopInning = linescore.get('isTopInning', None)
         self.scheduledInnings = linescore.get('scheduledInnings', None)
+        self.innings = linescore.get('innings', None)
         self.teams = linescore['teams']
         self.defense = linescore['defense']
         self.offense = linescore['offense']
@@ -814,6 +839,7 @@ class Linescore:
         self._children()
 
     def _children(self):
+        self.innings = [Inning(inning) for inning in self.innings]
         self.teams = TeamsLinescore(self.teams)
         self.defense = Defense(self.defense)
         self.offense = Offense(self.offense)
@@ -826,6 +852,27 @@ class Linescore:
         home_score = self.teams.home.runs
 
         return f'{inn_state} {inning}. {away_score}-{home_score}'
+
+
+class Inning:
+    def __init__(self, inning):
+        self.num = inning.get('num', None)
+        self.ordinalNum = inning.get('ordinalNum', None)
+        self.home = inning.get('home', None)
+        self.away = inning.get('away', None)
+        self._children()
+
+    def _children(self):
+        self.away = TeamInning(self.away)
+        self.home = TeamInning(self.home)
+
+
+class TeamInning:
+    def __init__(self, teamInning):
+        self.runs = teamInning.get('runs', None)
+        self.hits = teamInning.get('hits', None)
+        self.errors = teamInning.get('errors', None)
+        # no children
 
 
 class TeamsLinescore:
