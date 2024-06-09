@@ -81,4 +81,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #print(get_total_favored_runs(gamePk=717377))

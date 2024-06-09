@@ -19,12 +19,12 @@ import curses
 import argparse
 from typing import Tuple
 from src.game import Game, PlayEvents, AllPlays
-from src.statsapi_plus import get_game_dict, get_run_expectancy_table
+from src.statsapi_plus import get_game_dict, get_re640_dataframe
 from src.umpire import Umpire
 from src.runners import Runners
 from src.fifo import FIFO
 
-renp = get_run_expectancy_table()
+re640 = get_re640_dataframe()
 
 def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     """
@@ -82,7 +82,12 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
                     i += 1
 
                 i += 1
-                for line in _get_run_details(game, at_bat, pitch):
+                for line in _get_run_details(at_bat, pitch):
+                    god.addstr(i, 0, f'{line} {clr}')
+                    i += 1
+
+                i += 1
+                for line in _get_umpire_details(game):
                     god.addstr(i, 0, f'{line} {clr}')
                     i += 1
 
@@ -134,11 +139,8 @@ def _get_at_bat_details(at_bat: AllPlays,
     return (line_0, line_1, line_2)
 
 
-def _get_run_details(game: Game, at_bat: AllPlays,
-                     pitch: PlayEvents) -> Tuple[str, str, str]:
-
-    away_team = game.gameData.teams.away.abbreviation
-    home_team = game.gameData.teams.home.abbreviation
+def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
+                     ) -> Tuple[str, str, str, str, str, str]:
 
     balls = pitch.count.balls
     strikes = pitch.count.strikes
@@ -147,24 +149,63 @@ def _get_run_details(game: Game, at_bat: AllPlays,
     runners.end_at_bat(at_bat)
     runners = int(runners)
 
-    is_first = bool(runners & 1)
-    is_second = bool(runners & 2)
-    is_third = bool(runners & 4)
+    is_first_base = bool(runners & 1)
+    is_second_base = bool(runners & 2)
+    is_third_base = bool(runners & 4)
 
-    run_exp = renp[balls, strikes, outs, is_first, is_second, is_third]
+    state = ((re640['balls'] == balls) &
+             (re640['strikes'] == strikes) &
+             (re640['outs'] == outs) &
+             (re640['is_first_base'] == is_first_base) &
+             (re640['is_second_base'] == is_second_base) &
+             (re640['is_third_base'] == is_third_base))
 
-    misses, favor, _ = Umpire.find_missed_calls(game=game)
+    run_exp = re640[state]['average_runs'].iloc[0]
+    count = re640[state]['count'].iloc[0]
+
+    runs1p = 0
+    runs2p = 0
+    runs3p = 0
+    runs4p = 0
+
+    for i in range(0, 14):
+        runs = re640[state][f'{i} runs'].iloc[0]
+
+        if i >= 1:
+            runs1p += runs
+        if i >= 2:
+            runs2p += runs
+        if i >= 3:
+            runs3p += runs
+        if i >= 4:
+            runs4p += runs
 
     line_0 = f'Expected Runs: {run_exp:.2f}'
-    line_1 = f'Missed Calls: {misses}'
+    line_1 = f'1+ Runs: {runs1p / count:.2f}'
+    line_2 = f'2+ Runs: {runs2p / count:.2f}'
+    line_3 = f'3+ Runs: {runs3p / count:.2f}'
+    line_4 = f'4+ Runs: {runs4p / count:.2f}'
+
+
+    return (line_0, line_1, line_2, line_3, line_4)
+
+def _get_umpire_details(game: Game) -> Tuple[str, str]:
+    away_team = game.gameData.teams.away.abbreviation
+    home_team = game.gameData.teams.home.abbreviation
+
+    umpire = Umpire(game=game)
+    umpire.calculate_game('monte')
+    misses = umpire.num_missed_calls
+    favor = umpire.home_favor
+
+    line_0 = f'Missed Calls: {misses}'
 
     if favor < 0:
-        line_2 = f'Ump Favor: {-favor:+5.2f} {away_team}'
+        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
     else:
-        line_2 = f'Ump Favor: {favor:+5.2f} {home_team}'
+        line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
 
-    return (line_0, line_1, line_2)
-
+    return (line_0, line_1)
 
 def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
     if pitch.isPitch is True:

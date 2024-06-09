@@ -29,7 +29,7 @@ import pytz
 import statsapi
 from tqdm import tqdm
 from src.statsapi_plus import get_daily_gamepks
-from src.statsapi_plus import get_run_expectency_difference_numpy
+from src.statsapi_plus import get_re288_dataframe
 from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
@@ -552,7 +552,6 @@ class Splits:
 
 class PlayEvents:
     MOE = MARGIN_OF_ERROR
-    rednp = get_run_expectency_difference_numpy()
 
     def __init__(self, playEvents: dict):
         self._playEvents = playEvents

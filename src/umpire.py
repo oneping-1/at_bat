@@ -26,7 +26,7 @@ import math
 from src.game import Game, AllPlays, PlayEvents
 from src.runners import Runners
 from src.statsapi_plus import get_game_dict
-from src.statsapi_plus import get_run_expectency_difference_numpy
+from src.statsapi_plus import get_red288_dataframe
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
 # from the edge of the strike zone for the 90% rule to apply
@@ -123,7 +123,7 @@ class Umpire():
             instance class initialized
     """
     hmoe = HAWKEYE_MARGIN_OF_ERROR_FEET
-    rednp = get_run_expectency_difference_numpy()
+    red288 = get_red288_dataframe()
 
     def __init__(self, game: Game = None, gamepk: int = None,
                  delay_seconds: int = 0, method: str = None):
@@ -153,11 +153,12 @@ class Umpire():
             self._runners.new_at_bat(at_bat)
             isTopInning = at_bat.about.isTopInning
 
-            at_bat_last_pitch = at_bat.playEvents[-1].index
+            at_bat_last_pitch = len(at_bat.playEvents) - 1
 
             for pitch in at_bat.playEvents:
                 if pitch.index != at_bat_last_pitch:
                     # check for steals
+                    # might not be accurate when running live?
                     self._runners.process_runner_movement(at_bat.runners, pitch.index)
 
                 if pitch.isPitch is True:
@@ -167,12 +168,12 @@ class Umpire():
 
     def _process_pitch(self, at_bat: AllPlays, pitch: PlayEvents, isTopInning: bool):
         runners_int = int(self._runners)
-        is_first = bool(runners_int & 1)
-        is_second = bool(runners_int & 2)
-        is_third = bool(runners_int & 4)
+        is_first_base = bool(runners_int & 1)
+        is_second_base = bool(runners_int & 2)
+        is_third_base = bool(runners_int & 4)
 
-        home_delta =  Umpire.delta_favor_single_pitch(pitch, isTopInning, is_first,
-                                               is_second, is_third, self.method)
+        home_delta =  Umpire.delta_favor_single_pitch(pitch, isTopInning, is_first_base,
+                                               is_second_base, is_third_base, self.method)
 
         if home_delta != 0:
             self.num_missed_calls += 1
@@ -249,8 +250,8 @@ class Umpire():
 
     @classmethod
     def delta_favor_single_pitch(cls, pitch: PlayEvents, isTopInning: bool,
-                    is_first: bool, is_second: bool, is_third: bool,
-                    method: str = None):
+                    is_first_base: bool, is_second_base: bool,
+                    is_third_base: bool, method: str = None):
         """
         Calculates if a umpire made a bad call by either calling a pitch
         out of the zone a strike or a pitch in the zone a ball. There
@@ -295,9 +296,9 @@ class Umpire():
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
-            is_first (bool): Is there a runner on first
-            is_second (bool): Is there a runner on second
-            is_third (bool): Is there a runner on third
+            is_first_base (bool): Is there a runner on first
+            is_second_base (bool): Is there a runner on second
+            is_third_base (bool): Is there a runner on third
             method (str, optional): _description_. Defaults to None.
 
         Raises:
@@ -335,12 +336,27 @@ class Umpire():
         if correct is True:
             return 0
 
+
         if pitch.details.code == 'C':
             # Ball called Strike
-            home_favor = Umpire.rednp[(balls, strikes-1, outs, is_first, is_second, is_third)]
+            state = ((Umpire.red288['balls'] == balls) &
+                    (Umpire.red288['strikes'] == strikes - 1) &
+                    (Umpire.red288['outs'] == outs) &
+                    (Umpire.red288['is_first_base'] == is_first_base) &
+                    (Umpire.red288['is_second_base'] == is_second_base) &
+                    (Umpire.red288['is_third_base'] == is_third_base))
+
+            home_favor = Umpire.red288[state]['run_value'].iloc[0]
         if pitch.details.code == 'B':
             # Strike called Ball
-            home_favor = Umpire.rednp[(balls-1, strikes, outs, is_first, is_second, is_third)] * -1
+            state = ((Umpire.red288['balls'] == balls - 1) &
+                (Umpire.red288['strikes'] == strikes) &
+                (Umpire.red288['outs'] == outs) &
+                (Umpire.red288['is_first_base'] == is_first_base) &
+                (Umpire.red288['is_second_base'] == is_second_base) &
+                (Umpire.red288['is_third_base'] == is_third_base))
+
+            home_favor = -1 * Umpire.red288[state]['run_value'].iloc[0]
 
         if isTopInning is True:
             return home_favor

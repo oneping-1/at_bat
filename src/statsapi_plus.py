@@ -9,7 +9,8 @@ import csv
 from datetime import datetime, timedelta
 import os
 import statsapi
-import numpy as np
+import pandas as pd
+from src.run_expectancy import RunExpectancy
 
 
 def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
@@ -52,7 +53,6 @@ def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
                         force=True)
     return data
 
-
 def _get_utc_time(delay_seconds: int = 0):
     """
     returns the utc time in YYYMMDD-HHMMSS in 24 hour time
@@ -80,7 +80,6 @@ def _get_utc_time(delay_seconds: int = 0):
     formatted_time = utc_time.strftime('%Y%m%d_%H%M%S')
 
     return formatted_time
-
 
 def get_daily_gamepks(date: str = None) -> List[int]:
     """
@@ -115,37 +114,19 @@ def get_daily_gamepks(date: str = None) -> List[int]:
 
     return gamePks
 
-def eval_base(base: str) -> bool:
-    if base == 'False':
-        return False
-    elif base == 'True':
-        return True
-    else:
-        raise ValueError(f'Invalid value for base: {base}')
-
-def get_run_expectancy_table() -> dict:
+def get_re288_dataframe() -> pd.DataFrame:
     current_dir = os.path.dirname(os.path.relpath(__file__))
-    csv_path = os.path.join(current_dir, '..', 'csv')
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
+    csv_file_path = os.path.join(csv_path, 're288.csv')
+
+    return pd.read_csv(csv_file_path)
+
+def get_re640_dataframe() -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.relpath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 're640.csv')
 
-    renp = {}
-
-    with open(csv_file_path, 'r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)
-
-        for row in reader:
-            balls = int(row[0])
-            strikes = int(row[1])
-            outs = int(row[2])
-            is_first = eval_base(row[3])
-            is_second = eval_base(row[4])
-            is_third = eval_base(row[5])
-            run_expectency = float(row[8])
-
-            renp[(balls, strikes, outs, is_first, is_second, is_third)] = run_expectency
-
-    return renp
+    return pd.read_csv(csv_file_path)
 
 def _read_runners(base: str) -> bool:
     if base == 'True':
@@ -154,46 +135,13 @@ def _read_runners(base: str) -> bool:
         return False
     raise ValueError('unknown')
 
-def get_run_expectency_difference_numpy() -> dict:
-    """
-    Returns the numpy array run expectency table
 
-    Run expectency table obtained from:
-    https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
-
-    How to index:
-    renp[balls][strikes][outs][runners]
-    where runners is a int obtained from int(Runners)
-
-    Raises:
-        FileNotFoundError: red_fangraph.csv file missing, renamed, or misplaced
-
-    Returns:
-        np.ndarray: Run expectency table
-    """
+def get_red288_dataframe() -> pd.DataFrame:
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(current_dir, '..', 'csv')
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'red288.csv')
 
-    red288 = {}
-
-    with open(csv_file_path, 'r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)
-
-        for row in reader:
-            balls = int(row[0])
-            strikes = int(row[1])
-            outs = int(row[2])
-            is_first = _read_runners(row[3])
-            is_second = _read_runners(row[4])
-            is_third = _read_runners(row[5])
-            run_expectency = float(row[6])
-
-            state = (balls, strikes, outs, is_first, is_second, is_third)
-            red288[state] = run_expectency
-
-    return red288
+    return pd.read_csv(csv_file_path)
 
 if __name__ == '__main__':
     print(get_game_dict(745995))
