@@ -26,7 +26,6 @@ import math
 from src.game import Game, AllPlays, PlayEvents
 from src.runners import Runners
 from src.statsapi_plus import get_game_dict
-from src.statsapi_plus import get_run_expectency_numpy
 from src.statsapi_plus import get_run_expectency_difference_numpy
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
@@ -42,6 +41,60 @@ HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 # call becomes incorrect. between 0.325 and 0.505 based of tests
 BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
+
+class MissedCalls():
+    def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents, runners: Runners, home_favor):
+        self._at_bat = at_bat
+        self._pitch = pitch
+
+        self.i = i
+        self.pitcher = at_bat.matchup.pitcher.fullName
+        self.batter = at_bat.matchup.batter.fullName
+        self.inning = at_bat.about.inning
+        self.half_inning = at_bat.about.halfInning.capitalize()
+
+        self.balls = pitch.count.balls
+        self.strikes = pitch.count.strikes
+        self.outs = pitch.count.outs
+
+        self.code = pitch.details.code
+
+        self.zone = pitch.pitchData.zone
+        self.px = pitch.pitchData.coordinates.pX
+        self.pz = pitch.pitchData.coordinates.pZ
+        self.px_min = pitch.pitchData.coordinates.PX_MIN
+        self.px_max = pitch.pitchData.coordinates.PX_MAX
+        self.pz_min = pitch.pitchData.coordinates.pZ_min
+        self.pz_max = pitch.pitchData.coordinates.pZ_max
+        self.sz_top = pitch.pitchData.coordinates.sZ_top
+        self.sz_bot = pitch.pitchData.coordinates.sZ_bot
+
+        self.runners = runners
+        self.home_favor = home_favor
+
+    def print_pitch(self):
+        to_print_str = ''
+
+        to_print_str += f'{self.i}: {self.half_inning} {self.inning}\n'
+        to_print_str += f'{self.pitcher} to {self.batter}\n'
+
+        if self.outs == 1:
+            to_print_str += f'{self.outs} out, '
+        else:
+            to_print_str += f'{self.outs} outs, '
+
+        to_print_str += f'{str(self.runners)}\n'
+
+        if self.code:
+            to_print_str += f'{self.balls}-{self.strikes-1}, ball called strike\n'
+        elif self.code:
+            to_print_str += f'{self.balls-1}-{self.strikes}, strike called ball\n'
+
+        to_print_str += f'px: {self.px:.5f} | pz: {self.pz:.5f}\n'
+        to_print_str += f'left: {self.px_min:.5f} | right: {self.px_max:.5f}\n'
+        to_print_str += f'top: {self.pz_max:.5f} | bottom: {self.pz_min:.5f}\n'
+
+        to_print_str += f'Home Favor: {self.home_favor:4.2f}\n'
 
 
 class Umpire():
@@ -70,11 +123,10 @@ class Umpire():
             instance class initialized
     """
     hmoe = HAWKEYE_MARGIN_OF_ERROR_FEET
-    renp = get_run_expectency_numpy()
     rednp = get_run_expectency_difference_numpy()
 
     def __init__(self, game: Game = None, gamepk: int = None,
-                 delay_seconds: int = 0):
+                 delay_seconds: int = 0, method: str = None):
 
         self.delay_seconds: int = round(delay_seconds)
 
@@ -88,28 +140,49 @@ class Umpire():
 
         self.gamepk = self.game.gamepk
         self.num_missed_calls = 0
-        self.missed_calls: List[PlayEvents] = []
+        self.missed_calls: List[MissedCalls] = []
         self.home_favor = 0
+        self.method: str = method
+        self._runners = Runners()
 
-    def calculate(self, delta_favor_func = None,
-                  print_missed_calls: bool = False
-                  ) -> Tuple[int, float, List[PlayEvents]]:
-        """
-        A instance method that runs the Umpire.find_missed_calls class
-        method and inputs the results directly into the Umpire instance
+    def calculate_game(self, method: str = None) -> Tuple[int, float, List[PlayEvents]]:
+        if method is not None:
+            self.method = method
 
-        Args:
-            print_missed_calls (bool, optional): Whether to print the
-                missed pitch details to console. Including, batter and
-                pitcher names, count, runners, and pitch location.
-                Defaults to False.
-        """
+        for at_bat in self.game.liveData.plays.allPlays:
+            self._runners.new_at_bat(at_bat)
+            isTopInning = at_bat.about.isTopInning
 
-        stats = self.find_missed_calls(game=self.game,
-                                       print_missed_calls=print_missed_calls,
-                                       delta_favor_func=delta_favor_func)
+            at_bat_last_pitch = at_bat.playEvents[-1].index
 
-        self.num_missed_calls, self.home_favor, self.missed_calls = stats
+            for pitch in at_bat.playEvents:
+                if pitch.index != at_bat_last_pitch:
+                    # check for steals
+                    self._runners.process_runner_movement(at_bat.runners, pitch.index)
+
+                if pitch.isPitch is True:
+                    self._process_pitch(at_bat, pitch, isTopInning)
+
+            self._runners.end_at_bat(at_bat)
+
+    def _process_pitch(self, at_bat: AllPlays, pitch: PlayEvents, isTopInning: bool):
+        runners_int = int(self._runners)
+        is_first = bool(runners_int & 1)
+        is_second = bool(runners_int & 2)
+        is_third = bool(runners_int & 4)
+
+        home_delta =  Umpire.delta_favor_single_pitch(pitch, isTopInning, is_first,
+                                               is_second, is_third, self.method)
+
+        if home_delta != 0:
+            self.num_missed_calls += 1
+            self.home_favor += home_delta
+            self.missed_calls.append(MissedCalls(len(self.missed_calls), at_bat, pitch,
+                                     self._runners, home_delta))
+
+    def print_missed_calls(self):
+        for call in self.missed_calls:
+            call.print_pitch()
 
     def __int__(self):
         if self.num_missed_calls != len(self.missed_calls):
@@ -128,75 +201,6 @@ class Umpire():
             return f'+{-self.home_favor:.2f} {away_team}'
         home_team = self.game.gameData.teams.home.abbreviation
         return f'+{self.home_favor:.2f} {home_team}'
-
-    @classmethod
-    def find_missed_calls(cls, delta_favor_func = None, game: Game = None,
-                          gamepk: int = None, print_missed_calls: bool = False
-                          ) -> Tuple[int, float, List[PlayEvents]]:
-        """
-        find_missed_calls calculates total favored runs for the home
-        team for a given team. Iterates through every pitch in a given
-        game and finds pitches that the umpire missed. When home_favor
-        >0, umpire gave the home team runs. When <0, gave runs to the
-        away team.
-
-        Args:
-            game (Game, optional): A Game class from src.game. Takes
-                priority over gamePk argument. Defaults to None.
-            gamePk (int, optional): A gamePk for the desired game.
-                Useful to avoid manually creating Game class before
-                running this method. Defaults to None.
-            print_missed_calls (bool, optional): Prints info for each
-                missed call in a game. Including inning, pitcher, batter,
-                count, pitch location, strike zone info, and favor.
-                Defaults to False.
-
-        Raises:
-            ValueError: If game and gamePk are not provided
-            ConnectionError: If connection to API fails
-
-        Returns:
-            Tuple[int, float, List[PlayEvents]]: The number of missed
-                calls, the home favor, and a list of pitches that were
-                all called wrong in the given game
-        """
-        if game is None and gamepk is not None:
-            game_dict = get_game_dict(gamepk)
-            game = Game(game_dict)
-        elif game is None and gamepk is None:
-            raise ValueError('game and gamePk not provided')
-
-        # Default to delta_favor_dist if no function provided
-        if delta_favor_func is None:
-            delta_favor_func = Umpire.delta_favor_monte
-
-        j = 1
-
-        home_favor: float = 0
-        missed_calls: List[PlayEvents] = []
-        runners = Runners()
-
-        for at_bat in game.liveData.plays.allPlays:
-            runners.new_at_bat(at_bat)
-            isTopInning = at_bat.about.isTopInning
-
-            for i in at_bat.pitchIndex:
-                pitch: PlayEvents = at_bat.playEvents[i]
-                home_delta = delta_favor_func(pitch, isTopInning,
-                                                     runners=runners)
-
-                if home_delta != 0:
-                    home_favor += home_delta
-                    missed_calls.append(pitch)
-
-                    if print_missed_calls is True:
-                        print(cls._missed_pitch_details(
-                            at_bat, runners, pitch, home_delta,j))
-                        j += 1
-
-            runners.end_at_bat(at_bat)
-
-        return (len(missed_calls), home_favor, missed_calls)
 
     @classmethod
     def _missed_pitch_details(cls, at_bat: AllPlays, runners: Runners,
@@ -244,21 +248,46 @@ class Umpire():
         return to_print_str
 
     @classmethod
-    def delta_favor_zone(cls, pitch: PlayEvents, isTopInning: bool,
-                         runners: Runners = None, runners_int: int = None,
-                         ) -> float:
+    def delta_favor_single_pitch(cls, pitch: PlayEvents, isTopInning: bool,
+                    is_first: bool, is_second: bool, is_third: bool,
+                    method: str = None):
         """
-        delta_favor_zone calculates the favored runs the umpire gave the
-        home team if a pitch is missed based of the zone number of the
-        pitch.
+        Calculates if a umpire made a bad call by either calling a pitch
+        out of the zone a strike or a pitch in the zone a ball. There
+        are three different methods that can be used based on the users
+        choice. If the umpire did miss a call the function returns the
+        amount of runs they effectively game the home team. A number
+        greater than 0 means that they helped the home team while a
+        number less than 0 means they helped the away team.
 
-        The zone number is a single digit (1-9) if the pitch is a strike
-        and a two digit number (11-14) if the pitch is a ball. MLB
-        calculates the zone number automatically reducing the amount of
-        work this function needs. Unfortunately most places that
-        calculate umpire missed calls use some sort of buffer zone
-        that allows for a pitch to miss by some amount while still
-        giving the umpire the correct call
+        Option 1: method = 'zone':
+            The zone number is a single digit (1-9) if the pitch is a
+            strike and a two digit number (11-14) if the pitch is a
+            ball. MLB calculates the zone number automatically reducing
+            the amount of work this function needs. Unfortunately most
+            places that calculate umpire missed calls use some sort of
+            buffer zone that allows for a pitch to miss by some amount
+            while still giving the umpire the correct call
+        Option 2: method = 'monte':
+            The Hawkeye tracking system is not perfect and can miss a
+            pitches real location by up to a quarter of an inch. This
+            method calculates 500 potential pitch locations that the
+            real pitch location could have been. For a pitch to be a
+            missed call one of the two scenarios must be true:
+                1. Called ball but >90% of simulated pitches were balls
+                2. Called strike but >90% of simulated pitches were strikes
+
+            This is what UmpScorecards claims they use:
+            https://umpscorecards.com/explainers/accuracy
+        Option 3: method = 'buffer':
+            Most places that calculate missed calls made by umpires
+            define a grace area that a pitch can land on and the correct
+            call be made. That is what this method uses. If a pitch is
+            within a certain distance from the edges of the strike zone,
+            it returns 0 because that pitch can be called a ball or
+            strike and still be correct. If a pitch falls outside the
+            grace area, the homefavor will be calculated off the zone
+            number due to its speed
 
         Args:
             pitch (PlayEvents): The pitch data from the game.PlayEvents
@@ -266,208 +295,64 @@ class Umpire():
             isTopInning (bool): A boolean that represents if its the
                 top inning. Flips the sign of the result to adjust for
                 top/bottom of inning
-            runners (Runners, optional): The Runners class that holds
-                data for runners locations. Takes priority over
-                runners_int. Defaults to None
-            runners_int (int, optional): The integer representation for
-                base runner locations. Can be obtained by using
-                int(Runners) where Runners is the Runners class.
-                Defaults to None
+            is_first (bool): Is there a runner on first
+            is_second (bool): Is there a runner on second
+            is_third (bool): Is there a runner on third
+            method (str, optional): _description_. Defaults to None.
 
         Raises:
-            ValueError: If no runners or runners_int argument provided
-            TypeError: If runners_int argument is not type int
-            TypeError: If isTopInning argument is not type bool
-
-        Returns:
-            float: The amount of runs the umpire gave for a pitch. 0 if
-                pitch is swung or correct call was made.
-        """
-        if runners_int is None and runners is None:
-            raise ValueError('No runners_int or runners argument provided')
-        if isinstance(runners_int, int) is False and runners_int is not None:
-            raise TypeError('runners_int should be type int')
-        if isinstance(isTopInning, bool) is False:
-            raise TypeError('isTopInning should be type bool')
-
-        if runners is not None:
-            runners_int = int(runners)
-
-        home_delta = 0
-
-        correct = True
-
-        balls = pitch.count.balls
-        strikes = pitch.count.strikes
-        outs = pitch.count.outs
-
-        runners = runners_int
-
-        if pitch.details.code in ('C', 'B'):
-            correct = Umpire._is_correct_call_zone_num(pitch)
-
-        if correct is True:
-            return 0
-        if pitch.details.code == 'C':
-            # Ball called Strike
-            home_delta += Umpire.rednp[balls][strikes-1][outs][runners]
-
-        elif pitch.details.code == 'B':
-            # Strike called Ball
-            home_delta -= Umpire.rednp[balls-1][strikes][outs][runners]
-
-        if isTopInning is True:
-            return home_delta
-        return -home_delta
-
-    @classmethod
-    def delta_favor_dist(cls, pitch: PlayEvents, isTopInning: bool,
-                         runners: Runners = None, runners_int: int = None
-                         ) -> float:
-        """
-        delta_favor_dist calculates the favored runs the umpire gave the
-        home team if a pitch is missed based of the distance the pitch
-        was from the edges of the zone
-
-        Most places that calculate missed calls made by umpires define
-        a grace area that a pitch can land on and the correct call be
-        made. That is what this method uses. If a pitch is within
-        a certain distance from the edges of the strike zone, it returns
-        0 because that pitch can be called a ball or strike and still
-        be correct. If a pitch falls outside the grace area, the home
-        favor will be calculated off the zone number due to its speed
-
-        Args:
-            pitch (PlayEvents): The pitch data from the game.PlayEvents
-                class. The PlayEvents class holds all the pitch data
-            isTopInning (bool): A boolean that represents if its the
-                top inning. Flips the sign of the result to adjust for
-                top/bottom of inning
-            runners (Runners, optional): The Runners class that holds
-                data for runners locations. Takes priority over
-                runners_int. Defaults to None
-            runners_int (int, optional): The integer representation for
-                base runner locations. Can be obtained by using
-                int(Runners) where Runners is the Runners class.
-                Defaults to None
-
-        Raises:
-            ValueError: If not runners or runners_int arugments provided
-            TypeError: If runners_int argument is not type int
             TypeError: If isTopInning argument is not type bool
 
         Returns:
             float: The amount of runs the umpire gave for  pitch. 0 if
                 pitch is swung or correct call was made.
         """
-        if runners is None and runners_int is None:
-            raise ValueError('runners and runners_int were not provided')
-        if isinstance(runners_int, int) is False and runners_int is not None:
-            raise TypeError('runners_int should be type int')
+
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
-
-        if runners is not None:
-            runners_int = int(runners)
 
         if pitch.pitchData is None:
             return 0
-
-        if pitch.pitchData.coordinates.is_valid() is False:
-            return 0
-
-        if Umpire._in_buffer_zone(pitch) is True:
-            return 0
-
-        return Umpire.delta_favor_zone(pitch=pitch,
-                                       runners_int=runners_int,
-                                       isTopInning=isTopInning)
-
-    @classmethod
-    def delta_favor_monte(cls, pitch: PlayEvents, isTopInning: bool,
-                          runners: Runners = None, runners_int: int = None
-                          ) -> float:
-        """
-        delta_favor_monteClaculates the favored runs the umpire gave the
-        home team if a pitch is missed based off potential pitch
-        locations.
-
-        The Hawkeye tracking system is not perfect and can miss a
-        pitches real location by up to a quarter of an inch. This method
-        calculates 500 potential pitch locations that the real pitch
-        location could have been. For a pitch to be a missed call one
-        of the two scenarios must be true:
-        1. Called ball but >90% of simulated pitches were balls
-        2. Called strike but >90% of simulated pitches were strikes
-
-        This is what UmpScorecards claims they do but I do not believe
-        it after some testing. I believe they use the delta_favor_dist()
-        method instead
-        https://umpscorecards.com/explainers/accuracy
-
-        Args:
-            pitch (PlayEvents): The pitch data from the game.PlayEvents
-                class. The PlayEvents class holds all the pitch data
-            isTopInning (bool): A boolean that represents if its the
-                top inning. Flips the sign of the result to adjust for
-                top/bottom of inning
-            runners (Runners, optional): The Runners class that holds
-                data for runners locations. Takes priority over
-                runners_int. Defaults to None. Defaults to None.
-            runners_int (int, optional): The integer representation for base
-                runner locations. Can be obtained by using int(Runners)
-                where Runners is the Runners class. Defaults to None
-
-        Raises:
-            ValueError: _description_
-            TypeError: _description_
-            TypeError: _description_
-
-        Returns:
-            float: _description_
-        """
-        if runners is None and runners_int is None:
-            raise ValueError('runners and runners_int were not provided')
-        if isinstance(runners_int, int) is False and runners_int is not None:
-            raise TypeError('runners_int should be type int')
-        if isinstance(isTopInning, bool) is False:
-            raise TypeError('isTopInning should be type bool')
-
-        if runners is not None:
-            runners_int = int(runners)
-
-        home_delta = 0
-
-        correct = True
 
         balls = pitch.count.balls
         strikes = pitch.count.strikes
         outs = pitch.count.outs
 
-        runners = runners_int
-
-        if pitch.pitchData is None:
+        if pitch.details.code not in ('C', 'B'):
             return 0
 
-        if pitch.pitchData.coordinates.is_valid() is False:
-            return 0
-
-        if pitch.details.code in ('C', 'B'):
+        if method == 'zone':
+            correct = Umpire._is_correct_call_zone_num(pitch)
+        if method == 'monte':
+            if Umpire._check_valid_pitch(pitch) is False:
+                return 0
             correct = Umpire._is_correct_call_monte_carlo(pitch)
+        if method == 'buffer':
+            if Umpire._check_valid_pitch(pitch) is False:
+                return 0
+            correct = Umpire._is_correct_call_buffer_zone(pitch)
 
         if correct is True:
             return 0
 
         if pitch.details.code == 'C':
             # Ball called Strike
-            home_delta += Umpire.rednp[balls][strikes-1][outs][runners]
-        elif pitch.details.code == 'B':
+            home_favor = Umpire.rednp[(balls, strikes-1, outs, is_first, is_second, is_third)]
+        if pitch.details.code == 'B':
             # Strike called Ball
-            home_delta -= Umpire.rednp[balls-1][strikes][outs][runners]
+            home_favor = Umpire.rednp[(balls-1, strikes, outs, is_first, is_second, is_third)] * -1
 
         if isTopInning is True:
-            return home_delta
-        return -home_delta
+            return home_favor
+        return -1 * home_favor
+
+    @classmethod
+    def _check_valid_pitch(cls, pitch):
+        if pitch.pitchData is None:
+            return False
+        if pitch.pitchData.coordinates.is_valid() is False:
+            return False
+        return True
 
     @classmethod
     def _is_correct_call_zone_num(cls, pitch: PlayEvents) -> bool:
@@ -486,8 +371,8 @@ class Umpire():
 
         pX_left = pitch.pitchData.coordinates.PX_MIN
         pX_right = pitch.pitchData.coordinates.PX_MAX
-        pZ_top = pitch.pitchData.coordinates.pZ_top
-        pZ_bot = pitch.pitchData.coordinates.pZ_bot
+        pZ_top = pitch.pitchData.coordinates.pZ_max
+        pZ_bot = pitch.pitchData.coordinates.pZ_min
 
         for _ in range(1, 501):
             rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
@@ -506,7 +391,7 @@ class Umpire():
         return True
 
     @classmethod
-    def _in_buffer_zone(cls, pitch: PlayEvents) -> bool:
+    def _is_correct_call_buffer_zone(cls, pitch: PlayEvents) -> bool:
         buf = BUFFER_FEET # buffer in feet but short
 
         pX = pitch.pitchData.coordinates.pX
@@ -560,6 +445,18 @@ class Umpire():
 
         return (rand_x, rand_z)
 
+    @classmethod
+    def _check_class_methods(cls, runners: Runners, runners_int: int, isTopInning: bool) -> int:
+        if runners is None and runners_int is None:
+            raise ValueError('runners and runners_int were not provided')
+        if isinstance(runners_int, int) is False and runners_int is not None:
+            raise TypeError('runners_int should be type int')
+        if isinstance(isTopInning, bool) is False:
+            raise TypeError('isTopInning should be type bool')
+
+        if runners is not None:
+            return int(runners)
+        return runners_int
 
 def sv_top_bot(gamePk: int):
     """

@@ -115,32 +115,20 @@ def get_daily_gamepks(date: str = None) -> List[int]:
 
     return gamePks
 
+def eval_base(base: str) -> bool:
+    if base == 'False':
+        return False
+    elif base == 'True':
+        return True
+    else:
+        raise ValueError(f'Invalid value for base: {base}')
 
-def get_run_expectency_numpy() -> np.ndarray:
-    """
-    Returns the numpy array run expectency table
-
-    Run expectency table obtained from:
-    https://community.fangraphs.com/the-effect-of-umpires-on-baseball-umpire-runs-created-urc/
-
-    How to index:
-    renp[balls][strikes][outs][runners]
-    where runners is a int obtained from get_runners_int() function
-
-    Args:
-        None
-
-    Raises:
-        FileNotFoundError: re_fangraph.csv file missing, renamed, or misplaced
-
-    Returns:
-        numpy.ndarray: Run expectency table renp[balls][strikes][outs][runners]
-    """
+def get_run_expectancy_table() -> dict:
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')
-    csv_file_path = os.path.join(csv_path, 're_fangraph.csv')
+    csv_file_path = os.path.join(csv_path, 're640.csv')
 
-    renp = np.zeros((5,4,4,8))
+    renp = {}
 
     with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
@@ -150,15 +138,23 @@ def get_run_expectency_numpy() -> np.ndarray:
             balls = int(row[0])
             strikes = int(row[1])
             outs = int(row[2])
-            runners = int(row[3])
-            run_expectency = float(row[4])
+            is_first = eval_base(row[3])
+            is_second = eval_base(row[4])
+            is_third = eval_base(row[5])
+            run_expectency = float(row[8])
 
-            renp[balls][strikes][outs][runners] = run_expectency
+            renp[(balls, strikes, outs, is_first, is_second, is_third)] = run_expectency
 
     return renp
 
+def _read_runners(base: str) -> bool:
+    if base == 'True':
+        return True
+    elif base == 'False':
+        return False
+    raise ValueError('unknown')
 
-def get_run_expectency_difference_numpy() -> np.ndarray:
+def get_run_expectency_difference_numpy() -> dict:
     """
     Returns the numpy array run expectency table
 
@@ -177,8 +173,9 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')
-    csv_file_path = os.path.join(csv_path, 'red_fangraph.csv')
-    rednp = np.zeros((5,4,4,8))
+    csv_file_path = os.path.join(csv_path, 'red288.csv')
+
+    red288 = {}
 
     with open(csv_file_path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
@@ -188,13 +185,15 @@ def get_run_expectency_difference_numpy() -> np.ndarray:
             balls = int(row[0])
             strikes = int(row[1])
             outs = int(row[2])
-            runners = int(row[3])
-            run_expectency = float(row[4])
+            is_first = _read_runners(row[3])
+            is_second = _read_runners(row[4])
+            is_third = _read_runners(row[5])
+            run_expectency = float(row[6])
 
-            rednp[balls][strikes][outs][runners] = run_expectency
+            state = (balls, strikes, outs, is_first, is_second, is_third)
+            red288[state] = run_expectency
 
-    return rednp
-
+    return red288
 
 if __name__ == '__main__':
     print(get_game_dict(745995))

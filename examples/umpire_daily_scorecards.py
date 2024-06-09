@@ -44,7 +44,7 @@ def daily_ump_scorecards(date: str,
         game = Game(game_dict)
 
         games.append(Umpire(game=game))
-        games[-1].calculate()
+        games[-1].calculate_game(method='monte')
 
     if print_daily_stats is True:
         for game in games:

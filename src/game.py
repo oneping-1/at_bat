@@ -692,8 +692,8 @@ class PitchCoordinates:
         self.sZ_bot = sz_bot
 
         # Location of Center of Pitch for Ball/Strike
-        self.pZ_top = self.sZ_top + self.BALL_RADIUS_FEET
-        self.pZ_bot = self.sZ_bot - self.BALL_RADIUS_FEET
+        self.pZ_max = self.sZ_top + self.BALL_RADIUS_FEET
+        self.pZ_min = self.sZ_bot - self.BALL_RADIUS_FEET
 
         # Acceleration in X,Y,Z directions
         self.aX = coor.get('aX', None)
@@ -772,10 +772,9 @@ class PitchCoordinates:
         # no children
 
     def is_valid(self) -> bool:
-        if self.pX is not None and self.pZ is not None:
+        if (self.pX is not None) and (self.pZ is not None):
             return True
-        elif self.pX is None or self.pZ is None:
-            return False
+        return False
 
 
 class Breaks:

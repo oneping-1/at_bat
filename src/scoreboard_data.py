@@ -71,7 +71,7 @@ class ScoreboardData:
 
         self.umpire = 'L'
         umpire = Umpire(gamepk=self.gamepk, delay_seconds=self.delay_seconds)
-        umpire.calculate(delta_favor_func=Umpire.delta_favor_monte)
+        umpire.calculate_game(method='monte')
         self.umpire: str = f'{repr(umpire)} ({umpire.num_missed_calls:d})'
 
     def update_and_return_new(self) -> Tuple['ScoreboardData', bool]:

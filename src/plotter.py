@@ -16,7 +16,7 @@ plotter.plot([GameEvents])
 from typing import List
 from matplotlib import pyplot as plt
 from matplotlib import patches
-from src.game import PlayEvents
+from src.umpire import MissedCalls
 
 class Plotter:
     """
@@ -45,15 +45,15 @@ class Plotter:
 
     def __init__(self):
         # default top and bottom strike zone
-        self.sZ_top: float = 3.5
-        self.sZ_bot: float = 1.5
-        self._zone_height = self.sZ_top - self.sZ_bot
+        self.sz_top: float = 3.5
+        self.sz_bot: float = 1.5
+        self._zone_height = self.sz_top - self.sz_bot
 
-        self.pitches: List[PlayEvents] = None
+        self.pitches: List[MissedCalls] = None
 
         self.axis = None
 
-    def plot(self, pitches: List[PlayEvents], plot: bool = True):
+    def plot(self, pitches: List[MissedCalls], plot: bool = True):
         """
         Plots a list of pitches using matplot lib. Input is a list of
         pitches so that multiple pitches can be printed
@@ -65,17 +65,17 @@ class Plotter:
                 do calculations. Default = True
         """
 
-        self.pitches: List[PlayEvents] = pitches.copy()
+        self.pitches: List[MissedCalls] = pitches.copy()
         # normalized strike zone
         if len(self.pitches) == 1:
-            self.sZ_top = self.pitches[0].pitchData.coordinates.sZ_top
-            self.sZ_bot = self.pitches[0].pitchData.coordinates.sZ_bot
-            self._zone_height = self.sZ_top - self.sZ_bot
+            self.sz_top = self.pitches[0].sz_top
+            self.sz_bot = self.pitches[0].sz_bot
+            self._zone_height = self.sz_top - self.sz_bot
 
         _, self.axis = plt.subplots()
 
         # creates strike zone box
-        zone = patches.Rectangle((self.sX_min, self.sZ_bot),
+        zone = patches.Rectangle((self.sX_min, self.sz_bot),
                                  width=self._PLATE_WIDTH_FEET,
                                  height=self._zone_height,
                                  facecolor='none',
@@ -105,11 +105,11 @@ class Plotter:
         if plot is True:
             plt.show()
 
-    def _get_normalized_pitch_location(self, pitch: PlayEvents):
-        pX = pitch.pitchData.coordinates.pX
-        pZ = pitch.pitchData.coordinates.pZ
+    def _get_normalized_pitch_location(self, pitch: MissedCalls):
+        pX = pitch.px
+        pZ = pitch.pz
 
-        code = pitch.details.code
+        code = pitch.code
 
         if code == 'C':
             color = 'red'
@@ -119,12 +119,12 @@ class Plotter:
             color = 'black'
 
         # delta to top and bottom of strike zone
-        d_top = pZ - pitch.pitchData.coordinates.sZ_top
-        d_bot = pZ - pitch.pitchData.coordinates.sZ_bot
+        d_top = pZ - pitch.sz_top
+        d_bot = pZ - pitch.sz_bot
 
         # new pitch location accounted for normalized strike zone
-        pZ_top = d_top + self.sZ_top
-        pZ_bot = d_bot + self.sZ_bot
+        pZ_top = d_top + self.sz_top
+        pZ_bot = d_bot + self.sz_bot
 
         if abs(d_top) > abs(d_bot):
             pZ = pZ_bot

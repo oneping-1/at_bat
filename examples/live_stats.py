@@ -19,11 +19,12 @@ import curses
 import argparse
 from typing import Tuple
 from src.game import Game, PlayEvents, AllPlays
-from src.statsapi_plus import get_game_dict, get_run_expectency_numpy
+from src.statsapi_plus import get_game_dict, get_run_expectancy_table
 from src.umpire import Umpire
 from src.runners import Runners
 from src.fifo import FIFO
 
+renp = get_run_expectancy_table()
 
 def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     """
@@ -146,8 +147,11 @@ def _get_run_details(game: Game, at_bat: AllPlays,
     runners.end_at_bat(at_bat)
     runners = int(runners)
 
-    renp = get_run_expectency_numpy()
-    run_exp = renp[balls][strikes][outs][runners]
+    is_first = bool(runners & 1)
+    is_second = bool(runners & 2)
+    is_third = bool(runners & 4)
+
+    run_exp = renp[balls, strikes, outs, is_first, is_second, is_third]
 
     misses, favor, _ = Umpire.find_missed_calls(game=game)
 

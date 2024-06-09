@@ -149,7 +149,7 @@ class Runners:
         runners_list = [is_first, is_second, is_third]
         self.runners = runners_list.copy()
 
-    def process_runner_movement(self, runner_movements: List[RunnersMovement], index: int):
+    def process_runner_movement(self, runner_movements: List[RunnersMovement], play_index: int):
         """
         Processes runner movements as you iterate through the pitches
         in a game. For this method to work properly, you must skip the
@@ -163,7 +163,7 @@ class Runners:
         Args:
             runner_movements (List[Runners]): List of runners events
                 during the at bat
-            playIndex (int): Current playIndex number from the at bat
+            play_index (int): Current playIndex number from the at bat
 
         Raises:
             ValueError: If a runner is moved away from a base and
@@ -177,7 +177,7 @@ class Runners:
                 runners_delta[i] = 1
 
         for runner_movement in runner_movements:
-            if index == runner_movement.details.playIndex:
+            if play_index == runner_movement.details.playIndex:
                 runner_delta_return = self._runner_movement(runner_movement)
                 runners_delta = [a + b for a,b in zip(runners_delta, runner_delta_return)]
 
@@ -190,6 +190,8 @@ class Runners:
         for i, runner in enumerate(runners_delta):
             if runner == 1:
                 self.runners[i] = True
+            elif runner == 0:
+                self.runners[i] = False
 
     def _runner_movement(self, runner_movement) -> List[int]:
         runner_delta = [0, 0, 0]

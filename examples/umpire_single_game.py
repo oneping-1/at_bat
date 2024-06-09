@@ -32,16 +32,17 @@ def main():
 
     plotter = Plotter()
 
-    method = Umpire.delta_favor_monte
-    results = Umpire.find_missed_calls(gamepk=gamePk, print_missed_calls=True,
-                                       delta_favor_func=method)
-    _, favor, missed_list = results
+    umpire = Umpire(gamepk = gamePk)
+    umpire.calculate_game(method='monte')
+    umpire.print_missed_calls()
 
-    print(f'{favor:.2f}')
-    plotter.plot(missed_list)
+    favor = umpire.home_favor
+    missed_calls_list = umpire.missed_calls
+
+    print(f'{umpire.home_favor:.2f}')
+    plotter.plot(missed_calls_list)
 
     return favor
 
-
 if __name__ == '__main__':
-    print(f'{main():.2f}')
+    main()
