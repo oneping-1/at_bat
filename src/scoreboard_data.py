@@ -250,7 +250,11 @@ class ScoreboardData:
 
         new_game.check_postponed()
 
-        return dict_diff(self.to_dict(), new_game.to_dict())
+        diff = dict_diff(self.to_dict(), new_game.to_dict())
+
+        self = new_game
+
+        return diff
 
     def to_dict(self) -> dict:
         return {'gamepk': self.gamepk,
