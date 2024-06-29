@@ -26,6 +26,14 @@ request_keys = ['game_state',
                 'gamepk']
 
 def get_ip() -> str:
+    """
+    Returns the IP address of the server to send data to. A function
+    is used in case future me wants to store this data in a file or
+    database.
+
+    Returns:
+        str: The IP address of the server to send data to.
+    """
     return '192.168.1.187'
 
 def time_since_utc(input_time):
@@ -90,6 +98,23 @@ def time_from_seconds_ago_with_offset(seconds_ago, offset_hours):
 
     return past_datetime_no_micro.isoformat()
 
+def get_request_dict(game: dict) -> dict:
+    """
+    Returns a dictionary with the keys and values of the game object
+
+    Args:
+        game (ScoreboardData): ScoreboardData object
+
+    Returns:
+        dict: Dictionary with the keys and values of the game object
+    """
+    d = {}
+    for key in request_keys:
+        if game.get(key, None) is not None:
+            d[key] = game[key]
+
+    return d
+
 def start_games(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
     """Initalizes the games list with the games from the current day.
     Sends initial data to the ESP32.
@@ -107,7 +132,7 @@ def start_games(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
 
     for i, game in enumerate(games):
         if game is not None:
-            params = get_request_dict(game) | {'show': 'true'}
+            params = get_request_dict(game.to_dict()) | {'show': 'true'}
             response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
                                     params=params)
         else:
@@ -121,22 +146,6 @@ def start_games(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
 
     return games
 
-def get_request_dict(game: ScoreboardData) -> dict:
-    """
-    Returns a dictionary with the keys and values of the game object
-
-    Args:
-        game (ScoreboardData): ScoreboardData object
-
-    Returns:
-        dict: Dictionary with the keys and values of the game object
-    """
-    d = {}
-    for key in request_keys:
-        d[key] = getattr(game, key)
-
-    return d
-
 def loop(ip: str, i: int, game: ScoreboardData):
     """Update the scoreboard matrix with the current game data.
 
@@ -149,9 +158,9 @@ def loop(ip: str, i: int, game: ScoreboardData):
     if game is None:
         return
 
-    diff, new_info = game.get_updated_data_dict()
+    diff = game.get_updated_data_dict()
 
-    if new_info is True:
+    if diff:
         response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
                                 params=get_request_dict(diff))
 
@@ -172,10 +181,7 @@ def main():
 
     while True:
         for i, game, in enumerate(games):
-            try:
-                loop(ip, i, game)
-            except KeyboardInterrupt:
-                sys.exit()
+            loop(ip, i, game)
 
         if (time.time() - last_gamepk_check) > 600:
             last_gamepk_check = time.time()

@@ -1,12 +1,29 @@
-from typing import Tuple
+"""
+This module contains the ScoreboardData class which is a simplified
+version of the Game object which holds information that is displayed
+on the scoreboard. This object is used to easaily access the data
+needed to display the scoreboard and return changes in the data.
+
+Raises:
+    ValueError: If isTopInning is not a boolean
+"""
+
 from datetime import datetime, timedelta, timezone
-import copy
+import json
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
-import json
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
+    """Return the difference between two dictionaries
+
+    Args:
+        dict1 (dict): Dictionary 1
+        dict2 (dict): Dictionary 2
+
+    Returns:
+        dict: The difference between the two dictionaries
+    """
     diff = {}
 
     for key in dict1.keys() | dict2.keys():
@@ -21,10 +38,24 @@ def dict_diff(dict1: dict, dict2: dict) -> dict:
     return diff
 
 def get_player_last_name(game: Game, player_id: int) -> str:
+    """
+    Return the last name of a player given their player_id
+
+    Args:
+        game (Game): The Game object
+        player_id (int): The player_id
+
+    Returns:
+        str: The last name of the player
+    """
     player = game.gameData.players[f'ID{player_id}']
     return player['lastName']
 
 class ProbablePitchers:
+    """
+    Contains the probable pitcher data for the game as a sub-class to
+    ScoreboardData
+    """
     def __init__(self, game: Game):
         away_id = game.gameData.probablePitchers['away']['id']
         home_id= game.gameData.probablePitchers['home']['id']
@@ -32,13 +63,30 @@ class ProbablePitchers:
         self.away = get_player_last_name(game, away_id)
         self.home = get_player_last_name(game, home_id)
 
-        self.away_era = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{away_id}']['seasonStats']['pitching']['era']
-        self.home_era = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{home_id}']['seasonStats']['pitching']['era']
+        away = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+        home = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+
+        self.away_era = away[f'ID{away_id}']['seasonStats']['pitching']['era']
+        self.home_era = home[f'ID{home_id}']['seasonStats']['pitching']['era']
 
     def to_dict(self) -> dict:
-        return {'away': self.away, 'home': self.home, 'away_era': self.away_era, 'home_era': self.home_era}
+        """Return a dictionary representation of the ProbablePitchers object
+
+        Returns:
+            dict: Dictionary representation of the ProbablePitchers object
+        """
+        return {
+            'away': self.away,
+            'home': self.home,
+            'away_era': self.away_era,
+            'home_era': self.home_era
+        }
 
 class PitcherDecisions:
+    """
+    Contains the pitcher decisions data for the game as a sub-class to
+    ScoreboardData
+    """
     def __init__(self, game: Game):
         if game.liveData.decisions is None:
             self.win = None
@@ -55,26 +103,27 @@ class PitcherDecisions:
         self.win = get_player_last_name(game, win_id)
         self.loss = get_player_last_name(game, loss_id)
 
-
-
         away_score = game.liveData.linescore.teams.away.runs
         home_score = game.liveData.linescore.teams.home.runs
 
+        away_team = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+        home_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+
         if away_score > home_score:
-            w = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{win_id}']['seasonStats']['pitching']['wins']
-            l = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{win_id}']['seasonStats']['pitching']['losses']
+            w = away_team[f'ID{win_id}']['seasonStats']['pitching']['wins']
+            l = away_team[f'ID{win_id}']['seasonStats']['pitching']['losses']
             self.win_summary = f'{w}-{l}'
 
-            w = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{loss_id}']['seasonStats']['pitching']['wins']
-            l = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{loss_id}']['seasonStats']['pitching']['losses']
+            w = home_team[f'ID{loss_id}']['seasonStats']['pitching']['wins']
+            l = home_team[f'ID{loss_id}']['seasonStats']['pitching']['losses']
             self.loss_summary = f'{w}-{l}'
         else:
-            w = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{win_id}']['seasonStats']['pitching']['wins']
-            l = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{win_id}']['seasonStats']['pitching']['losses']
+            w = home_team[f'ID{win_id}']['seasonStats']['pitching']['wins']
+            l = home_team[f'ID{win_id}']['seasonStats']['pitching']['losses']
             self.win_summary = f'{w}-{l}'
 
-            w = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{loss_id}']['seasonStats']['pitching']['wins']
-            l = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{loss_id}']['seasonStats']['pitching']['losses']
+            w = away_team[f'ID{loss_id}']['seasonStats']['pitching']['wins']
+            l = away_team[f'ID{loss_id}']['seasonStats']['pitching']['losses']
             self.loss_summary = f'{w}-{l}'
 
         if game.liveData.decisions.save is None:
@@ -86,16 +135,35 @@ class PitcherDecisions:
         self.save = get_player_last_name(game, save_id)
 
         if away_score > home_score:
-            s = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{save_id}']['seasonStats']['pitching']['saves']
+            save_team = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+            s = save_team[f'ID{save_id}']['seasonStats']['pitching']['saves']
             self.save_summary = f'{s}'
         else:
-            s = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{save_id}']['seasonStats']['pitching']['saves']
+            save_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+            s = save_team[f'ID{save_id}']['seasonStats']['pitching']['saves']
             self.save_summary = f'{s}'
 
+        return None
+
     def to_dict(self) -> dict:
-        return {'win': self.win, 'loss': self.loss, 'save': self.save, 'win_summary': self.win_summary, 'loss_summary': self.loss_summary, 'save_summary': self.save_summary}
+        """Return a dictionary representation of the PitcherDecisions object
+
+        Returns:
+            dict: Dictionary representation of the PitcherDecisions object
+        """
+        return {
+            'win': self.win,
+            'loss': self.loss,
+            'save': self.save,
+            'win_summary': self.win_summary,
+            'loss_summary': self.loss_summary,
+            'save_summary': self.save_summary
+        }
 
 class Matchup:
+    """
+    Contains the matchup data for the game as a sub-class to ScoreboardData
+    """
     def __init__(self, game: Game):
         self._game = game
 
@@ -122,19 +190,42 @@ class Matchup:
             # next half inning's batter and pitcher
             isTopInning = not isTopInning
 
+        away_team = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+        home_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+
         if isTopInning is True:
-            self.batter_summary = game._game_dict['liveData']['boxscore']['teams']['away']['players'][f'ID{batter_id}']['stats']['batting']['summary'][:3]
-            self.pitcher_summary = f'P:{game._game_dict["liveData"]["boxscore"]["teams"]["home"]["players"][f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]}'
+            pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+            self.pitcher_summary = f'P:{pitches}'
+            self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
         elif isTopInning is False:
-            self.batter_summary = game._game_dict['liveData']['boxscore']['teams']['home']['players'][f'ID{batter_id}']['stats']['batting']['summary'][:3]
-            self.pitcher_summary = f'P:{game._game_dict["liveData"]["boxscore"]["teams"]["away"]["players"][f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]}'
+            pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+            self.pitcher_summary = f'P:{pitches}'
+            self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
         else:
             raise ValueError('isTopInning is not a boolean')
 
+        return None
+
     def to_dict(self) -> dict:
-        return {'batter': self.batter, 'pitcher': self.pitcher, 'batter_summary': self.batter_summary, 'pitcher_summary': self.pitcher_summary}
+        """Return a dictionary representation of the Matchup object
+
+        Returns:
+            dict: Dictionary representation of the Matchup object
+        """
+        return {
+            'batter': self.batter,
+            'pitcher': self.pitcher,
+            'batter_summary': self.batter_summary,
+            'pitcher_summary': self.pitcher_summary
+        }
 
 class ScoreboardData:
+    """
+    A simplified version of the Game object which holds information
+    that is displayed on the scoreboard. This object is used to
+    easaily access the data needed to display the scoreboard and return
+    changes in the data.
+    """
     def __init__(self, gamepk: int = None, delay_seconds: int = 0):
         self.gamepk: int = gamepk
         self.delay_seconds: int = delay_seconds
@@ -195,56 +286,13 @@ class ScoreboardData:
         umpire.calculate_game(method='monte')
         self.umpire: str = f'{repr(umpire)} ({umpire.num_missed_calls:d})'
 
-    def _get_live_batter(self):
-        if self.game.liveData.linescore.offense.batter is None:
-            self.batter = None
-            return 0
-
-        # batter_endpoint = self.game.liveData.linescore.offense.batter.link
-        # batter_response = requests.get(url + batter_endpoint, timeout=10)
-        # self.batter = batter_response.json()['people'][0]['lastName']
-        # return 0
-
-        batter_id = self.game.liveData.linescore.offense.batter.id
-        self.batter = self._get_last_name(batter_id)
-
-    def _get_live_pitcher(self):
-        if self.game.liveData.linescore.defense.pitcher is None:
-            self.pitcher = None
-            return 0
-
-        # pitcher_endpoint = self.game.liveData.linescore.defense.pitcher.link
-        # pitcher_response = requests.get(url + pitcher_endpoint, timeout=10)
-        # self.pitcher = pitcher_response.json()['people'][0]['lastName']
-
-        pitcher_id = self.game.liveData.linescore.defense.pitcher.id
-        self.pitcher = self._get_last_name(pitcher_id)
-
-    def _get_pitcher_decisions(self) -> int:
-        if self.game.liveData.decisions is None:
-            self.winning_pitcher = None
-            self.losing_pitcher = None
-            self.save_pitcher = None
-            return 0
-
-        winning_pitcher_id = self.game.liveData.decisions.winner.id
-        losing_pitcher_id = self.game.liveData.decisions.loser.id
-
-
-        self.winning_pitcher = self._get_last_name(winning_pitcher_id)
-        self.losing_pitcher = self._get_last_name(losing_pitcher_id)
-
-
-        if self.game.liveData.decisions.save is None:
-            self.save_pitcher = None
-            return 0
-
-        save_pitcher_id = self.game.liveData.decisions.save.id
-        self.save_pitcher = self._get_last_name(save_pitcher_id)
-
-        return 0
-
     def get_updated_data_dict(self) -> dict:
+        """Return the difference between the current ScoreboardData
+        object as a dictionary
+
+        Returns:
+            dict: The difference between the current ScoreboardData object
+        """
         new_game = ScoreboardData(gamepk=self.gamepk,
                                   delay_seconds=self.delay_seconds)
 
@@ -252,11 +300,16 @@ class ScoreboardData:
 
         diff = dict_diff(self.to_dict(), new_game.to_dict())
 
-        self = new_game
+        self.__dict__.update(new_game.__dict__)
 
         return diff
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of the ScoreboardData object
+
+        Returns:
+            dict: Dictionary representation of the ScoreboardData object
+        """
         return {'gamepk': self.gamepk,
                 'game_state': self.game_state,
                 'away_abv': self.away_abv,
