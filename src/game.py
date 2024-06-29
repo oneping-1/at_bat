@@ -29,16 +29,16 @@ import pytz
 import statsapi
 from tqdm import tqdm
 from src.statsapi_plus import get_daily_gamepks
-from src.statsapi_plus import get_re288_dataframe
 from src.statsapi_plus import get_game_dict
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # Update for new game states for custom game_state attribute
 KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
-                    'MA','MC','ME','MF','MG','MH','MI','MN','MO','MP',
-                    'MS','MT','MU','MV','MQ','MW','MY','NF','NJ','NN',
-                    'NH','TR','UR','O','OR','F','FG','FR','DI','DC','DR')
+                    'MA','MC','MD','ME','MF','MG','MH','MI','MN','MO'
+                    'MP','MS','MT','MU','MV','MQ','MW','MY','NF','NJ',
+                    'NN','NH','TR','UR','O','OR','F','FG','FR','DI',
+                    'DC','DR')
 
 class Game:
     """
@@ -354,12 +354,15 @@ class LiveData:
         self.plays = liveData['plays']
         self.linescore = liveData['linescore']
         self.boxscore = liveData['boxscore']
-        self.decisions = liveData.get('decision', {})
+        self.decisions = liveData.get('decisions', None)
         self._children()
 
     def _children(self):
         self.plays = Plays(self.plays)
         self.linescore = Linescore(self.linescore)
+
+        if self.decisions is not None:
+            self.decisions = Decisions(self.decisions)
 
     def __eq__(self, other):
         if self._liveData == other._liveData:
@@ -975,11 +978,15 @@ class Decisions:
     def __init__(self, decision):
         self.winner = decision['winner']
         self.loser = decision['loser']
+        self.save = decision.get('save', None)
         self._children()
 
     def _children(self):
         self.winner = Player(self.winner)
         self.loser = Player(self.loser)
+
+        if self.save is not None:
+            self.save = Player(self.save)
 
 
 def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:

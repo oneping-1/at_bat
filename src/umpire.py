@@ -75,7 +75,7 @@ class MissedCalls():
     def print_pitch(self):
         to_print_str = ''
 
-        to_print_str += f'{self.i}: {self.half_inning} {self.inning}\n'
+        to_print_str += f'{self.i + 1}: {self.half_inning} {self.inning}\n'
         to_print_str += f'{self.pitcher} to {self.batter}\n'
 
         if self.outs == 1:
@@ -96,6 +96,7 @@ class MissedCalls():
 
         to_print_str += f'Home Favor: {self.home_favor:4.2f}\n'
 
+        print(to_print_str)
 
 class Umpire():
     """

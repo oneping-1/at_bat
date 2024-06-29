@@ -160,7 +160,7 @@ class GameFrame(tk.Frame):
         if self.gamepk is None:
             return
 
-        self.diff, _ = self.data.update_and_return_new()
+        self.diff, _ = self.data.get_updated_data_dict()
 
     def update_data(self):
         if self.gamepk is None:
