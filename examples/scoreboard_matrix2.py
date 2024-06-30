@@ -19,7 +19,7 @@ def get_ip() -> str:
         str: The IP address of the server to send data to.
     """
     # return 'http://127.0.0.1:5000'
-    return "http://192.168.1.133:5000"
+    return 'http://192.168.1.94:5000'
 
 def send_data(game_index: int, data: dict):
     """
@@ -36,6 +36,15 @@ def send_data(game_index: int, data: dict):
     response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
     print(json.dumps(response.json(), indent=4))
 
+def reset_games():
+    """
+    Resets the games on the server.
+    """
+    ip = get_ip()
+    url = f'{ip}/reset'
+    response = requests.get(url, timeout=10)
+    print(json.dumps(response.json(), indent=4))
+
 def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
     """
     Starts the games and sends the initial data to the server.
@@ -49,6 +58,7 @@ def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
     Returns:
         List[ScoreboardData]: List of ScoreboardData objects
     """
+    # reset_games()
     gamepks = get_daily_gamepks()
     games = [ScoreboardData(gamepk=gamepk, delay_seconds=delay_seconds) for gamepk in gamepks]
 

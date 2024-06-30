@@ -57,17 +57,38 @@ class ProbablePitchers:
     ScoreboardData
     """
     def __init__(self, game: Game):
-        away_id = game.gameData.probablePitchers['away']['id']
-        home_id= game.gameData.probablePitchers['home']['id']
+        self._get_away(game)
+        self._get_home(game)
 
+    def _get_away(self, game: Game) -> str:
+        away = game.gameData.probablePitchers.get('away', None)
+
+        if away is None:
+            self.away = None
+            self.away_era = None
+            return None
+
+        away_id = away['id']
         self.away = get_player_last_name(game, away_id)
+
+        away_boxscore = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+        self.away_era = away_boxscore[f'ID{away_id}']['seasonStats']['pitching']['era']
+        return None
+
+    def _get_home(self, game: Game) -> str:
+        home = game.gameData.probablePitchers.get('home', None)
+
+        if home is None:
+            self.home = None
+            self.home_era = None
+            return None
+
+        home_id = home['id']
         self.home = get_player_last_name(game, home_id)
 
-        away = game._game_dict['liveData']['boxscore']['teams']['away']['players']
-        home = game._game_dict['liveData']['boxscore']['teams']['home']['players']
-
-        self.away_era = away[f'ID{away_id}']['seasonStats']['pitching']['era']
-        self.home_era = home[f'ID{home_id}']['seasonStats']['pitching']['era']
+        home_boxscore = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+        self.home_era = home_boxscore[f'ID{home_id}']['seasonStats']['pitching']['era']
+        return None
 
     def to_dict(self) -> dict:
         """Return a dictionary representation of the ProbablePitchers object
