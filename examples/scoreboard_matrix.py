@@ -181,7 +181,11 @@ def main():
 
     while True:
         for i, game, in enumerate(games):
-            loop(ip, i, game)
+            try:
+                loop(ip, i, game)
+            except TimeoutError as e:
+                print('Timeout Error')
+                print(e)
 
         if (time.time() - last_gamepk_check) > 600:
             last_gamepk_check = time.time()

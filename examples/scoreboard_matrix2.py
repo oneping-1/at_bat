@@ -19,7 +19,7 @@ def get_ip() -> str:
         str: The IP address of the server to send data to.
     """
     # return 'http://127.0.0.1:5000'
-    return 'http://192.168.1.94:5000'
+    return 'http://192.168.1.93:5000'
 
 def send_data(game_index: int, data: dict):
     """
@@ -69,6 +69,14 @@ def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
 
     return games
 
+def check_for_new_games(gamepks: List[int]) -> List[int]:
+    new_gamepks = get_daily_gamepks()
+
+    if gamepks != new_gamepks:
+        return new_gamepks
+
+    return gamepks
+
 def loop(index: int, game: ScoreboardData):
     """
     Main loop to check for updated data and send it to the server.
@@ -99,14 +107,15 @@ def main(delay_seconds: int = 60):
 
     while True:
         for i, game in enumerate(games):
-            loop(i, game)
+            try:
+                loop(i, game)
+            except TimeoutError as e:
+                print('Timeout Error')
+                print(e)
 
         if (time.time() - last_gamepk_check) > 600:
             last_gamepk_check = time.time()
-
-            if gamepks != get_daily_gamepks():
-                gamepks = get_daily_gamepks()
-                games = start_games(delay_seconds=delay_seconds)
+            gamepks = check_for_new_games(gamepks)
 
 if __name__ == '__main__':
     main()
