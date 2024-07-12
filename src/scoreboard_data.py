@@ -64,8 +64,8 @@ class ProbablePitchers:
         away = game.gameData.probablePitchers.get('away', None)
 
         if away is None:
-            self.away = None
-            self.away_era = None
+            self.away = 'TBD'
+            self.away_era = '-.--'
             return None
 
         away_id = away['id']
@@ -79,8 +79,8 @@ class ProbablePitchers:
         home = game.gameData.probablePitchers.get('home', None)
 
         if home is None:
-            self.home = None
-            self.home_era = None
+            self.home = 'TBD'
+            self.home_era = '-.--'
             return None
 
         home_id = home['id']
