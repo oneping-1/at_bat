@@ -160,9 +160,15 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
     diff = game.get_updated_data_dict()
 
-    if diff:
+    reduced_diff = {}
+
+    for key in diff:
+        if key in request_keys:
+            reduced_diff[key] = diff[key]
+
+    if reduced_diff:
         response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
-                                params=get_request_dict(diff))
+                                params=get_request_dict(reduced_diff))
 
         if response.status_code != 200:
             print(f'Error: {response.status_code} {response.reason}')

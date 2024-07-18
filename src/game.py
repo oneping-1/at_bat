@@ -37,8 +37,8 @@ MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
                     'MA','MC','MD','ME','MF','MG','MH','MI','MN','MO'
                     'MP','MS','MT','MU','MV','MQ','MW','MY','NF','NJ',
-                    'NN','NH','TR','UR','O','OR','F','FG','FR','DI',
-                    'DC','DR')
+                    'NI','NN','NH','TR','UR','O','OO','OR','F','FG',
+                    'FO','FR','DI','DC','DR')
 
 class Game:
     """
