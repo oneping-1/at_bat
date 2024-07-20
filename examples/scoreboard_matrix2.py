@@ -3,7 +3,7 @@ This module will send data to the server for the scoreboard matrix.
 """
 
 import time
-from typing import List
+from typing import List, Union
 import json
 import requests
 from src.scoreboard_data import ScoreboardData
@@ -58,7 +58,8 @@ def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
     Returns:
         List[ScoreboardData]: List of ScoreboardData objects
     """
-    # reset_games()
+    reset_games()
+
     gamepks = get_daily_gamepks()
     games = [ScoreboardData(gamepk=gamepk, delay_seconds=delay_seconds) for gamepk in gamepks]
 
@@ -70,6 +71,15 @@ def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
     return games
 
 def check_for_new_games(gamepks: List[int]) -> List[int]:
+    """
+    Check for new games and send the new data to the server.
+
+    Args:
+        gamepks (List[int]): List of gamepks to check for new games
+
+    Returns:
+        List[int]: List of gamepks
+    """
     new_gamepks = get_daily_gamepks()
 
     if gamepks != new_gamepks:
@@ -77,7 +87,7 @@ def check_for_new_games(gamepks: List[int]) -> List[int]:
 
     return gamepks
 
-def loop(index: int, game: ScoreboardData):
+def loop(index: int, game: Union[ScoreboardData, None]):
     """
     Main loop to check for updated data and send it to the server.
 

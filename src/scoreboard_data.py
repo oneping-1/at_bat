@@ -240,6 +240,19 @@ class Matchup:
             'pitcher_summary': self.pitcher_summary
         }
 
+class Count:
+    def __init__(self, game: Game):
+        self.balls = game.liveData.linescore.balls
+        self.strikes = game.liveData.linescore.strikes
+        self.outs = game.liveData.linescore.outs
+
+    def to_dict(self) -> dict:
+        return {
+            'balls': self.balls,
+            'strikes': self.strikes,
+            'outs': self.outs
+        }
+
 class ScoreboardData:
     """
     A simplified version of the Game object which holds information
@@ -295,8 +308,7 @@ class ScoreboardData:
         self.probables = ProbablePitchers(game=self.game)
         self.decisions = PitcherDecisions(game=self.game)
         self.matchup = Matchup(game=self.game)
-
-        self.outs: int = self.game.liveData.linescore.outs
+        self.count = Count(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
@@ -343,7 +355,7 @@ class ScoreboardData:
                 'probables': self.probables.to_dict(),
                 'decisions': self.decisions.to_dict(),
                 'matchup': self.matchup.to_dict(),
-                'outs': self.outs,
+                'count': self.count.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
