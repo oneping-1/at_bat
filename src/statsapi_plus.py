@@ -5,13 +5,14 @@ more appropriate modules
 """
 
 from typing import List
-import csv
+import time
 from datetime import datetime, timedelta
 import os
 import statsapi
 import pandas as pd
-from src.run_expectancy import RunExpectancy
 
+class MaxRetriesError(Exception):
+    pass
 
 def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
     """
@@ -44,14 +45,24 @@ def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
         game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
         game_class = Game(game_dict)
     """
+    max_retries = 5
+
     if gamepk is None:
         raise ValueError('gamePk not provided')
 
     delay_time = _get_utc_time(delay_seconds=delay_seconds)
-    data = statsapi.get('game',
-                        {'gamePk': gamepk, 'timecode': delay_time},
-                        force=True)
-    return data
+
+    for i in range(max_retries):
+        try:
+            data = statsapi.get('game',
+                {'gamePk': gamepk, 'timecode': delay_time},
+                force=True)
+            return data
+        except ConnectionError as e:
+            print(f'ConnectionError: {e}')
+            print(f'Retrying... {i+1}/{max_retries}')
+            time.sleep(2 ** i) # Exponential backoff
+    raise MaxRetriesError('Max retries reached')
 
 def _get_utc_time(delay_seconds: int = 0):
     """
