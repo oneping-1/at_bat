@@ -214,16 +214,31 @@ class Matchup:
         away_team = game._game_dict['liveData']['boxscore']['teams']['away']['players']
         home_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
 
-        if isTopInning is True:
-            pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-            self.pitcher_summary = f'P:{pitches}'
-            self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
-        elif isTopInning is False:
-            pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-            self.pitcher_summary = f'P:{pitches}'
-            self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
-        else:
-            raise ValueError('isTopInning is not a boolean')
+        try:
+            if isTopInning is True:
+                pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_summary = f'P:{pitches}'
+                self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+            elif isTopInning is False:
+                pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_summary = f'P:{pitches}'
+                self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+            else:
+                raise ValueError('isTopInning is not a boolean')
+        except KeyError:
+            # Sometimes mlb messes up and the inning state does not
+            # match the batter and pitcher. This is a easy bodged fix
+            print('KeyError in Matchup')
+            if isTopInning is False:
+                pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_summary = f'P:{pitches}'
+                self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+            elif isTopInning is True:
+                pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_summary = f'P:{pitches}'
+                self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+            else:
+                raise ValueError('isTopInning is not a boolean')
 
         return None
 
