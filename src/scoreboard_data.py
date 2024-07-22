@@ -256,6 +256,9 @@ class Matchup:
         }
 
 class Count:
+    """
+    Contains the count data for the game as a sub-class to ScoreboardData
+    """
     def __init__(self, game: Game):
         self.balls = game.liveData.linescore.balls
         self.strikes = game.liveData.linescore.strikes
@@ -266,6 +269,60 @@ class Count:
             'balls': self.balls,
             'strikes': self.strikes,
             'outs': self.outs
+        }
+
+class Team:
+    """
+    Contains the team data for the game as a sub-class to Score
+    """
+    def __init__(self, game: Game, team: str):
+        self.abv = game.gameData._gameData['teams'][team]['abbreviation']
+        self.location = game.gameData._gameData['teams'][team]['locationName']
+        self.name = game.gameData._gameData['teams'][team]['teamName']
+
+    def to_dict(self) -> dict:
+        return {
+            'abv': self.abv,
+            'location': self.location,
+            'name': self.name
+        }
+
+class PitchDetails:
+    """
+    Contains the pitch details data for the game as a sub-class to Scoreboard
+    """
+    def __init__(self, game: Game):
+        if game.liveData.plays.allPlays[-1].playEvents == []:
+            # new batter but no pitch yet
+            return None
+
+        pitch =  game.liveData.plays.allPlays[-1].playEvents[-1]
+
+        if pitch.isPitch is False:
+            self.description = None
+            self.speed = None
+            self.type = None
+            self.zone = None
+            # self.spin_rate = None
+            return None
+
+        self.description = pitch.details.description
+        self.speed = pitch.pitchData.startSpeed
+        self.type = pitch.details.type.description
+        self.zone = pitch.pitchData.zone
+
+        # spin rate is incosinstently available
+        # self.spin_rate = pitch.pitchData.spinRate
+
+        return None
+
+    def to_dict(self) -> dict:
+        return {
+            'description': self.description,
+            'speed': self.speed,
+            'type': self.type,
+            'zone': self.zone
+            # 'spin_rate': self.spin_rate
         }
 
 class ScoreboardData:
@@ -291,9 +348,6 @@ class ScoreboardData:
         # See get/game.py/status for more info:
         self.game_state: str = self.game.gameData.status.game_state
         self.check_postponed()
-
-        self.away_abv: str = self.game.gameData.teams.away.abbreviation
-        self.home_abv: str = self.game.gameData.teams.home.abbreviation
 
         self.away_score: int = self.game.liveData.linescore.teams.away.runs
         self.home_score: int = self.game.liveData.linescore.teams.home.runs
@@ -324,6 +378,9 @@ class ScoreboardData:
         self.decisions = PitcherDecisions(game=self.game)
         self.matchup = Matchup(game=self.game)
         self.count = Count(game=self.game)
+        self.away = Team(game=self.game, team='away')
+        self.home = Team(game=self.game, team='home')
+        self.pitch_details = PitchDetails(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
@@ -360,17 +417,18 @@ class ScoreboardData:
         """
         return {'gamepk': self.gamepk,
                 'game_state': self.game_state,
-                'away_abv': self.away_abv,
-                'home_abv': self.home_abv,
                 'away_score': self.away_score,
                 'home_score': self.home_score,
                 'start_time': self.start_time,
                 'inning': self.inning,
                 'inning_state': self.inning_state,
+                'away': self.away.to_dict(),
+                'home': self.home.to_dict(),
                 'probables': self.probables.to_dict(),
                 'decisions': self.decisions.to_dict(),
                 'matchup': self.matchup.to_dict(),
                 'count': self.count.to_dict(),
+                'pitch_details': self.pitch_details.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
@@ -397,7 +455,7 @@ class ScoreboardData:
             self.game_state = 'S' # Suspended/Postponed
 
     def __repr__(self):
-        return f'{self.away_abv} {self.away_score} @ {self.home_abv} {self.home_score}'
+        return f'{self.away.abv} {self.away_score} @ {self.home.abv} {self.home_score}'
 
 if __name__ == '__main__':
     x = ScoreboardData(gamepk=745560)
