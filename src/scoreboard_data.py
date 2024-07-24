@@ -292,8 +292,22 @@ class PitchDetails:
     Contains the pitch details data for the game as a sub-class to Scoreboard
     """
     def __init__(self, game: Game):
+        if game.liveData.plays.allPlays == []:
+            # new game but no pitches yet
+            self.description = None
+            self.speed = None
+            self.type = None
+            self.zone = None
+            # self.spin_rate = None
+            return None
+
         if game.liveData.plays.allPlays[-1].playEvents == []:
             # new batter but no pitch yet
+            self.description = None
+            self.speed = None
+            self.type = None
+            self.zone = None
+            # self.spin_rate = None
             return None
 
         pitch =  game.liveData.plays.allPlays[-1].playEvents[-1]
