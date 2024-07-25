@@ -7,6 +7,7 @@ from typing import Union
 import json
 import requests
 from flask import Flask, request, jsonify
+import threading
 from src.scoreboard_data import ScoreboardData
 from src.statsapi_plus import get_daily_gamepks
 
@@ -18,7 +19,6 @@ class Server:
         self.scoreboard_matrix = scorebaord_matrix
         self.app = Flask(__name__)
         self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
-        self.app.run(host='0.0.0.0', port=5000)
 
     def home(self):
         """
@@ -30,6 +30,9 @@ class Server:
             self.scoreboard_matrix.delay_seconds = int(delay)
 
         return jsonify({'delay_seconds': self.scoreboard_matrix.delay_seconds})
+
+    def run(self):
+        self.app.run(host='0.0.0.0', port=5000)
 
 class ScoreboardMatrix:
     """
@@ -142,7 +145,24 @@ class ScoreboardMatrix:
                 self.last_gamepk_check = time.time()
                 self.check_for_new_games()
 
+def start_server(server):
+    server.run()
+
+def start_scoreboard(scoreboard):
+    scoreboard.run()
+
+def main():
+    scoreboard = ScoreboardMatrix()
+    server = Server(scorebaord_matrix=scoreboard)
+
+    server_thread = threading.Thread(target=start_server, args=(server,))
+    scoreboard_thread = threading.Thread(target=start_scoreboard, args=(scoreboard,))
+
+    server_thread.start()
+    scoreboard_thread.start()
+
+    server_thread.start()
+    scoreboard_thread.start()
+
 if __name__ == '__main__':
-    scoreboard_matrix = ScoreboardMatrix(delay_seconds=60)
-    server = Server(scorebaord_matrix=scoreboard_matrix)
-    scoreboard_matrix.run()
+    main()

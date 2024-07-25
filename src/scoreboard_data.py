@@ -405,13 +405,17 @@ class ScoreboardData:
         umpire.calculate_game(method='monte')
         self.umpire: str = f'{repr(umpire)} ({umpire.num_missed_calls:d})'
 
-    def get_updated_data_dict(self) -> dict:
+    def get_updated_data_dict(self, delay_seconds: int = None) -> dict:
         """Return the difference between the current ScoreboardData
         object as a dictionary
 
         Returns:
             dict: The difference between the current ScoreboardData object
         """
+
+        if delay_seconds is not None:
+            self.delay_seconds = delay_seconds
+
         new_game = ScoreboardData(gamepk=self.gamepk,
                                   delay_seconds=self.delay_seconds)
 
