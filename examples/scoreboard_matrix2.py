@@ -3,129 +3,146 @@ This module will send data to the server for the scoreboard matrix.
 """
 
 import time
-from typing import List, Union
+from typing import Union
 import json
 import requests
+from flask import Flask, request, jsonify
 from src.scoreboard_data import ScoreboardData
 from src.statsapi_plus import get_daily_gamepks
 
-def get_ip() -> str:
+class Server:
     """
-    Returns the IP address of the server to send data to. A function
-    is used in case future me wants to store this data in a file or
-    database.
-
-    Returns:
-        str: The IP address of the server to send data to.
+    Server class to send data to the server.
     """
-    # return 'http://127.0.0.1:5000'
-    return 'http://192.168.1.93:5000'
+    def __init__(self, scorebaord_matrix: 'ScoreboardMatrix'):
+        self.scoreboard_matrix = scorebaord_matrix
+        self.app = Flask(__name__)
+        self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
+        self.app.run(host='0.0.0.0', port=5000)
 
-def send_data(game_index: int, data: dict):
+    def home(self):
+        """
+        Make sure the server is running.
+        """
+        delay = request.args.get('delay')
+
+        if delay is not None:
+            self.scoreboard_matrix.delay_seconds = int(delay)
+
+        return jsonify({'delay_seconds': self.scoreboard_matrix.delay_seconds})
+
+class ScoreboardMatrix:
     """
-    Sends dictionary data to the server.
-
-    Args:
-        game_index (int): game index to send data to
-        data (dict): data to send to the server
+    ScoreboardMatrix class to send data to the server for the scoreboard matrix.
     """
-    ip = get_ip()
-    headers = {'Content-Type': 'application/json'}
+    def __init__(self, delay_seconds: int = 60):
+        self.delay_seconds = delay_seconds
+        self.games = []
+        self.gamepks = []
+        self.last_gamepk_check = time.time()
+        self.ip = self.get_ip()
 
-    url = f'{ip}/{game_index}'
-    response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
-    print(json.dumps(response.json(), indent=4))
+    def get_ip(self) -> str:
+        """
+        Returns the IP address of the server to send data to. A function
+        is used in case future me wants to store this data in a file or
+        database.
 
-def reset_games():
-    """
-    Resets the games on the server.
-    """
-    ip = get_ip()
-    url = f'{ip}/reset'
-    response = requests.get(url, timeout=10)
-    print(json.dumps(response.json(), indent=4))
+        Returns:
+            str: The IP address of the server to send data to.
+        """
+        # return '127.0.0.1:5000'
+        return 'http://192.168.1.93:5000'
 
-def start_games(delay_seconds: int = 60) -> List[ScoreboardData]:
-    """
-    Starts the games and sends the initial data to the server.
+    def send_data(self, game_index: int, data: dict):
+        """
+        Sends dictionary data to the server.
 
-    Args:
-        delay_seconds (int, optional): Seconds to delay the data. Useful
-            when watching games live as streams are typically delayed.
-            60 seconds is a good number when watching MLB.tv
-            Defaults to 60.
+        Args:
+            game_index (int): game index to send data to
+            data (dict): data to send to the server
+        """
+        headers = {'Content-Type': 'application/json'}
+        url = f'{self.ip}/{game_index}'
+        response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
+        print(json.dumps(response.json(), indent=4))
 
-    Returns:
-        List[ScoreboardData]: List of ScoreboardData objects
-    """
-    reset_games()
+    def reset_games(self):
+        """
+        Resets the games on the server.
+        """
+        url = f'{self.ip}/reset'
+        response = requests.get(url, timeout=10)
+        print(json.dumps(response.json(), indent=4))
 
-    gamepks = get_daily_gamepks()
-    games = [ScoreboardData(gamepk=gamepk, delay_seconds=delay_seconds) for gamepk in gamepks]
+    def start_games(self):
+        """
+        Starts the games and sends the initial data to the server.
 
-    for i, game in enumerate(games):
-        if game is not None:
-            data = game.to_dict()
-            send_data(i, data)
+        Returns:
+            List[ScoreboardData]: List of ScoreboardData objects
+        """
+        self.reset_games()
+        self.gamepks = get_daily_gamepks()
+        self.games = [ScoreboardData(gamepk=gamepk, delay_seconds=self.delay_seconds) for gamepk in self.gamepks]
 
-    return games
+        for i, game in enumerate(self.games):
+            if game is not None:
+                data = game.to_dict()
+                self.send_data(i, data)
 
-def check_for_new_games(gamepks: List[int]) -> List[int]:
-    """
-    Check for new games and send the new data to the server.
+    def check_for_new_games(self):
+        """
+        Check for new games and send the new data to the server.
 
-    Args:
-        gamepks (List[int]): List of gamepks to check for new games
+        Returns:
+            List[int]: List of gamepks
+        """
+        new_gamepks = get_daily_gamepks()
 
-    Returns:
-        List[int]: List of gamepks
-    """
-    new_gamepks = get_daily_gamepks()
+        if self.gamepks != new_gamepks:
+            self.gamepks = new_gamepks
+            self.start_games()
 
-    if gamepks != new_gamepks:
-        return new_gamepks
+    def loop(self, index: int, game: Union[ScoreboardData, None]):
+        """
+        Main loop to check for updated data and send it to the server.
 
-    return gamepks
+        Args:
+            index (int): index of the game
+            game (ScoreboardData): ScoreboardData object
+        """
+        if game is None:
+            return
 
-def loop(index: int, game: Union[ScoreboardData, None]):
-    """
-    Main loop to check for updated data and send it to the server.
+        diff = game.get_updated_data_dict(delay_seconds=self.delay_seconds)
 
-    Args:
-        index (int): index of the game
-        game (ScoreboardData): ScoreboardData object
-    """
-    if game is None:
-        return
+        if diff:
+            self.send_data(index, diff)
 
-    diff = game.get_updated_data_dict()
+    def run(self):
+        """
+        Main function to start the games and run the main loop.
+        The main loop will check for updated data and send it to the server.
 
-    if diff:
-        send_data(index, diff)
+        This function also checks if the daily gamepks change and will
+        send the new data to the server.
+        """
+        self.start_games()
 
-def main(delay_seconds: int = 60):
-    """
-    Main function to start the games and run the main loop.
-    The main loop will check for updated data and send it to the server.
+        while True:
+            for i, game in enumerate(self.games):
+                try:
+                    self.loop(i, game)
+                except TimeoutError as e:
+                    print('Timeout Error')
+                    print(e)
 
-    This function also checks if the daily gamepks change and will
-    send the new data to the server.
-    """
-    games = start_games(delay_seconds=delay_seconds)
-    gamepks = get_daily_gamepks()
-    last_gamepk_check = time.time()
-
-    while True:
-        for i, game in enumerate(games):
-            try:
-                loop(i, game)
-            except TimeoutError as e:
-                print('Timeout Error')
-                print(e)
-
-        if (time.time() - last_gamepk_check) > 600:
-            last_gamepk_check = time.time()
-            gamepks = check_for_new_games(gamepks)
+            if (time.time() - self.last_gamepk_check) > 600:
+                self.last_gamepk_check = time.time()
+                self.check_for_new_games()
 
 if __name__ == '__main__':
-    main()
+    scoreboard_matrix = ScoreboardMatrix(delay_seconds=60)
+    server = Server(scorebaord_matrix=scoreboard_matrix)
+    scoreboard_matrix.run()
