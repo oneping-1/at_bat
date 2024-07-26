@@ -339,6 +339,49 @@ class PitchDetails:
             # 'spin_rate': self.spin_rate
         }
 
+class HitDetails:
+    """
+    Contains the hit details data for the game as a sub-class
+    """
+    def __init__(self, game: Game):
+        if game.liveData.plays.allPlays == []:
+            self.exit_velo = None
+            self.launch_angle = None
+            self.distance = None
+            return None
+
+        if game.liveData.plays.allPlays[-1].playEvents == []:
+            self.exit_velo = None
+            self.launch_angle = None
+            self.distance = None
+            return None
+
+        pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
+
+        if pitch.isPitch is False:
+            self.exit_velo = None
+            self.launch_angle = None
+            self.distance = None
+
+        if pitch.hitData is None:
+            self.exit_velo = None
+            self.launch_angle = None
+            self.distance = None
+            return None
+
+        self.exit_velo = pitch.hitData.launchSpeed
+        self.launch_angle = pitch.hitData.launchAngle
+        self.distance = pitch.hitData.totalDistance
+
+        return None
+
+    def to_dict(self) -> dict:
+        return {
+            'exit_velo': self.exit_velo,
+            'launch_angle': self.launch_angle,
+            'distance': self.distance
+        }
+
 class ScoreboardData:
     """
     A simplified version of the Game object which holds information
@@ -395,6 +438,7 @@ class ScoreboardData:
         self.away = Team(game=self.game, team='away')
         self.home = Team(game=self.game, team='home')
         self.pitch_details = PitchDetails(game=self.game)
+        self.hit_details = HitDetails(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
@@ -447,6 +491,7 @@ class ScoreboardData:
                 'matchup': self.matchup.to_dict(),
                 'count': self.count.to_dict(),
                 'pitch_details': self.pitch_details.to_dict(),
+                'hit_details': self.hit_details.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
