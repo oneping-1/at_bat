@@ -10,9 +10,12 @@ Raises:
 
 from datetime import datetime, timedelta, timezone
 import json
+from src.statsapi_plus import get_re640_dataframe
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
+
+re640 = get_re640_dataframe()
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
     """Return the difference between two dictionaries
@@ -382,6 +385,58 @@ class HitDetails:
             'distance': self.distance
         }
 
+class UmpireDetails:
+    """
+    Contains the umpire data for the game as a sub-class to ScoreboardData
+    """
+    def __init__(self, game: Game) -> None:
+        umpire = Umpire(game=game, method='monte')
+        umpire.calculate_game()
+
+        self.num_missed: int = umpire.num_missed_calls
+        self.home_favor: float = umpire.home_favor
+
+    def to_dict(self) -> dict:
+        return {
+            'num_missed': self.num_missed,
+            'home_favor': self.home_favor
+        }
+
+class RunExpectancy:
+    def __init__(self, game: Game):
+        if game.liveData.plays.allPlays == []:
+            # No plays yet
+            self.average_runs = None
+            return
+
+        at_bat = game.liveData.plays.allPlays[-1]
+
+        balls = game.liveData.linescore.balls
+        strikes = game.liveData.linescore.strikes
+        outs = game.liveData.linescore.outs
+
+        runners = Runners()
+        runners.end_at_bat(at_bat)
+        runners = int(runners)
+
+        is_first_base = bool(runners & 1)
+        is_second_base = bool(runners & 2)
+        is_third_base = bool(runners & 4)
+
+        state = ((re640['balls'] == balls) &
+               (re640['strikes'] == strikes) &
+                (re640['outs'] == outs) &
+                (re640['is_first_base'] == is_first_base) &
+                (re640['is_second_base'] == is_second_base) &
+                (re640['is_third_base'] == is_third_base))
+
+        self.average_runs = re640[state]['average_runs'].iloc[0]
+
+    def to_dict(self) -> dict:
+        return {
+            'average_runs': self.average_runs
+        }
+
 class ScoreboardData:
     """
     A simplified version of the Game object which holds information
@@ -439,15 +494,12 @@ class ScoreboardData:
         self.home = Team(game=self.game, team='home')
         self.pitch_details = PitchDetails(game=self.game)
         self.hit_details = HitDetails(game=self.game)
+        self.umpire = UmpireDetails(game=self.game)
+        self.run_expectancy = RunExpectancy(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
         self.runners = int(runners)
-
-        self.umpire = 'L'
-        umpire = Umpire(gamepk=self.gamepk, delay_seconds=self.delay_seconds)
-        umpire.calculate_game(method='monte')
-        self.umpire: str = f'{repr(umpire)} ({umpire.num_missed_calls:d})'
 
     def get_updated_data_dict(self, delay_seconds: int = None) -> dict:
         """Return the difference between the current ScoreboardData
@@ -492,6 +544,8 @@ class ScoreboardData:
                 'count': self.count.to_dict(),
                 'pitch_details': self.pitch_details.to_dict(),
                 'hit_details': self.hit_details.to_dict(),
+                'umpire': self.umpire.to_dict(),
+                'run_expectancy': self.run_expectancy.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
@@ -521,5 +575,5 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away_score} @ {self.home.abv} {self.home_score}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=745560)
+    x = ScoreboardData(gamepk=744908)
     print(json.dumps(x.to_dict(), indent=4))

@@ -146,7 +146,7 @@ class Umpire():
         self.method: str = method
         self._runners = Runners()
 
-    def calculate_game(self, method: str = None) -> Tuple[int, float, List[PlayEvents]]:
+    def calculate_game(self, method: str = None):
         if method is not None:
             self.method = method
 
@@ -315,6 +315,9 @@ class Umpire():
 
         if pitch.pitchData is None:
             return 0
+
+        if method not in ('zone', 'monte', 'buffer'):
+            raise ValueError('method should be zone, monte, or buffer')
 
         balls = pitch.count.balls
         strikes = pitch.count.strikes
