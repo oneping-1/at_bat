@@ -325,8 +325,12 @@ class PitchDetails:
 
         self.description = pitch.details.description
         self.speed = pitch.pitchData.startSpeed
-        self.type = pitch.details.type.description
         self.zone = pitch.pitchData.zone
+
+        if pitch.details.type is not None:
+            self.type = pitch.details.type.description
+        else:
+            self.type = None
 
         # spin rate is incosinstently available
         # self.spin_rate = pitch.pitchData.spinRate
