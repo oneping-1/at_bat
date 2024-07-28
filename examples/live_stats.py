@@ -189,6 +189,7 @@ def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
 
     return (line_0, line_1, line_2, line_3, line_4)
 
+
 def _get_umpire_details(game: Game) -> Tuple[str, str]:
     away_team = game.gameData.teams.away.abbreviation
     home_team = game.gameData.teams.home.abbreviation
@@ -213,11 +214,16 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
         speed = pitch.pitchData.startSpeed
         pitch_type = pitch.details.type.description
 
+        dx = pitch.pitchData.breaks.breakHorizontal
+        idy = pitch.pitchData.breaks.breakVerticalInduced
+
         line_0 = 'Pitch Details: '
         line_1 = f'{desc}'
         line_2 = f'{speed} {pitch_type}'
         line_3 = f'Zone: {pitch.pitchData.zone}'
         line_4 = f'{pitch.pitchData.breaks.spinRate} RPM'
+        line_5 = f'dx: {dx}'
+        line_6 = f'idy: {idy}'
     else:
         desc = pitch.details.description
 
@@ -226,8 +232,10 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
         line_2 = ''
         line_3 = ''
         line_4 = ''
+        line_5 = ''
+        line_6 = ''
 
-    return (line_0, line_1, line_2, line_3, line_4)
+    return (line_0, line_1, line_2, line_3, line_4, line_5, line_6)
 
 
 def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
