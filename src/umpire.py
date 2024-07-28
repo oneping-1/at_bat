@@ -23,6 +23,7 @@ import os
 from typing import List, Tuple
 import random
 import math
+import copy
 from src.game import Game, AllPlays, PlayEvents
 from src.runners import Runners
 from src.statsapi_plus import get_game_dict
@@ -69,7 +70,7 @@ class MissedCalls():
         self.sz_top = pitch.pitchData.coordinates.sZ_top
         self.sz_bot = pitch.pitchData.coordinates.sZ_bot
 
-        self.runners = runners
+        self.runners = copy.deepcopy(runners)
         self.home_favor = home_favor
 
     def print_pitch(self):
