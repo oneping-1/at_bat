@@ -4,7 +4,6 @@ scoreboard matrix.
 """
 
 import time
-import sys
 from typing import List
 from datetime import datetime, timezone, timedelta
 import requests
@@ -14,8 +13,8 @@ from src.scoreboard_data import ScoreboardData
 
 PORT = 8080 # Defined on the ESP32's side
 request_keys = ['game_state',
-                'away_abv',
-                'home_abv',
+                'away',
+                'home',
                 'away_score',
                 'home_score',
                 'start_time',
@@ -111,7 +110,16 @@ def get_request_dict(game: dict) -> dict:
     d = {}
     for key in request_keys:
         if game.get(key, None) is not None:
+            # Bodge because i put team abvs in a subdict
+            # Dont think this will catch if anything in subdicts change
+            if key == 'away':
+                d['away_abv'] = game['away']['abv']
+
+            if key == 'home':
+                d['home_abv'] = game['home']['abv']
+
             d[key] = game[key]
+
 
     return d
 
@@ -164,6 +172,7 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
     for key in diff:
         if key in request_keys:
+            # I dont think this will catch subdicts
             reduced_diff[key] = diff[key]
 
     if reduced_diff:

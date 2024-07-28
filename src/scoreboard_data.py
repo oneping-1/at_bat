@@ -504,6 +504,7 @@ class ScoreboardData:
     def get_updated_data_dict(self, delay_seconds: int = None) -> dict:
         """Return the difference between the current ScoreboardData
         object as a dictionary
+        Also updates itself with the new data
 
         Returns:
             dict: The difference between the current ScoreboardData object
