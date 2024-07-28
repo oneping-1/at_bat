@@ -43,8 +43,6 @@ HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
-random.seed(0)
-
 class MissedCalls():
     def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents, runners: Runners, home_favor):
         self._at_bat = at_bat
@@ -389,6 +387,8 @@ class Umpire():
     @classmethod
     def _is_correct_call_monte_carlo(cls, pitch: PlayEvents) -> bool:
         """Helper method to delta_favor_zone"""
+        random.seed(0)
+
         strike = 0
         ball = 0
 
