@@ -43,6 +43,8 @@ HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
+random.seed(0)
+
 class MissedCalls():
     def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents, runners: Runners, home_favor):
         self._at_bat = at_bat
