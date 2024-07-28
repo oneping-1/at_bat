@@ -306,14 +306,9 @@ class PitchDetails:
 
         if game.liveData.plays.allPlays[-1].playEvents == []:
             # new batter but no pitch yet
-            self.description = None
-            self.speed = None
-            self.type = None
-            self.zone = None
-            # self.spin_rate = None
-            return None
-
-        pitch =  game.liveData.plays.allPlays[-1].playEvents[-1]
+            pitch = game.liveData.plays.allPlays[-2].playEvents[-1]
+        else:
+            pitch =  game.liveData.plays.allPlays[-1].playEvents[-1]
 
         if pitch.isPitch is False:
             self.description = None
@@ -351,19 +346,20 @@ class HitDetails:
     Contains the hit details data for the game as a sub-class
     """
     def __init__(self, game: Game):
+        pitch = None
+
         if game.liveData.plays.allPlays == []:
+            # Game has not started
             self.exit_velo = None
             self.launch_angle = None
             self.distance = None
             return None
 
         if game.liveData.plays.allPlays[-1].playEvents == []:
-            self.exit_velo = None
-            self.launch_angle = None
-            self.distance = None
-            return None
-
-        pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
+            # No pitch in current at bat yet
+            pitch = game.liveData.plays.allPlays[-2].playEvents[-1]
+        else:
+            pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
 
         if pitch.isPitch is False:
             self.exit_velo = None
