@@ -13,8 +13,8 @@ from src.scoreboard_data import ScoreboardData
 
 PORT = 8080 # Defined on the ESP32's side
 request_keys = ['game_state',
-                'away',
-                'home',
+                'away_abv',
+                'home_abv',
                 'away_score',
                 'home_score',
                 'start_time',
@@ -110,16 +110,26 @@ def get_request_dict(game: dict) -> dict:
     d = {}
     for key in request_keys:
         if game.get(key, None) is not None:
-            # Bodge because i put team abvs in a subdict
-            # Dont think this will catch if anything in subdicts change
-            if key == 'away':
-                d['away_abv'] = game['away']['abv']
-
-            if key == 'home':
-                d['home_abv'] = game['home']['abv']
-
             d[key] = game[key]
 
+        # bodge because i put these in a subdict
+        if key == 'away_abv':
+            if game.get('away', None) is not None:
+                away = game['away']
+                if away.get('abv', None) is not None:
+                    d['away_abv'] = game['away']['abv']
+
+        if key == 'home_abv':
+            if game.get('home', None) is not None:
+                home = game['home']
+                if home.get('abv', None) is not None:
+                    d['home_abv'] = game['home']['abv']
+
+        if key == 'outs':
+            if game.get('count', None) is not None:
+                count = game['count']
+                if count.get('outs', None) is not None:
+                    d['outs'] = game['count']['outs']
 
     return d
 
@@ -168,16 +178,11 @@ def loop(ip: str, i: int, game: ScoreboardData):
 
     diff = game.get_updated_data_dict()
 
-    reduced_diff = {}
+    request_dict = get_request_dict(diff)
 
-    for key in diff:
-        if key in request_keys:
-            # I dont think this will catch subdicts
-            reduced_diff[key] = diff[key]
-
-    if reduced_diff:
+    if request_dict:
         response = requests.get(f'http://{ip}:{PORT}/{i}', timeout=10,
-                                params=get_request_dict(reduced_diff))
+                                params=get_request_dict(request_dict))
 
         if response.status_code != 200:
             print(f'Error: {response.status_code} {response.reason}')
