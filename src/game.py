@@ -36,9 +36,9 @@ MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 # Update for new game states for custom game_state attribute
 KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
                     'MA','MC','MD','ME','MF','MG','MH','MI','MN','MO'
-                    'MP','MS','MT','MU','MV','MQ','MW','MY','NF','NJ',
-                    'NI','NN','NH','TR','UR','O','OO','OR','F','FG',
-                    'FO','FR','DI','DC','DR')
+                    'MP','MS','MT','MU','MV','MQ','MW','MX','MY','NA',
+                    'NF','NJ','NI','NK','NN','NO','NH','NQ','TR','UR',
+                    'O','OO','OR','F','FG','FO','FR','DI','DC','DR')
 
 class Game:
     """
@@ -237,6 +237,7 @@ class TeamGameData:
     def __repr__(self):
         return self.abbreviation
 
+
 class Venue:
     def __init__(self, venue):
         self.id: int = venue.get('id', None)
@@ -255,6 +256,7 @@ class Venue:
         self.timeZone = TimeZone(self.timeZone)
         self.fieldInfo = FieldInfo(self.fieldInfo)
 
+
 class Location:
     def __init__(self, location):
         self.address1: str = location.get('address1', None)
@@ -272,10 +274,12 @@ class Location:
     def _children(self):
         self.defaultCoordinates = DefaultCoordinates(self.defaultCoordinates)
 
+
 class DefaultCoordinates:
     def __init__(self, defaultCoordinates):
         self.latitude: float = defaultCoordinates.get('latitude', None)
         self.longitude: float = defaultCoordinates.get('longitude', None)
+
 
 class TimeZone:
     def __init__(self, timeZone):
@@ -283,6 +287,7 @@ class TimeZone:
         self.offset: int = timeZone.get('offset', None)
         self.offsetAtGameTime: int = timeZone.get('offsetAtGameTime', None)
         self.tz: str = timeZone.get('tz', None)
+
 
 class FieldInfo:
     def __init__(self, fieldInfo):
@@ -296,6 +301,7 @@ class FieldInfo:
         self.rightCenter: int = fieldInfo.get('rightCenter', None)
         self.right: int = fieldInfo.get('right', None)
         self.rightLine: int = fieldInfo.get('rightLine', None)
+
 
 class Weather:
     def __init__(self, weather):
@@ -485,6 +491,7 @@ class Matchup:
         if self.splits is not None:
             self.splits = Splits(self.splits)
 
+
 class RunnersMovement:
     def __init__(self, runners):
         self.movement = runners.get('movement', None)
@@ -495,6 +502,7 @@ class RunnersMovement:
     def _children(self):
         self.movement = Movement(self.movement)
         self.details = RunnersDetails(self.details)
+
 
 class Movement:
     def __init__(self, movement):
@@ -527,6 +535,7 @@ class Movement:
         else:
             self.outBaseNum = None
 
+
 class RunnersDetails:
     def __init__(self, details):
         self.event = details.get('event', None)
@@ -539,6 +548,7 @@ class RunnersDetails:
         self.earned = details.get('earned', None)
         self.teamUnearned = details.get('teamUnearned', None)
         self.playIndex = details.get('playIndex', None)
+
 
 class Side:
     def __init__(self, side):
@@ -601,6 +611,7 @@ class PlayEvents:
 
     def __repr__(self):
         return self.details.description
+
 
 class Details:
     def __init__(self, details):
