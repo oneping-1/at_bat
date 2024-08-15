@@ -7,7 +7,7 @@ from typing import Union
 import json
 import threading
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response
 from src.scoreboard_data import ScoreboardData
 from src.statsapi_plus import get_daily_gamepks
 
@@ -20,8 +20,8 @@ def get_ip() -> str:
     Returns:
         str: The IP address of the server to send data to.
     """
-    return 'http://127.0.0.1:5000'
-    # return 'http://192.168.1.93:5000'
+    # return 'http://127.0.0.1:5000'
+    return 'http://192.168.1.93:5000'
 
 def send_data(endpoint: str, data: dict):
     """
@@ -36,7 +36,7 @@ def send_data(endpoint: str, data: dict):
     headers = {'Content-Type': 'application/json'}
     url = f'{ip}/{endpoint}'
     response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
-    print(json.dumps(response.json(), indent=4))
+    # print(json.dumps(response.json(), indent=4))
 
 class Server:
     """
@@ -47,6 +47,7 @@ class Server:
         self.gamecast = gamecast
         self.app = Flask(__name__)
         self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
+        self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
 
     def home(self):
         """
@@ -76,7 +77,16 @@ class Server:
             'games': game_details
         }
 
-        return jsonify(return_dict), 200
+        r = json.dumps(return_dict, indent=4)
+        print(r)
+
+        return Response(r, mimetype='text/plain')
+
+    def gamepk(self, gamepk: int):
+        gamepk = request.view_args['gamepk']
+        game = ScoreboardData(gamepk=gamepk, delay_seconds=self.scoreboard.delay_seconds)
+        game = game.to_dict()
+        return Response(json.dumps(game, indent=4), mimetype='text/plain')
 
     def run(self):
         """
