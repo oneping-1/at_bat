@@ -84,28 +84,32 @@ class TeamRecords:
         self.hasWildcard = bool(teamRecords['hasWildcard'])
         self.clinched = bool(teamRecords['clinched'])
 
-        self.eliminationNumber = self._get_int(teamRecords['eliminationNumber'])
-        self.wildCardEliminationNumber = self._get_int(teamRecords['wildCardEliminationNumber'])
         self.magicNumber = teamRecords.get('magicNumber', None)
         self.wins = int(teamRecords['wins'])
         self.losses = int(teamRecords['losses'])
         self.runDifferential = int(teamRecords['runDifferential'])
         self.winningPercentage = float(teamRecords['winningPercentage'])
+
+        self.eliminationNumber = self._get_int(teamRecords['eliminationNumber'])
+        self.wildCardEliminationNumber = self._get_int(teamRecords['wildCardEliminationNumber'])
+
         self._children()
 
 
     def _get_int(self,string):
         if string == '-':
             return 0
-        else:
-            return int(string)
+        if string == 'E':
+            return -1
+        return int(string)
 
 
     def _get_float(self,string):
         if string == '-':
             return 0
-        else:
-            return float(string)
+        if string == 'E':
+            return -1
+        return float(string)
 
 
     def _children(self):
