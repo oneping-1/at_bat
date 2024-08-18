@@ -139,10 +139,10 @@ def get_re640_dataframe() -> pd.DataFrame:
 
     return pd.read_csv(csv_file_path)
 
-def get_wp702720_dataframe() -> pd.DataFrame:
+def get_wp780800_dataframe() -> pd.DataFrame:
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
-    csv_file_path = os.path.join(csv_path, 'wp702720.csv')
+    csv_file_path = os.path.join(csv_path, 'wp780800.csv')
 
     return pd.read_csv(csv_file_path)
 

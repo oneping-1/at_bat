@@ -10,13 +10,13 @@ Raises:
 
 from datetime import datetime, timedelta, timezone
 import json
-from src.statsapi_plus import get_re640_dataframe, get_wp702720_dataframe
+from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
 
 re640 = get_re640_dataframe()
-wp702720 = get_wp702720_dataframe()
+wp780800 = get_wp780800_dataframe()
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
     """Return the difference between two dictionaries
@@ -505,20 +505,20 @@ class WinProbability:
             return None
 
         state = (
-            (wp702720['balls'] == balls) &
-            (wp702720['strikes'] == strikes) &
-            (wp702720['outs'] == outs) &
-            (wp702720['is_first_base'] == is_first_base) &
-            (wp702720['is_second_base'] == is_second_base) &
-            (wp702720['is_third_base'] == is_third_base) &
-            (wp702720['inning'] == inning) &
-            (wp702720['is_top_inning'] == isTopInning) &
-            (wp702720['home_lead'] == home_lead)
+            (wp780800['balls'] == balls) &
+            (wp780800['strikes'] == strikes) &
+            (wp780800['outs'] == outs) &
+            (wp780800['is_first_base'] == is_first_base) &
+            (wp780800['is_second_base'] == is_second_base) &
+            (wp780800['is_third_base'] == is_third_base) &
+            (wp780800['inning'] == inning) &
+            (wp780800['is_top_inning'] == isTopInning) &
+            (wp780800['home_lead'] == home_lead)
         )
 
-        away_win = wp702720[state]['away_win'].iloc[0]
-        home_win = wp702720[state]['home_win'].iloc[0]
-        tie = wp702720[state]['tie'].iloc[0]
+        away_win = wp780800[state]['away_win'].iloc[0]
+        home_win = wp780800[state]['home_win'].iloc[0]
+        tie = wp780800[state]['tie'].iloc[0]
 
         # Split the tie between the two teams
         away_win = away_win + (tie / 2)
