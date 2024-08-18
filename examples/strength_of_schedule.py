@@ -37,10 +37,13 @@ def sos(days_ahead=15, print_results = False):
         raise TypeError('days_ahead argument must be type int')
 
     today = datetime.now()
-    ahead = today + timedelta(days=days_ahead)
+    today = today.date() + timedelta(days=12)
+    ahead = today + timedelta(days=45)
 
     today = f'{today.year:4d}-{today.month:02d}-{today.day:02d}'
     ahead = f'{ahead.year:4d}-{ahead.month:02d}-{ahead.day:02d}'
+    print(today)
+    print(ahead)
 
     teams: List[Team] = Team.get_teams_list()
 
