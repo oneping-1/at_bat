@@ -7,6 +7,13 @@ import tqdm
 from tabulate import tabulate
 
 def read_pitch_csv() -> pd.DataFrame:
+    """
+    Read the pitch.csv file and return it as a pandas DataFrame.
+
+    Returns:
+        pd.DataFrame: A pandas DataFrame with the contents of the
+            pitch.csv file.
+    """
     # Read the csv file
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file_path = os.path.join(current_dir, 'pitch.csv')
@@ -14,11 +21,42 @@ def read_pitch_csv() -> pd.DataFrame:
     return df
 
 def save_run_expectancy_results(results: List[dict]):
+    """
+    Save the run expectancy results to a csv file.
+
+    Args:
+        results (List[dict]): A list of dictionaries with the run expectancy results.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     run_expectancy_csv_file_path = os.path.join(current_dir, 're288.csv')
 
     with open(run_expectancy_csv_file_path, 'w', newline='', encoding='UTF-8') as csv_file:
-        field_names = ['balls', 'strikes', 'outs', 'is_first_base', 'is_second_base', 'is_third_base', 'total_runs', 'count', 'average_runs', '0 runs', '1 runs', '2 runs', '3 runs', '4 runs', '5 runs', '6 runs', '7 runs', '8 runs', '9 runs', '10 runs', '11 runs', '12 runs', '13 runs']
+        field_names = [
+            'balls',
+            'strikes',
+            'outs',
+            'is_first_base',
+            'is_second_base',
+            'is_third_base',
+            'total_runs',
+            'count',
+            'average_runs',
+            '0 runs',
+            '1 runs',
+            '2 runs',
+            '3 runs',
+            '4 runs',
+            '5 runs',
+            '6 runs',
+            '7 runs',
+            '8 runs',
+            '9 runs',
+            '10 runs',
+            '11 runs',
+            '12 runs',
+            '13 runs'
+        ]
+
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
         writer.writeheader()
 
@@ -50,6 +88,9 @@ def save_run_expectancy_results(results: List[dict]):
             })
 
 def main():
+    """
+    Calculate the run expectancy for each state of the game.
+    """
     df = read_pitch_csv()
 
     # create win probability matrix
@@ -60,10 +101,40 @@ def main():
     is_second_base = [False, True]
     is_third_base = [False, True]
 
-    run_expectancy_states = itertools.product(ball_states, strike_states, out_states, is_first_base, is_second_base, is_third_base)
+    run_expectancy_states = itertools.product(
+        ball_states,
+        strike_states,
+        out_states,
+        is_first_base,
+        is_second_base,
+        is_third_base
+    )
 
-    run_probability = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0}
-    run_expectancy = {states: {'total_runs': 0, 'count': 0, 'average_runs': None, 'run_probability': run_probability.copy()} for states in run_expectancy_states}
+    # Probabily a more pythonic way to write this
+    run_probability = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0,
+        7: 0,
+        8: 0,
+        9: 0,
+        10: 0,
+        11: 0,
+        12: 0,
+        13: 0
+    }
+
+    r = {
+        'total_runs': 0,
+        'count': 0,
+        'average_runs': None,
+        'run_probability': run_probability.copy()
+    }
+    run_expectancy = {states: r for states in run_expectancy_states}
 
     for _, row in tqdm.tqdm(df.iterrows()):
         balls = row['balls']

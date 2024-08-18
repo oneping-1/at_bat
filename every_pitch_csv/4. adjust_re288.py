@@ -19,10 +19,9 @@ import itertools
 def eval_base(base: str) -> bool:
     if base == 'False':
         return False
-    elif base == 'True':
+    if base == 'True':
         return True
-    else:
-        raise ValueError(f'Invalid value for base: {base}')
+    raise ValueError(f'Invalid value for base: {base}')
 
 def read_re288() -> dict:
     """Reads the run expectancy csv file

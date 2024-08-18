@@ -45,7 +45,7 @@ def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
         game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
         game_class = Game(game_dict)
     """
-    max_retries = 5
+    max_retries = 10
 
     if gamepk is None:
         raise ValueError('gamePk not provided')
@@ -138,6 +138,14 @@ def get_re640_dataframe() -> pd.DataFrame:
     csv_file_path = os.path.join(csv_path, 're640.csv')
 
     return pd.read_csv(csv_file_path)
+
+def get_wp702720_dataframe() -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.relpath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
+    csv_file_path = os.path.join(csv_path, 'wp702720.csv')
+
+    return pd.read_csv(csv_file_path)
+
 
 def _read_runners(base: str) -> bool:
     if base == 'True':

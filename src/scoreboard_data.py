@@ -10,12 +10,13 @@ Raises:
 
 from datetime import datetime, timedelta, timezone
 import json
-from src.statsapi_plus import get_re640_dataframe
+from src.statsapi_plus import get_re640_dataframe, get_wp702720_dataframe
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
 
 re640 = get_re640_dataframe()
+wp702720 = get_wp702720_dataframe()
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
     """Return the difference between two dictionaries
@@ -403,6 +404,9 @@ class UmpireDetails:
         }
 
 class RunExpectancy:
+    """
+    Contains the run expectancy data for the game as a sub-class to Scoreboard
+    """
     def __init__(self, game: Game):
         if game.liveData.plays.allPlays == []:
             # No plays yet
@@ -435,6 +439,101 @@ class RunExpectancy:
     def to_dict(self) -> dict:
         return {
             'average_runs': self.average_runs
+        }
+
+class WinProbability:
+    def __init__(self, game: Game):
+        """
+        Calculate the win probability for the away team, home team, and a tie.
+        The extras attribute is the probability of a tie after 9 innings.
+        Important to note that the extras attribute is already distributed
+        to away and home win probabilities.
+
+        So this: away_win + home_win = 1
+        not this: away_win + home_win + tie = 1
+
+        Args:
+            game (Game): The Game object
+        """
+        self.win_probability_away = None
+        self.win_probability_home = None
+        self.extras = None
+
+        if game.liveData.plays.allPlays == []:
+            # No plays yet
+            self.win_probability = None
+            return
+
+        at_bat = game.liveData.plays.allPlays[-1]
+
+        balls = game.liveData.linescore.balls
+        strikes = game.liveData.linescore.strikes
+        outs = game.liveData.linescore.outs
+
+        runners = Runners()
+        runners.end_at_bat(at_bat)
+        runners = int(runners)
+
+        is_first_base = bool(runners & 1)
+        is_second_base = bool(runners & 2)
+        is_third_base = bool(runners & 4)
+
+        inning = game.liveData.linescore.currentInning
+        isTopInning = game.liveData.linescore.isTopInning
+
+        home_score = game.liveData.linescore.teams.home.runs
+        away_score = game.liveData.linescore.teams.away.runs
+        home_lead = home_score - away_score
+
+        if (inning >= 9) and (isTopInning is False) and (home_lead < 0) and (outs == 3):
+            self.win_probability_home = 0
+            self.win_probability_away = 1
+            self.extras = 0
+            return None
+
+        if (inning >= 9) and (isTopInning is True) and (home_lead > 0) and (outs == 3):
+            self.win_probability_home = 1
+            self.win_probability_away = 0
+            self.extras = 0
+            return None
+
+        if (inning >= 9) and (isTopInning is False) and (home_lead > 0):
+            # Walk off win
+            self.win_probability_away = 0
+            self.win_probability_home = 1
+            self.extras = 0
+            return None
+
+        state = (
+            (wp702720['balls'] == balls) &
+            (wp702720['strikes'] == strikes) &
+            (wp702720['outs'] == outs) &
+            (wp702720['is_first_base'] == is_first_base) &
+            (wp702720['is_second_base'] == is_second_base) &
+            (wp702720['is_third_base'] == is_third_base) &
+            (wp702720['inning'] == inning) &
+            (wp702720['is_top_inning'] == isTopInning) &
+            (wp702720['home_lead'] == home_lead)
+        )
+
+        away_win = wp702720[state]['away_win'].iloc[0]
+        home_win = wp702720[state]['home_win'].iloc[0]
+        tie = wp702720[state]['tie'].iloc[0]
+
+        # Split the tie between the two teams
+        away_win = away_win + (tie / 2)
+        home_win = home_win + (tie / 2)
+
+        # Normalize to eliminate floating point errors (i think)
+        self.win_probability_away = away_win / (away_win + home_win)
+        self.win_probability_home = home_win / (away_win + home_win)
+        self.extras = tie
+
+    def to_dict(self) -> dict:
+        return {
+            'away': self.win_probability_away,
+            'home': self.win_probability_home,
+            'extras': self.extras
         }
 
 class ScoreboardData:
@@ -496,6 +595,7 @@ class ScoreboardData:
         self.hit_details = HitDetails(game=self.game)
         self.umpire = UmpireDetails(game=self.game)
         self.run_expectancy = RunExpectancy(game=self.game)
+        self.win_probability = WinProbability(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
@@ -547,6 +647,7 @@ class ScoreboardData:
                 'hit_details': self.hit_details.to_dict(),
                 'umpire': self.umpire.to_dict(),
                 'run_expectancy': self.run_expectancy.to_dict(),
+                'win_probability': self.win_probability.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
