@@ -86,9 +86,9 @@ class MissedCalls():
 
         to_print_str += f'{str(self.runners)}\n'
 
-        if self.code:
+        if self.code == 'C':
             to_print_str += f'{self.balls}-{self.strikes-1}, ball called strike\n'
-        elif self.code:
+        elif self.code == 'B':
             to_print_str += f'{self.balls-1}-{self.strikes}, strike called ball\n'
 
         to_print_str += f'px: {self.px:.5f} | pz: {self.pz:.5f}\n'
