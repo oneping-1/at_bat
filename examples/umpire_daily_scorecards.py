@@ -56,9 +56,14 @@ def daily_ump_scorecards(date: str,
             print(f'Misses: {game.num_missed_calls}')
 
             if game.home_favor < 0:
-                print(f'{-game.home_favor:+5.2f} {away_team_abv}')
+                print(f'Favor: {-game.home_favor:+5.2f} {away_team_abv}')
             else:
-                print(f'{game.home_favor:+5.2f} {home_team_abv}')
+                print(f'Favor: {game.home_favor:+5.2f} {home_team_abv}')
+
+            if game.home_wpa < 0:
+                print(f'WPA: {-game.home_wpa*100:.1f} {away_team_abv}')
+            else:
+                print(f'WPA: {game.home_wpa*100:.1f} {home_team_abv}')
             print()
 
     return games

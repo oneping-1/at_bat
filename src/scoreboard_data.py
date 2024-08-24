@@ -396,11 +396,13 @@ class UmpireDetails:
 
         self.num_missed: int = umpire.num_missed_calls
         self.home_favor: float = umpire.home_favor
+        self.home_wpa: float = umpire.home_wpa
 
     def to_dict(self) -> dict:
         return {
             'num_missed': self.num_missed,
-            'home_favor': self.home_favor
+            'home_favor': self.home_favor,
+            'home_wpa': self.home_wpa
         }
 
 class RunExpectancy:

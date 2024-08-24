@@ -27,7 +27,7 @@ import copy
 from src.game import Game, AllPlays, PlayEvents
 from src.runners import Runners
 from src.statsapi_plus import get_game_dict
-from src.statsapi_plus import get_red288_dataframe
+from src.statsapi_plus import get_red288_dataframe, get_wpd351360_dataframe
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
 # from the edge of the strike zone for the 90% rule to apply
@@ -44,7 +44,8 @@ BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
 class MissedCalls():
-    def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents, runners: Runners, home_favor):
+    def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents,
+            runners: Runners, home_favor: float, home_wpa: float):
         self._at_bat = at_bat
         self._pitch = pitch
 
@@ -72,6 +73,7 @@ class MissedCalls():
 
         self.runners = copy.deepcopy(runners)
         self.home_favor = home_favor
+        self.home_wpa = home_wpa
 
     def print_pitch(self):
         to_print_str = ''
@@ -96,6 +98,7 @@ class MissedCalls():
         to_print_str += f'top: {self.pz_max:.5f} | bottom: {self.pz_min:.5f}\n'
 
         to_print_str += f'Home Favor: {self.home_favor:4.2f}\n'
+        to_print_str += f'Home WPA: {self.home_wpa:4.2f}\n'
 
         print(to_print_str)
 
@@ -126,6 +129,7 @@ class Umpire():
     """
     hmoe = HAWKEYE_MARGIN_OF_ERROR_FEET
     red288 = get_red288_dataframe()
+    wpd351360 = get_wpd351360_dataframe()
 
     def __init__(self, game: Game = None, gamepk: int = None,
                  delay_seconds: int = 0, method: str = None):
@@ -141,13 +145,33 @@ class Umpire():
             raise ValueError('gamePk and game arguments not provided')
 
         self.gamepk = self.game.gamepk
-        self.num_missed_calls = 0
+        self.num_missed_calls: int = 0
         self.missed_calls: List[MissedCalls] = []
-        self.home_favor = 0
+        self.home_favor: float = 0
+        self.home_wpa: float = 0
         self.method: str = method
         self._runners = Runners()
 
     def calculate_game(self, method: str = None):
+        """
+        Calculates the missed calls for the given game. This function
+        will loop through all the pitches in the game and calculate
+        the missed calls. The missed calls will be stored in the
+        missed_calls attribute. The number of missed calls will be
+        stored in the num_missed_calls attribute. The total favor will
+        be stored in the home_favor attribute. The method argument can
+        be used to change the method used to calculate missed calls.
+        The default method is 'zone' which uses the zone number to
+        calculate missed calls. The other methods are 'monte' and
+        'buffer'. 'monte' uses a Monte Carlo simulation to calculate
+        missed calls while 'buffer' uses a buffer zone to calculate
+        missed calls. The method argument can be used to change the
+        method used to calculate missed calls. The default method is
+        'zone' which uses the zone number to calculate missed calls.
+
+        Args:
+            method (str, optional): The method used to calculate missed
+        """
         if method is not None:
             self.method = method
 
@@ -168,22 +192,43 @@ class Umpire():
 
             self._runners.end_at_bat(at_bat)
 
-    def _process_pitch(self, at_bat: AllPlays, pitch: PlayEvents, isTopInning: bool):
+    def _process_pitch(self, at_bat: AllPlays, pitch: PlayEvents, is_top_inning: bool):
         runners_int = int(self._runners)
         is_first_base = bool(runners_int & 1)
         is_second_base = bool(runners_int & 2)
         is_third_base = bool(runners_int & 4)
 
-        home_delta =  Umpire.delta_favor_single_pitch(pitch, isTopInning, is_first_base,
-                                               is_second_base, is_third_base, self.method)
+        inning = at_bat.about.inning
+        is_top_inning = at_bat.about.isTopInning
+        home_lead = at_bat.result.homeScore - at_bat.result.awayScore
 
-        if home_delta != 0:
+
+        home_delta: Tuple =  Umpire.delta_favor_single_pitch(pitch, is_top_inning,
+                                is_first_base, is_second_base, is_third_base,
+                                inning, home_lead, self.method)
+
+        if home_delta == 0:
+            # Bodge because I don't want to change the return type
+            home_favor_delta = 0
+            home_wpa_delta = 0
+        else:
+            home_favor_delta, home_wpa_delta = home_delta
+
+        if home_favor_delta != 0:
             self.num_missed_calls += 1
-            self.home_favor += home_delta
+            self.home_favor += home_favor_delta
+            self.home_wpa += home_wpa_delta
             self.missed_calls.append(MissedCalls(len(self.missed_calls), at_bat, pitch,
-                                     self._runners, home_delta))
+                                     self._runners, home_favor_delta, home_wpa_delta))
 
     def print_missed_calls(self):
+        """
+        Prints the missed calls in the game. The missed calls are
+        printed in a formatted string that includes the inning, pitcher,
+        batter, balls, strikes, outs, zone, px, pz, home favor, and
+        runners. The missed calls are printed in the order they were
+        called in the game.
+        """
         for call in self.missed_calls:
             call.print_pitch()
 
@@ -252,8 +297,8 @@ class Umpire():
 
     @classmethod
     def delta_favor_single_pitch(cls, pitch: PlayEvents, isTopInning: bool,
-                    is_first_base: bool, is_second_base: bool,
-                    is_third_base: bool, method: str = None):
+        is_first_base: bool, is_second_base: bool, is_third_base: bool,
+        inning: int, home_lead: int, method: str = None) -> Tuple[float, float]:
         """
         Calculates if a umpire made a bad call by either calling a pitch
         out of the zone a strike or a pitch in the zone a ball. There
@@ -341,31 +386,45 @@ class Umpire():
         if correct is True:
             return 0
 
+        if pitch.details.code == 'C':
+            strikes = strikes - 1
+        elif pitch.details.code == 'B':
+            balls = balls - 1
+
+        state_runs = (
+            (Umpire.red288['balls'] == balls) &
+            (Umpire.red288['strikes'] == strikes) &
+            (Umpire.red288['outs'] == outs) &
+            (Umpire.red288['is_first_base'] == is_first_base) &
+            (Umpire.red288['is_second_base'] == is_second_base) &
+            (Umpire.red288['is_third_base'] == is_third_base)
+        )
+
+        state_wpa = (
+            (Umpire.wpd351360['balls'] == balls) &
+            (Umpire.wpd351360['strikes'] == strikes) &
+            (Umpire.wpd351360['outs'] == outs) &
+            (Umpire.wpd351360['is_first_base'] == is_first_base) &
+            (Umpire.wpd351360['is_second_base'] == is_second_base) &
+            (Umpire.wpd351360['is_third_base'] == is_third_base) &
+            (Umpire.wpd351360['inning'] == inning) &
+            (Umpire.wpd351360['is_top_inning'] == isTopInning) &
+            (Umpire.wpd351360['home_lead'] == home_lead)
+        )
+
+        home_win = Umpire.wpd351360[state_wpa]['wpa'].iloc[0]
 
         if pitch.details.code == 'C':
-            # Ball called Strike
-            state = ((Umpire.red288['balls'] == balls) &
-                    (Umpire.red288['strikes'] == strikes - 1) &
-                    (Umpire.red288['outs'] == outs) &
-                    (Umpire.red288['is_first_base'] == is_first_base) &
-                    (Umpire.red288['is_second_base'] == is_second_base) &
-                    (Umpire.red288['is_third_base'] == is_third_base))
+            home_favor = Umpire.red288[state_runs]['run_value'].iloc[0]
+            home_wpa = home_win
 
-            home_favor = Umpire.red288[state]['run_value'].iloc[0]
         if pitch.details.code == 'B':
-            # Strike called Ball
-            state = ((Umpire.red288['balls'] == balls - 1) &
-                (Umpire.red288['strikes'] == strikes) &
-                (Umpire.red288['outs'] == outs) &
-                (Umpire.red288['is_first_base'] == is_first_base) &
-                (Umpire.red288['is_second_base'] == is_second_base) &
-                (Umpire.red288['is_third_base'] == is_third_base))
-
-            home_favor = -1 * Umpire.red288[state]['run_value'].iloc[0]
+            home_favor = -1 * Umpire.red288[state_runs]['run_value'].iloc[0]
+            home_wpa = -1 * home_win
 
         if isTopInning is True:
-            return home_favor
-        return -1 * home_favor
+            return (home_favor, home_wpa)
+        return (-1 * home_favor, -1 * home_wpa)
 
     @classmethod
     def _check_valid_pitch(cls, pitch):

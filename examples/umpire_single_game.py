@@ -39,7 +39,20 @@ def main():
     favor = umpire.home_favor
     missed_calls_list = umpire.missed_calls
 
-    print(f'{umpire.home_favor:.2f}')
+    away_abv = umpire.game.gameData.teams.away.abbreviation
+    home_abv = umpire.game.gameData.teams.home.abbreviation
+
+    if umpire.home_favor < 0:
+        print(f'Favor: {-umpire.home_favor:.2f}  {away_abv}')
+    else:
+        print(f'Favor: {umpire.home_favor:.2f}  {home_abv}')
+
+    if umpire.home_wpa < 0:
+        print(f' WPA: {-umpire.home_wpa*100:5.2f}% {away_abv}')
+    else:
+        print(f' WPA: {umpire.home_wpa*100:5.2f}% {home_abv}')
+
+
     plotter.plot(missed_calls_list)
 
     return favor

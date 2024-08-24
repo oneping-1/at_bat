@@ -146,6 +146,13 @@ def get_wp780800_dataframe() -> pd.DataFrame:
 
     return pd.read_csv(csv_file_path)
 
+def get_wpd351360_dataframe() -> pd.DataFrame:
+    current_dir = os.path.dirname(os.path.relpath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
+    csv_file_path = os.path.join(csv_path, 'wpd351360.csv')
+
+    return pd.read_csv(csv_file_path)
+
 
 def _read_runners(base: str) -> bool:
     if base == 'True':

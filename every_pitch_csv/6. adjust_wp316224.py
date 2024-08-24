@@ -173,10 +173,125 @@ def write_wp780800(wp780800: dict):
                 'tie': value['tie']
             })
 
+def create_wpd351360(wp351360: dict, wp780800: dict) -> dict:
+    wpd351360 = {}
+
+    for key, _ in tqdm(wp351360.items()):
+        balls = key[0]
+        strikes = key[1]
+        outs = key[2]
+        is_first_base = key[3]
+        is_second_base = key[4]
+        is_third_base = key[5]
+        inning = key[6]
+        is_top_inning = key[7]
+        home_lead = key[8]
+
+        ball_state = (
+            balls + 1,
+            strikes,
+            outs,
+            is_first_base,
+            is_second_base,
+            is_third_base,
+            inning,
+            is_top_inning,
+            home_lead
+        )
+
+        strike_state = (
+            balls,
+            strikes + 1,
+            outs,
+            is_first_base,
+            is_second_base,
+            is_third_base,
+            inning,
+            is_top_inning,
+            home_lead
+        )
+
+        if (balls == 3) and (is_first_base is True) and (is_second_base is True) and (is_third_base is True):
+            # walk in a run
+            # not accounted for in wp351360 because that only looks at
+            # runs scored from that point onward and ignores walked in run
+            if is_top_inning is True:
+                home_lead += 1
+            elif is_top_inning is False:
+                home_lead -= 1
+
+            if home_lead > 30:
+                home_lead = 30
+            elif home_lead < -30:
+                home_lead = -30
+
+            ball_state = (
+                0,
+                0,
+                outs,
+                True,
+                True,
+                True,
+                inning,
+                is_top_inning,
+                home_lead
+            )
+
+        bh = wp780800[ball_state]['home_win']
+        bt = wp780800[ball_state]['tie']
+
+        ball_wpa = bh + (bt / 2)
+
+        sh = wp780800[strike_state]['home_win']
+        st = wp780800[strike_state]['tie']
+
+        strike_wpa = sh + (st / 2)
+
+        wpd351360[key] = ball_wpa - strike_wpa
+
+    return wpd351360
+
+def write_wpd351360(wpd351360: dict):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_file_path = os.path.join(current_dir, 'wpd351360.csv')
+
+    with open(csv_file_path, 'w', newline='', encoding='UTF-8') as csv_file:
+        fieldnames = [
+            'balls',
+            'strikes',
+            'outs',
+            'is_first_base',
+            'is_second_base',
+            'is_third_base',
+            'inning',
+            'is_top_inning',
+            'home_lead',
+            'wpa'
+        ]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for key, value in tqdm(wpd351360.items()):
+            writer.writerow({
+                'balls': key[0],
+                'strikes': key[1],
+                'outs': key[2],
+                'is_first_base': key[3],
+                'is_second_base': key[4],
+                'is_third_base': key[5],
+                'inning': key[6],
+                'is_top_inning': key[7],
+                'home_lead': key[8],
+                'wpa': value
+            })
+
 def main():
     wp351360 = read_wp351360()
     wp780800 = create_wp780800(wp351360)
     write_wp780800(wp780800)
+
+    wpd351360 = create_wpd351360(wp351360, wp780800)
+    write_wpd351360(wpd351360)
 
 if __name__ == '__main__':
     main()
