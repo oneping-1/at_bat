@@ -92,7 +92,7 @@ class Server:
         """
         Run the server.
         """
-        self.app.run(host='0.0.0.0', port=5001)
+        self.app.run(host='0.0.0.0', port=80)
 
 class Gamecast:
     def __init__(self, scoreboard: 'Scoreboard'):
