@@ -481,6 +481,8 @@ class WinProbability:
         is_third_base = bool(runners & 4)
 
         inning = game.liveData.linescore.currentInning
+        inning = min(inning, 10) # extra innings, revert to 10th inning
+
         isTopInning = game.liveData.linescore.isTopInning
 
         home_score = game.liveData.linescore.teams.home.runs
