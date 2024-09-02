@@ -36,7 +36,15 @@ def send_data(endpoint: str, data: dict):
     headers = {'Content-Type': 'application/json'}
     url = f'{ip}/{endpoint}'
     response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
-    # print(json.dumps(response.json(), indent=4))
+
+    # Only show new data to limit the amount of data shown
+    # but add endpoint so we know what data is being shown
+
+    new_data = response.json()['new_data']
+    new_data['endpoint'] = endpoint
+
+    print(json.dumps(new_data, indent=4))
+
 
 class Server:
     """
@@ -175,13 +183,12 @@ class Scoreboard:
         self.gamepks = get_daily_gamepks()
 
         self.games = []
-        for gamepk in self.gamepks:
-            self.games.append(ScoreboardData(gamepk=gamepk, delay_seconds=self.delay_seconds))
+        for i, gamepk in enumerate(self.gamepks):
+            game = ScoreboardData(gamepk=gamepk, delay_seconds=self.delay_seconds)
+            data = game.to_dict()
+            send_data(i, data)
 
-        for i, game in enumerate(self.games):
-            if game is not None:
-                data = game.to_dict()
-                send_data(i, data)
+            self.games.append(game)
 
     def check_for_new_games(self):
         """
