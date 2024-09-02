@@ -7,7 +7,7 @@ import argparse
 from datetime import datetime
 from datetime import timedelta
 from typing import List
-import statsapi
+import statsapi # pylint: disable=E0401
 from tqdm import tqdm
 from src.team import Team
 from src.schedule import Schedule

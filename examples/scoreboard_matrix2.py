@@ -91,6 +91,12 @@ class Server:
         return Response(r, mimetype='text/plain')
 
     def gamepk(self, gamepk: int):
+        """
+        Get the game data for the given gamepk.
+
+        Args:
+            gamepk (int): gamepk of the game
+        """
         gamepk = request.view_args['gamepk']
         game = ScoreboardData(gamepk=gamepk, delay_seconds=self.scoreboard.delay_seconds)
         game = game.to_dict()
@@ -103,6 +109,11 @@ class Server:
         self.app.run(host='0.0.0.0', port=80)
 
 class Gamecast:
+    """
+    Gamecast class to send data to the server for the gamecast. This
+    class will only send data for the game that is being shown on the
+    scoreboard.
+    """
     def __init__(self, scoreboard: 'Scoreboard'):
         self.scoreboard = scoreboard
 
@@ -110,7 +121,7 @@ class Gamecast:
         self.gamepk: int = None
 
         # Id of the game on that day shown on scoreboard
-        self._gamecast_id = None
+        self._gamecast_id: int = None
 
         self.game: 'ScoreboardData' = None
 
@@ -118,7 +129,15 @@ class Gamecast:
         self.delay_seconds = self.scoreboard.delay_seconds
 
     @property
-    def gamecast_id(self):
+    def gamecast_id(self) -> int:
+        """
+        Getter for gamecast_id property. This will return the gamecast_id
+        property. If the gamecast_id is greater than the max value, it will
+        return None.
+
+        Returns:
+            int: gamecast_id
+        """
         return self._gamecast_id
 
     @gamecast_id.setter
@@ -242,6 +261,9 @@ class Scoreboard:
                 self.check_for_new_games()
 
 def main():
+    """
+    Main function to run the server, scoreboard, and gamecast.
+    """
     scoreboard = Scoreboard()
     gamecast = Gamecast(scoreboard)
     server = Server(scorebaord=scoreboard, gamecast=gamecast)

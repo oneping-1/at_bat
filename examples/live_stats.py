@@ -138,10 +138,7 @@ def _get_at_bat_details(at_bat: AllPlays,
 
     return (line_0, line_1, line_2)
 
-
-def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
-                     ) -> Tuple[str, str, str, str, str, str]:
-
+def _get_run_details_state(at_bat: AllPlays, pitch: PlayEvents) -> bool:
     balls = pitch.count.balls
     strikes = pitch.count.strikes
     outs = pitch.count.outs
@@ -160,31 +157,35 @@ def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
              (re640['is_second_base'] == is_second_base) &
              (re640['is_third_base'] == is_third_base))
 
+    return state
+
+def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
+                     ) -> Tuple[str, str, str, str, str, str]:
+
+    state = _get_run_details_state(at_bat, pitch)
+
     run_exp = re640[state]['average_runs'].iloc[0]
     count = re640[state]['count'].iloc[0]
 
-    runs1p = 0
-    runs2p = 0
-    runs3p = 0
-    runs4p = 0
+    runs = [0, 0, 0, 0] # 1+, 2+, 3+, 4+
 
     for i in range(0, 14):
         runs = re640[state][f'{i} runs'].iloc[0]
 
         if i >= 1:
-            runs1p += runs
+            runs[0] += runs
         if i >= 2:
-            runs2p += runs
+            runs[1] += runs
         if i >= 3:
-            runs3p += runs
+            runs[2] += runs
         if i >= 4:
-            runs4p += runs
+            runs[3] += runs
 
     line_0 = f'Expected Runs: {run_exp:.2f}'
-    line_1 = f'1+ Runs: {runs1p / count:.2f}'
-    line_2 = f'2+ Runs: {runs2p / count:.2f}'
-    line_3 = f'3+ Runs: {runs3p / count:.2f}'
-    line_4 = f'4+ Runs: {runs4p / count:.2f}'
+    line_1 = f'1+ Runs: {runs[0] / count:.2f}'
+    line_2 = f'2+ Runs: {runs[1] / count:.2f}'
+    line_3 = f'3+ Runs: {runs[2] / count:.2f}'
+    line_4 = f'4+ Runs: {runs[3] / count:.2f}'
 
 
     return (line_0, line_1, line_2, line_3, line_4)

@@ -7,17 +7,15 @@ American League: 103
 National League: 104
 """
 
-import statsapi
+import statsapi # pylint: disable=E0401
 from src.standings import Standing
-import json
 
 # leagueID:
 # 103 - American League
 # 104 - National League
 
-
 if __name__ == '__main__':
-    standings_data = statsapi.get('standings', {'leagueId':103}
+    standings_data = statsapi.get('standings', {'leagueId':103})
     s = Standing(standings_data)
 
     for team in s.west.teamRecords:
