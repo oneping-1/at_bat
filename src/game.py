@@ -22,11 +22,11 @@ game_class = Game(game_dict)
 
 import os
 import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import math
 from tzlocal import get_localzone
 import pytz
-import statsapi
+import statsapi # pylint: disable=E0401
 from tqdm import tqdm
 from src.statsapi_plus import get_daily_gamepks
 from src.statsapi_plus import get_game_dict
@@ -231,7 +231,7 @@ class TeamGameData:
         self.id = team['id']
         self.abbreviation = team['abbreviation']
         self.teamName = team['teamName']
-        self.division = _get_division(self.id)
+        self.division = _get_division(self.abbreviation)
         # no children
 
     def __repr__(self):
@@ -366,6 +366,7 @@ class LiveData:
     def _children(self):
         self.plays = Plays(self.plays)
         self.linescore = Linescore(self.linescore)
+        self.boxscore = Boxscore(self.boxscore)
 
         if self.decisions is not None:
             self.decisions = Decisions(self.decisions)
@@ -684,8 +685,7 @@ class PitchData:
         # Bother with margin of error?
         if self.zone >= 1 and self.zone <= 9:
             return 'In Zone'
-        else:
-            return 'Out of Zone'
+        return 'Out of Zone'
 
 
 class PitchCoordinates:
@@ -985,6 +985,173 @@ class Player:
         # no children
 
 
+class Boxscore:
+    def __init__(self, boxscore):
+        self.teams = boxscore['teams']
+        self.officials = boxscore.get('officials', None)
+        self.pitchingNotes = boxscore.get('pitchingNotes', None)
+        self.top_performers = boxscore.get('top_performers', None)
+        self._children()
+
+    def _children(self):
+        self.teams = TeamsBoxScore(self.teams)
+
+
+class TeamsBoxScore:
+    def __init__(self, team_box_score):
+        self.away = team_box_score['away']
+        self.home = team_box_score['home']
+        self._children()
+
+    def _children(self):
+        self.away = TeamBoxScore(self.away)
+        self.home = TeamBoxScore(self.home)
+
+
+
+class TeamBoxScore:
+    def __init__(self, team_box_score):
+        self.team = team_box_score.get('team', None)
+        self.team_stats = team_box_score.get('teamStats', None)
+        self.players: List[dict] = team_box_score.get('players', None)
+        self.batters: List[int] = team_box_score.get('batters', None)
+        self.pitchers: List[int] = team_box_score.get('pitchers', None)
+        self.bench: List[int] = team_box_score.get('bench', None)
+        self.bullpen: List[int] = team_box_score.get('bullpen', None)
+        self.batting_order: List[int] = team_box_score.get('battingOrder', None)
+        self.info = team_box_score.get('info', None)
+        self.note = team_box_score.get('note', None)
+        self._children()
+
+    def _children(self):
+        self.team = TeamBoxScoreTeam(self.team)
+
+
+class TeamBoxScoreTeam:
+    def __init__(self, team_box_score_team):
+        self.all_star_status = team_box_score_team.get('allStarStatus', None)
+        self.id = team_box_score_team.get('id', None)
+        self.name = team_box_score_team.get('name', None)
+        self.link = team_box_score_team.get('link', None)
+
+
+class TeamStats:
+    def __init__(self, team_stats):
+        self.batting = team_stats.get('batting', None)
+        self.pitching = team_stats.get('pitching', None)
+        self.fielding = team_stats.get('fielding', None)
+        self._children()
+
+    def _children(self):
+        self.batting = BattingStats(self.batting)
+        self.pitching = PitchingStats(self.pitching)
+        self.fielding = FieldingStats(self.fielding)
+
+
+class BattingStats:
+    def __init__(self, batting_stats):
+        self.fly_outs = batting_stats.get('flyOuts', None)
+        self.ground_outs = batting_stats.get('groundOuts', None)
+        self.air_outs = batting_stats.get('airOuts', None)
+        self.runs = batting_stats.get('runs', None)
+        self.doubles = batting_stats.get('doubles', None)
+        self.triples = batting_stats.get('triples', None)
+        self.home_runs = batting_stats.get('homeRuns', None)
+        self.strike_outs = batting_stats.get('strikeOuts', None)
+        self.base_on_balls = batting_stats.get('baseOnBalls', None)
+        self.intentional_walks = batting_stats.get('intentionalWalks', None)
+        self.hits = batting_stats.get('hits', None)
+        self.hit_by_pitch = batting_stats.get('hitByPitch', None)
+        self.avg = batting_stats.get('avg', None)
+        self.at_bats = batting_stats.get('atBats', None)
+        self.obp = batting_stats.get('obp', None)
+        self.slg = batting_stats.get('slg', None)
+        self.ops = batting_stats.get('ops', None)
+        self.caught_stealing = batting_stats.get('caughtStealing', None)
+        self.stolen_bases = batting_stats.get('stolenBases', None)
+        self.stolen_base_percentage = batting_stats.get('stolenBasePercentage', None)
+        self.ground_into_double_play = batting_stats.get('groundIntoDoublePlay', None)
+        self.ground_into_triple_play = batting_stats.get('groundIntoTriplePlay', None)
+        self.plate_appearances = batting_stats.get('plateAppearances', None)
+        self.total_bases = batting_stats.get('totalBases', None)
+        self.rbi = batting_stats.get('rbi', None)
+        self.left_on_base = batting_stats.get('leftOnBase', None)
+        self.sac_bunts = batting_stats.get('sacBunts', None)
+        self.sac_flies = batting_stats.get('sacFlies', None)
+        self.catchers_interference = batting_stats.get('catchersInterference', None)
+        self.pickoffs = batting_stats.get('pickoffs', None)
+        self.at_bats_per_home_run = batting_stats.get('atBatsPerHomeRun', None)
+        self.pop_outs = batting_stats.get('popOuts', None)
+        self.line_outs = batting_stats.get('lineOuts', None)
+        # no children
+
+
+class PitchingStats:
+    def __init__(self, pitching_stats):
+        self.fly_outs = pitching_stats.get('flyOuts', None)
+        self.ground_outs = pitching_stats.get('groundOuts', None)
+        self.air_outs = pitching_stats.get('airOuts', None)
+        self.runs = pitching_stats.get('runs', None)
+        self.doubles = pitching_stats.get('doubles', None)
+        self.triples = pitching_stats.get('triples', None)
+        self.home_runs = pitching_stats.get('homeRuns', None)
+        self.strike_outs = pitching_stats.get('strikeOuts', None)
+        self.base_on_balls = pitching_stats.get('baseOnBalls', None)
+        self.intentional_walks = pitching_stats.get('intentionalWalks', None)
+        self.hits = pitching_stats.get('hits', None)
+        self.hit_by_pitch = pitching_stats.get('hitByPitch', None)
+        self.at_bats = pitching_stats.get('atBats', None)
+        self.obp = pitching_stats.get('obp', None)
+        self.caught_stealing = pitching_stats.get('caughtStealing', None)
+        self.stolen_bases = pitching_stats.get('stolenBases', None)
+        self.stolen_base_percentage = pitching_stats.get('stolenBasePercentage', None)
+        self.number_of_pitches = pitching_stats.get('numberOfPitches', None)
+        self.era = pitching_stats.get('era', None)
+        self.innings_pitched = pitching_stats.get('inningsPitched', None)
+        self.save_opportunities = pitching_stats.get('saveOpportunities', None)
+        self.earned_runs = pitching_stats.get('earnedRuns', None)
+        self.whip = pitching_stats.get('whip', None)
+        self.batters_faced = pitching_stats.get('battersFaced', None)
+        self.outs = pitching_stats.get('outs', None)
+        self.complete_games = pitching_stats.get('completeGames', None)
+        self.shutouts = pitching_stats.get('shutouts', None)
+        self.pitches_thrown = pitching_stats.get('pitchesThrown', None)
+        self.balls = pitching_stats.get('balls', None)
+        self.strikes = pitching_stats.get('strikes', None)
+        self.strike_percentage = pitching_stats.get('strikePercentage', None)
+        self.hit_batsmen = pitching_stats.get('hitBatsmen', None)
+        self.balks = pitching_stats.get('balks', None)
+        self.wild_pitches = pitching_stats.get('wildPitches', None)
+        self.pickoffs = pitching_stats.get('pickoffs', None)
+        self.ground_outs_to_airouts = pitching_stats.get('groundOutsToAirouts', None)
+        self.rbi = pitching_stats.get('rbi', None)
+        self.pitches_per_innning = pitching_stats.get('pitchesPerInning', None)
+        self.runs_scored_per_9 = pitching_stats.get('runsScoredPer9', None)
+        self.home_runs_per_9 = pitching_stats.get('homeRunsPer9', None)
+        self.inherited_runners = pitching_stats.get('inheritedRunners', None)
+        self.inherited_runners_scored = pitching_stats.get('inheritedRunnersScored', None)
+        self.catchers_interference = pitching_stats.get('catchersInterference', None)
+        self.sac_bunts = pitching_stats.get('sacBunts', None)
+        self.sac_flies = pitching_stats.get('sacFlies', None)
+        self.passed_balls = pitching_stats.get('passedBalls', None)
+        self.pop_outs = pitching_stats.get('popOuts', None)
+        self.line_outs = pitching_stats.get('lineOuts', None)
+        # no children
+
+
+class FieldingStats:
+    def __init__(self, fielding_stats):
+        self.caught_stealing = fielding_stats.get('caughtStealing', None)
+        self.stolen_bases = fielding_stats.get('stolenBases', None)
+        self.stolen_base_percentage = fielding_stats.get('stolenBasePercentage', None)
+        self.assists = fielding_stats.get('assists', None)
+        self.put_outs = fielding_stats.get('putOuts', None)
+        self.errors = fielding_stats.get('errors', None)
+        self.chances = fielding_stats.get('chances', None)
+        self.passed_balls = fielding_stats.get('passedBalls', None)
+        self.pickoffs = fielding_stats.get('pickoffs', None)
+
+
 class Decisions:
     def __init__(self, decision):
         self.winner = decision['winner']
@@ -1017,67 +1184,20 @@ def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
     return (int(t[0:2]), int(t[3:]))
 
 
-def _get_division(code:int):
-    if 108 == code: # LAA
-        return 'AW'
-    if 109 == code: # ARI
-        return 'NW'
-    if 110 == code: # BAL
-        return 'AE'
-    if 111 == code: # BOS
-        return 'AE'
-    if 112 == code: # CHC
-        return 'NC'
-    if 113 == code: # CIN
-        return 'NC'
-    if 114 == code: # CLE
-        return 'AC'
-    if 115 == code: # COL
-        return 'NW'
-    if 116 == code: # DET
-        return 'AC'
-    if 117 == code: # HOU
-        return 'AW'
-    if 118 == code: # KC
-        return 'AC'
-    if 119 == code: # LAD
-        return 'NW'
-    if 120 == code: # WSH
-        return 'NE'
-    if 121 == code: # NYM
-        return 'NE'
-    if 133 == code: # OAK
-        return 'AW'
-    if 134 == code: # PIT
-        return 'NC'
-    if 135 == code: # SD
-        return 'NW'
-    if 136 == code: # SEA
-        return 'AW'
-    if 137 == code: # SF
-        return 'NW'
-    if 138 == code: # STL
-        return 'NC'
-    if 139 == code: # TB
-        return 'AE'
-    if 140 == code: # TEX
-        return 'AW'
-    if 141 == code: # TOR
-        return 'AE'
-    if 142 == code: # MIN
-        return 'AC'
-    if 143 == code: # PHI
-        return 'NE'
-    if 144 == code: # ATL
-        return 'NE'
-    if 145 == code: # CHW
-        return 'AC'
-    if 146 == code: # MIA
-        return 'NE'
-    if 147 == code: # NYY
-        return 'AE'
-    if 158 == code: # MIL
-        return 'NC'
+def _get_division(code: str) -> Union[str, None]: # pylint: disable=R0911
+    if code in ('NYY', 'BOS', 'TB', 'BAL', 'TOR'):
+        return 'AL East'
+    if code in ('CWS', 'CLE', 'DET', 'KC', 'MIN'):
+        return 'AL Central'
+    if code in ('HOU', 'OAK', 'SEA', 'LAA', 'TEX'):
+        return 'AL West'
+    if code in ('ATL', 'MIA', 'NYM', 'PHI', 'WSH'):
+        return 'NL East'
+    if code in ('CHC', 'CIN', 'MIL', 'PIT', 'STL'):
+        return 'NL Central'
+    if code in ('ARI', 'COL', 'LAD', 'SD', 'SF'):
+        return 'NL West'
+    return None
 
 
 def get_games() -> List[Game]:

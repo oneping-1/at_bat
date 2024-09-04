@@ -1,3 +1,10 @@
+"""
+This module creates a GUI for the MLB scoreboard. The scoreboard displays
+the current games being played and the current time and date. The GUI is
+created using the tkinter library. The scoreboard is updated every 5 seconds
+to display the most recent game data.
+"""
+
 import os
 from datetime import datetime, timedelta
 from typing import List, Tuple
@@ -9,6 +16,11 @@ from src.statsapi_plus import get_daily_gamepks
 from src.scoreboard_data import ScoreboardData
 
 class GameFrame(tk.Frame):
+    """.
+    GameFrame class is a frame that displays the current game information.
+    The game information includes the team abbreviations, scores, inning, and
+    runners on base. The frame is color coded based on the game state.`
+    """
     _BOARDER_WIDTH = 0
     _BW = _BOARDER_WIDTH
 
@@ -19,18 +31,12 @@ class GameFrame(tk.Frame):
     LIVE_COLOR = 'white'
     NOT_LIVE_COLOR = 'light grey'
 
-    RIVAL_TEAMS = 'HOU'
+    RIVAL_TEAMS = ()
     RIVAL_COLOR = 'firebrick1'
     FAV_TEAMS = 'TEX'
     FAV_COLOR = 'blue'
     BET_TEAMS = ()
     BET_COLOR = 'green'
-
-    # I could read these from game states.xlsx but ¯\_(ツ)_/¯
-    KNOWN_STATUSCODES = ( 'S',  'P', 'PR', 'PY', 'PW',  'I', 'IO', 'IR', 'MA',
-                         'MC', 'ME', 'MF', 'MG', 'MI', 'MP', 'MT', 'MU', 'MV',
-                         'NF', 'NH', 'TR', 'UR',  'O', 'OR',  'F', 'FR', 'DR',
-                         'DI')
 
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -118,10 +124,13 @@ class GameFrame(tk.Frame):
         self.outs.place(anchor='center', relx=0.5, rely=0.5)
 
     def start(self):
+        """
+        Starts the game frame. Fetches the data and updates the labels.
+        """
         self.data = ScoreboardData(gamepk=self.gamepk,
                                    delay_seconds=self.delay_seconds)
 
-        self._team_labels(self.data.away_abv, self.data.home_abv)
+        self._team_labels(self.data.away.abv, self.data.home.abv)
         self._status()
 
         if 'L' == self.data.game_state: # In Progress
@@ -131,7 +140,7 @@ class GameFrame(tk.Frame):
             self.home_score.config(text=f'{self.data.home_score}')
             self.inning.config(text=f'{self.data.inning}')
             self.umpire.config(text=f'{self.data.umpire}')
-            self._outs(self.data.outs)
+            self._outs(self.data.count.outs)
             self._runners(self.data.runners)
             self._inning_state(self.data.inning_state)
         elif 'P' == self.data.game_state: # Pregame
@@ -154,29 +163,48 @@ class GameFrame(tk.Frame):
             self.home_score.config(text=f'{self.data.home_score}')
             self.umpire.config(text=f'{self.data.umpire}')
             self._runners(self.data.runners)
-            self._outs(self.data.outs)
+            self._outs(self.data.count.outs)
 
     def fetch_data(self):
+        """
+        Fetches the updated data from the API and stores the difference in the
+        data dictionary. The difference is used to update the labels.
+        """
         if self.gamepk is None:
             return
 
-        self.diff, _ = self.data.get_updated_data_dict()
+        self.diff = self.data.get_updated_data_dict()
 
     def update_data(self):
+        """
+        Updates the labels based on the difference between the current data and
+        the updated data. If there is no difference, the labels are not updated.
+        """
         if self.gamepk is None:
             self._frame_color(self.NOT_LIVE_COLOR)
 
-        if self.diff is None:
+        if not self.diff:
             return
 
         # Update Team Abbreviations
-        if self.diff.away_abv is not None or self.diff.home_abv is not None:
-            self._team_labels(self.diff.away_abv, self.diff.home_abv)
+        if self.diff.get('away', None) is not None:
+            if self.diff.get('abv', None) is not None:
+                self._team_labels(self.data.away.abv, self.data.home.abv)
+
+        if self.diff.get('home', None) is not None:
+            if self.diff.get('abv', None) is not None:
+                self._team_labels(self.data.away.abv, self.data.home.abv)
 
         # Update gamepk + codedGameState
-        if self.diff.gamepk is not None or self.diff.codedGameState is not None:
+        if self.diff.get('gamepk', None) is not None:
             self._status()
 
+        if self.diff.get('game_state', None) is not None:
+            self._status()
+
+        self._game_state()
+
+    def _game_state(self):
         if self.data.game_state in 'P':
             self._pregame()
         elif self.data.game_state in ('D', 'S'):
@@ -201,34 +229,37 @@ class GameFrame(tk.Frame):
         self.outs.config(image='')
         self.runners.config(image='')
 
-        if self.diff is not None and self.diff.start_time is not None:
-            self.runners.config(text=self.diff.start_time)
+        if self.diff:
+            if self.diff['start_time'] is not None:
+                self.runners.config(text=self.data.start_time)
 
     def _delayed(self):
         self._frame_color(self.NOT_LIVE_COLOR)
         # Update Scores
-        if self.diff.away_score is not None:
-            self.away_score.config(text=self.diff.away_score)
-        if self.diff.home_score is not None:
-            self.home_score.config(text=self.diff.home_score)
-        if self.diff.runners is not None:
-            self._runners(self.diff.runners)
-        if self.diff.outs is not None:
-            self._outs(self.diff.outs)
-        if self.diff.umpire is not None:
-            self.umpire.config(text=self.diff.umpire)
+        if self.diff.get('away_score', None) is not None:
+            self.away_score.config(text=self.data.away_score)
+        if self.diff.get('home_score', None) is not None:
+            self.home_score.config(text=self.data.home_score)
+        if self.diff.get('runners', None) is not None:
+            self._runners(self.data.runners)
+        if self.diff('umpire', None) is not None:
+            self.umpire.config(text=self.data.umpire)
+
+        if self.diff.get('count', None) is not None:
+            if self.diff.get('outs', None) is not None:
+                self._outs(self.data.count.outs)
 
     def _final(self):
         self._frame_color(self.NOT_LIVE_COLOR)
         # Update Scores
-        if self.diff.away_score is not None:
-            self.away_score.config(text=self.diff.away_score)
-        if self.diff.home_score is not None:
-            self.home_score.config(text=self.diff.home_score)
-        if self.diff.umpire is not None:
-            self.umpire.config(text=self.diff.umpire)
+        if self.diff.get('away_score', None) is not None:
+            self.away_score.config(text=self.data.away_score)
+        if self.diff.get('home_score', None) is not None:
+            self.home_score.config(text=self.data.home_score)
+        if self.diff.get('umpire', None) is not None:
+            self.umpire.config(text=self.data.umpire)
 
-        if self.diff.game_state is not None:
+        if self.diff.get('game_state', None) is not None:
             self.inning.config(text='F')
 
         self.runners.config(image='')
@@ -241,25 +272,26 @@ class GameFrame(tk.Frame):
         self._frame_color(self.LIVE_COLOR)
 
         # Update Scores
-        if self.diff.away_score is not None:
+        if self.diff.get('away_score', None) is not None:
             self.away_score.config(text=f'{self.data.away_score}')
-        if self.diff.home_score is not None:
+        if self.diff.get('home_score', None) is not None:
             self.home_score.config(text=f'{self.data.home_score}')
 
         # Update Inning
-        if self.diff.inning is not None:
+        if self.diff.get('inning', None) is not None:
             self.inning.config(text=self.data.inning)
 
-        if self.diff.inning_state is not None:
+        if self.diff.get('inning_state', None) is not None:
             self._inning_state(self.data.inning_state)
 
-        if self.diff.umpire is not None:
+        if self.diff.get('umpire', None) is not None:
             self.umpire.config(text=self.data.umpire)
 
-        if self.diff.outs is not None:
-            self._outs(self.data.outs)
+        if self.diff.get('count', None) is not None:
+            if self.diff.get('outs', None) is not None:
+                self._outs(self.data.count.outs)
 
-        if self.diff.runners is not None:
+        if self.diff.get('runners', None) is not None:
             self._runners(self.data.runners)
 
     def _status(self):
@@ -363,6 +395,9 @@ class GameFrame(tk.Frame):
         self.umpire.config(bg=bg_color)
 
 class TimeFrame(tk.Frame):
+    """
+    TimeFrame class is a frame that displays the current time and date.
+    """
     _BOARDER_WIDTH = 0
     _BW = _BOARDER_WIDTH
 
@@ -418,6 +453,11 @@ class TimeFrame(tk.Frame):
         return (date, time)
 
 class Scoreboard:
+    """
+    Scoreboard class is the main class that creates the GUI for the MLB
+    scoreboard. The scoreboard displays the current games being played and the
+    current time and date.
+    """
     def __init__(self, delay_seconds: int = 0, date: str = None):
         self.delay_seconds = delay_seconds
 
@@ -498,6 +538,9 @@ class Scoreboard:
         self.time_frame.update()
 
 def main():
+    """
+    Main function that creates the GUI for the MLB scoreboard.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--delay', type=int, default=60,
                         help='Delay in seconds')
@@ -507,7 +550,7 @@ def main():
 
     # args = parser.parse_args()
 
-    Scoreboard(delay_seconds=17671776, date='2023-05-29')
+    Scoreboard(delay_seconds=60, date=None)
 
 if __name__ == '__main__':
     main()

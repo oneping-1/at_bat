@@ -240,7 +240,7 @@ class Runners:
 
         return i
 
-    def __str__(self) -> str:
+    def __str__(self) -> str: # pylint: disable=R0911
         """
         Converts the current the current state of the bases into a
         readable sentence someone would say
@@ -265,6 +265,8 @@ class Runners:
             return 'runners on second and third'
         if self.runners == [True, True, True]:
             return 'bases loaded'
+
+        return 'unknown'
 
     def __repr__(self) -> str:
         """

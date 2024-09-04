@@ -20,7 +20,7 @@ num_miss, favor, missed_list = Umpire.find_missed_calls(gamePk = 717404,
 
 import csv
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import random
 import math
 import copy
@@ -44,6 +44,9 @@ BUFFER_INCH = .325
 BUFFER_FEET = BUFFER_INCH / 12
 
 class MissedCalls():
+    """
+    Class that represents a missed call made by the umpire in a game
+    """
     def __init__(self, i: int, at_bat: AllPlays, pitch: PlayEvents,
             runners: Runners, home_favor: float, home_wpa: float):
         self._at_bat = at_bat
@@ -76,6 +79,12 @@ class MissedCalls():
         self.home_wpa = home_wpa
 
     def print_pitch(self):
+        """
+        Prints the missed call in a formatted string that includes the
+        inning, pitcher, batter, balls, strikes, outs, zone, px, pz,
+        home favor, and runners. The missed call is printed in the
+        format of the order it was called in the game
+        """
         to_print_str = ''
 
         to_print_str += f'{self.i + 1}: {self.half_inning} {self.inning}\n'
@@ -131,8 +140,9 @@ class Umpire():
     red288 = get_red288_dataframe()
     wpd351360 = get_wpd351360_dataframe()
 
-    def __init__(self, game: Game = None, gamepk: int = None,
-                 delay_seconds: int = 0, method: str = None):
+    def __init__(self, game: Union[Game, None] = None,
+        gamepk: Union[int, None] = None, delay_seconds: int = 0,
+        method: str = None):
 
         self.delay_seconds: int = round(delay_seconds)
 
@@ -528,7 +538,8 @@ class Umpire():
         return (rand_x, rand_z)
 
     @classmethod
-    def _check_class_methods(cls, runners: Runners, runners_int: int, isTopInning: bool) -> int:
+    def _check_class_methods(cls, runners: Union[Runners, None],
+            runners_int: Union[int, None], isTopInning: bool) -> int:
         if runners is None and runners_int is None:
             raise ValueError('runners and runners_int were not provided')
         if isinstance(runners_int, int) is False and runners_int is not None:

@@ -14,7 +14,7 @@ Example:
 """
 
 import os
-from typing import List
+from typing import List, Union
 import csv
 
 
@@ -127,7 +127,7 @@ class Team:
 
 
     @classmethod
-    def _abv_from_id(cls, code):
+    def _abv_from_id(cls, code) -> Union[str, None]:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_dir = os.path.join(current_dir, '..', 'csv')
         csv_file_path = os.path.join(csv_dir, 'teams.csv')
@@ -140,9 +140,11 @@ class Team:
                 if code == int(team_id):
                     return abv
 
+        return None
+
 
     @classmethod
-    def _div_from_id(cls, code):
+    def _div_from_id(cls, code) -> Union[str, None]:
         with open('csv/teams.csv', encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
@@ -150,6 +152,8 @@ class Team:
             for team_id, _, div in reader:
                 if code == int(team_id):
                     return div
+
+        return None
 
 
 

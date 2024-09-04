@@ -11,9 +11,6 @@ import os
 import statsapi
 import pandas as pd
 
-class MaxRetriesError(Exception):
-    pass
-
 def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
     """
     Returns the game dictionary for given game
@@ -126,6 +123,12 @@ def get_daily_gamepks(date: str = None) -> List[int]:
     return gamePks
 
 def get_re288_dataframe() -> pd.DataFrame:
+    """
+    Returns the re288.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The re288.csv file as a pandas DataFrame
+    """
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 're288.csv')
@@ -133,6 +136,12 @@ def get_re288_dataframe() -> pd.DataFrame:
     return pd.read_csv(csv_file_path)
 
 def get_re640_dataframe() -> pd.DataFrame:
+    """
+    Returns the re640.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The re640.csv file as a pandas DataFrame
+    """
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 're640.csv')
@@ -140,6 +149,12 @@ def get_re640_dataframe() -> pd.DataFrame:
     return pd.read_csv(csv_file_path)
 
 def get_wp780800_dataframe() -> pd.DataFrame:
+    """
+    Returns the wp780800.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The wp780800.csv file as a pandas DataFrame
+    """
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'wp780800.csv')
@@ -147,6 +162,12 @@ def get_wp780800_dataframe() -> pd.DataFrame:
     return pd.read_csv(csv_file_path)
 
 def get_wpd351360_dataframe() -> pd.DataFrame:
+    """
+    Returns the wpd351360.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The wpd351360.csv file as a pandas DataFrame
+    """
     current_dir = os.path.dirname(os.path.relpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'wpd351360.csv')
@@ -157,12 +178,18 @@ def get_wpd351360_dataframe() -> pd.DataFrame:
 def _read_runners(base: str) -> bool:
     if base == 'True':
         return True
-    elif base == 'False':
+    if base == 'False':
         return False
     raise ValueError('unknown')
 
 
 def get_red288_dataframe() -> pd.DataFrame:
+    """
+    Returns the red288.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The red288.csv file as a pandas DataFrame
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'red288.csv')

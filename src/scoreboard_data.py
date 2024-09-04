@@ -10,6 +10,7 @@ Raises:
 
 from datetime import datetime, timedelta, timezone
 import json
+from typing import List
 from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe
 from src.game import Game
 from src.runners import Runners
@@ -75,7 +76,7 @@ class ProbablePitchers:
         away_id = away['id']
         self.away = get_player_last_name(game, away_id)
 
-        away_boxscore = game._game_dict['liveData']['boxscore']['teams']['away']['players']
+        away_boxscore = game.liveData.boxscore.teams.away.players
         self.away_era = away_boxscore[f'ID{away_id}']['seasonStats']['pitching']['era']
         return None
 
@@ -90,7 +91,7 @@ class ProbablePitchers:
         home_id = home['id']
         self.home = get_player_last_name(game, home_id)
 
-        home_boxscore = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+        home_boxscore: List[dict] = game.liveData.boxscore.teams.home.players
         self.home_era = home_boxscore[f'ID{home_id}']['seasonStats']['pitching']['era']
         return None
 
@@ -232,7 +233,6 @@ class Matchup:
         except KeyError:
             # Sometimes mlb messes up and the inning state does not
             # match the batter and pitcher. This is a easy bodged fix
-            print('KeyError in Matchup')
             if isTopInning is False:
                 pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_summary = f'P:{pitches}'
@@ -241,8 +241,6 @@ class Matchup:
                 pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_summary = f'P:{pitches}'
                 self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
-            else:
-                raise ValueError('isTopInning is not a boolean')
 
         return None
 
@@ -269,6 +267,12 @@ class Count:
         self.outs = game.liveData.linescore.outs
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the Count object
+
+        Returns:
+            dict: Dictionary representation of the Count object
+        """
         return {
             'balls': self.balls,
             'strikes': self.strikes,
@@ -285,6 +289,12 @@ class Team:
         self.name = game.gameData._gameData['teams'][team]['teamName']
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the Team object
+
+        Returns:
+            dict: Dictionary representation of the Team object
+        """
         return {
             'abv': self.abv,
             'location': self.location,
@@ -334,6 +344,12 @@ class PitchDetails:
         return None
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the PitchDetails object
+
+        Returns:
+            dict: Dictionary representation of the PitchDetails object
+        """
         return {
             'description': self.description,
             'speed': self.speed,
@@ -380,6 +396,12 @@ class HitDetails:
         return None
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the HitDetails object
+
+        Returns:
+            dict: Dictionary representation of the HitDetails object
+        """
         return {
             'exit_velo': self.exit_velo,
             'launch_angle': self.launch_angle,
@@ -399,6 +421,12 @@ class UmpireDetails:
         self.home_wpa: float = umpire.home_wpa
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the UmpireDetails object
+
+        Returns:
+            dict: Dictionary representation of the UmpireDetails object
+        """
         return {
             'num_missed': self.num_missed,
             'home_favor': self.home_favor,
@@ -439,11 +467,20 @@ class RunExpectancy:
         self.average_runs = re640[state]['average_runs'].iloc[0]
 
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the RunExpectancy object
+
+        Returns:
+            dict: Dictionary representation of the RunExpectancy object
+        """
         return {
             'average_runs': self.average_runs
         }
 
 class WinProbability:
+    """
+    Contains the win probability data for the game as a sub-class to ScoreboardData
+    """
     def __init__(self, game: Game):
         """
         Calculate the win probability for the away team, home team, and a tie.
@@ -533,7 +570,15 @@ class WinProbability:
         self.win_probability_home = home_win / (away_win + home_win)
         self.extras = tie
 
+        return None
+
     def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the WinProbability object
+
+        Returns:
+            dict: Dictionary representation of the WinProbability object
+        """
         return {
             'away': self.win_probability_away,
             'home': self.win_probability_home,
