@@ -3,13 +3,13 @@ This module will send data to the server for the scoreboard matrix.
 """
 
 import time
-from typing import Union
+from typing import Union, List
 import json
 import threading
 import requests
 from flask import Flask, request, Response
 from src.scoreboard_data import ScoreboardData
-from src.statsapi_plus import get_daily_gamepks
+from src import statsapi_plus as sap
 
 def get_ip() -> str:
     """
@@ -44,6 +44,18 @@ def send_data(endpoint: str, data: dict):
 
     print(json.dumps(new_data, indent=4))
 
+def get_daily_gamepks() -> List[int]:
+    """
+    Get the daily gamepks.
+    One function in case future me wants to add more functionality.
+    Or add specific gamepks.
+
+    Returns:
+        list: List of gamepks
+    """
+    l =  sap.get_daily_gamepks()
+
+    return l
 
 class Server:
     """
