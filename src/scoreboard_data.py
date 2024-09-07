@@ -56,6 +56,27 @@ def get_player_last_name(game: Game, player_id: int) -> str:
     player = game.gameData.players[f'ID{player_id}']
     return player['lastName']
 
+class Flags:
+    """
+    Contains the flags data for the game as a sub-class to ScoreboardData
+    like no_hitter and perfect_game
+    """
+    def __init__(self, game: Game):
+        self.no_hitter = game.gameData.flags.no_hitter
+        self.perfect_game = game.gameData.flags.perfect_game
+
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the Flags object
+
+        Returns:
+            dict: Dictionary representation of the Flags object
+        """
+        return {
+            'no_hitter': self.no_hitter,
+            'perfect_game': self.perfect_game
+        }
+
 class ProbablePitchers:
     """
     Contains the probable pitcher data for the game as a sub-class to
@@ -645,6 +666,7 @@ class ScoreboardData:
         self.umpire = UmpireDetails(game=self.game)
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
+        self.flags = Flags(game=self.game)
 
         runners = Runners()
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
@@ -697,6 +719,7 @@ class ScoreboardData:
                 'umpire': self.umpire.to_dict(),
                 'run_expectancy': self.run_expectancy.to_dict(),
                 'win_probability': self.win_probability.to_dict(),
+                'flags': self.flags.to_dict(),
                 'runners': self.runners}
 
     def check_postponed(self):
@@ -726,5 +749,5 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away_score} @ {self.home.abv} {self.home_score}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=744908)
+    x = ScoreboardData(gamepk=745455)
     print(json.dumps(x.to_dict(), indent=4))

@@ -39,6 +39,7 @@ def send_data(endpoint: str, data: dict):
 
     # Only show new data to limit the amount of data shown
     # but add endpoint so we know what data is being shown
+    # if there is an error here its probably on the scoreboard side
     new_data = response.json()['new_data']
     new_data['endpoint'] = endpoint
 

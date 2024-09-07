@@ -130,9 +130,9 @@ class GameData:
         self.players = gameData['players']
         self.venue = gameData['venue']
         self.weather = gameData.get('weather', None)
-        self.gameInfo = gameData['gameInfo']
-        self.flags = gameData['flags']
-        self.probablePitchers = gameData['probablePitchers']
+        self.gameInfo = gameData.get('gameInfo', None)
+        self.flags = gameData.get('flags', None)
+        self.probablePitchers = gameData.get('probablePitchers', None)
         self.officialScorer = gameData.get('officialScorer', None)
         self.primaryDatacaster = gameData.get('primaryDatacaster', None)
         self._children()
@@ -142,9 +142,15 @@ class GameData:
         self.status = Status(self.status)
         self.teams = TeamsGameData(self.teams)
         self.venue = Venue(self.venue)
-        self.weather = Weather(self.weather)
-        self.gameInfo = GameInfo(self.gameInfo)
-        self.flags = Flags(self.flags)
+
+        if self.weather is not None:
+            self.weather = Weather(self.weather)
+
+        if self.gameInfo is not None:
+            self.gameInfo = GameInfo(self.gameInfo)
+
+        if self.flags is not None:
+            self.flags = Flags(self.flags)
 
         if self.officialScorer:
             self.officialScorer = OfficialScorer(self.officialScorer)
@@ -174,7 +180,11 @@ class Datetime:
         self.startMinute: int
 
         start_time = _convert_zulu_to_local(self.dateTime)
-        self.startHour, self.startMinute = start_time
+        if start_time is None:
+            self.startHour = 0
+            self.startMinute = 0
+        else:
+            self.startHour, self.startMinute = start_time
 
         self.startTime = f'{self.startHour}:{self.startMinute:02d}'
         self.startTime_sb = f'{self.startHour:2d} {self.startMinute:02d}'
@@ -252,9 +262,14 @@ class Venue:
         self._children()
 
     def _children(self):
-        self.location = Location(self.location)
-        self.timeZone = TimeZone(self.timeZone)
-        self.fieldInfo = FieldInfo(self.fieldInfo)
+        if self.location is not None:
+            self.location = Location(self.location)
+
+        if self.timeZone is not None:
+            self.timeZone = TimeZone(self.timeZone)
+
+        if self.fieldInfo is not None:
+            self.fieldInfo = FieldInfo(self.fieldInfo)
 
 
 class Location:
@@ -327,8 +342,8 @@ class GameInfo:
 
 class Flags:
     def __init__(self, flags):
-        self.noHitter = flags['noHitter']
-        self.perfectGame = flags['perfectGame']
+        self.no_hitter = flags.get('noHitter', None)
+        self.perfect_game = flags.get('perfectGame', None)
         # no children
 
 
@@ -357,16 +372,21 @@ class PrimaryDatacaster:
 class LiveData:
     def __init__(self, liveData):
         self._liveData = liveData
-        self.plays = liveData['plays']
-        self.linescore = liveData['linescore']
-        self.boxscore = liveData['boxscore']
+        self.plays = liveData.get('plays', None)
+        self.linescore = liveData.get('linescore', None)
+        self.boxscore = liveData.get('boxscore', None)
         self.decisions = liveData.get('decisions', None)
         self._children()
 
     def _children(self):
-        self.plays = Plays(self.plays)
-        self.linescore = Linescore(self.linescore)
-        self.boxscore = Boxscore(self.boxscore)
+        if self.plays is not None:
+            self.plays = Plays(self.plays)
+
+        if self.linescore is not None:
+            self.linescore = Linescore(self.linescore)
+
+        if self.boxscore is not None:
+            self.boxscore = Boxscore(self.boxscore)
 
         if self.decisions is not None:
             self.decisions = Decisions(self.decisions)
@@ -382,6 +402,11 @@ class Plays:
         self._test = plays
         self.allPlays: List[AllPlays] = [AllPlays(play) for play in plays['allPlays']]
         self.currentPlay = plays.get('currentPlay', None)
+        self._children()
+
+    def _children(self):
+        if self.currentPlay is not None:
+            self.currentPlay = AllPlays(self.currentPlay)
 
 
 class AllPlays:
@@ -842,19 +867,26 @@ class Linescore:
         self.isTopInning = linescore.get('isTopInning', None)
         self.scheduledInnings = linescore.get('scheduledInnings', None)
         self.innings = linescore.get('innings', None)
-        self.teams = linescore['teams']
-        self.defense = linescore['defense']
-        self.offense = linescore['offense']
+        self.teams = linescore.get('teams', None)
+        self.defense = linescore.get('defense', None)
+        self.offense = linescore.get('offense', None)
         self.balls = linescore.get('balls', None)
         self.strikes = linescore.get('strikes', None)
         self.outs = linescore.get('outs', None)
         self._children()
 
     def _children(self):
-        self.innings = [Inning(inning) for inning in self.innings]
-        self.teams = TeamsLinescore(self.teams)
-        self.defense = Defense(self.defense)
-        self.offense = Offense(self.offense)
+        if self.innings is not None:
+            self.innings = [Inning(inning) for inning in self.innings]
+
+        if self.teams is not None:
+            self.teams = TeamsLinescore(self.teams)
+
+        if self.defense is not None:
+            self.defense = Defense(self.defense)
+
+        if self.offense is not None:
+            self.offense = Offense(self.offense)
 
     def __repr__(self):
         inn_state = self.inningState
@@ -1168,6 +1200,9 @@ class Decisions:
 
 
 def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
+    if zulu_time_str is None:
+        return None
+
     zulu_time = datetime.datetime.strptime(zulu_time_str, '%Y-%m-%dT%H:%M:%SZ')
     zulu_time = pytz.utc.localize(zulu_time)
 

@@ -107,7 +107,7 @@ class MissedCalls():
         to_print_str += f'top: {self.pz_max:.5f} | bottom: {self.pz_min:.5f}\n'
 
         to_print_str += f'Home Favor: {self.home_favor:4.2f}\n'
-        to_print_str += f'Home WPA: {self.home_wpa:4.2f}\n'
+        to_print_str += f'Home WPA: {self.home_wpa*100:5.2f}%\n'
 
         print(to_print_str)
 

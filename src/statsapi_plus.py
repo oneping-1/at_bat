@@ -4,50 +4,42 @@ Eventually want to get rid of this module by moving these functions to
 more appropriate modules
 """
 
-from typing import List
-import time
+from typing import List, Union
 from datetime import datetime, timedelta
+from dateutil import tz
 import os
 import statsapi
 import pandas as pd
 
-def get_game_dict(gamepk=None, delay_seconds=0) -> dict:
+def get_game_dict(gamepk: int = None, time: Union[str, None] = None,
+    delay_seconds: Union[int, None] = 0) -> dict:
     """
-    Returns the game dictionary for given game
-
-    Essentially the same as statsapi.get('game') but with an extra
-    function argument. This argument will let the dictionary returned
-    to be from a given number of seconds ago. This is for when you are
-    watching a game which is delayed to the data
+    Returns the game data for a given gamePk. If time is provided, the game
+    data at that time is returned. If time is not provided, the game data
+    at the current time is returned.
 
     Args:
-        gamePk (int): The gamePk/id for the desired game. Can easily
-            be found on the MLB/MiLB websites
-        delay_seconds (float, optional): The number of seconds the data
-            should be delayed to match what you're seeing. Defaults to 0
+        gamepk (int): gamepk for the desired game. Defaults to None.
+        time (str, optional): time (ISO 8601). Defaults to None.
+        delay_seconds (int, optional): number of seconds to be delayed.
+            Defaults to 0.
 
     Raises:
-        ValueError: If gamePk argument is not defined
-        ConnectionError: If connection to API fails
-        TypeError: If delay_seconds is not valid
+        ValueError: No gamepk  provided
+        MaxRetriesError: Max retries reached
 
     Returns:
-        dict: The game dictionary recieved with the given delay. Can be
-            turned into a Game object by using this dict as the only
-            argument to Game. Example:
-            data = get_game_dict(717404, delay_seconds=45)
-            game_class = Game(data)
-
-    Example:
-        game_dict = get_game_dict(gamePk=718552, delay_seconds=30)
-        game_class = Game(game_dict)
+        dict: The game data for the given gamePk
     """
     max_retries = 10
 
     if gamepk is None:
         raise ValueError('gamePk not provided')
 
-    delay_time = _get_utc_time(delay_seconds=delay_seconds)
+    if time is not None:
+        delay_time = _get_utc_time_from_zulu(time)
+    else:
+        delay_time = _get_utc_time(delay_seconds=delay_seconds)
 
     for i in range(max_retries):
         try:
@@ -88,6 +80,16 @@ def _get_utc_time(delay_seconds: int = 0):
     formatted_time = utc_time.strftime('%Y%m%d_%H%M%S')
 
     return formatted_time
+
+def _get_utc_time_from_zulu(zulu_time_str):
+    # Parse the time string with a timezone offset
+    utc_time = datetime.fromisoformat(zulu_time_str.replace('Z', '+00:00'))
+
+    # Convert to UTC (Zulu time)
+    utc_time = utc_time.astimezone(tz.UTC)
+
+    # Return the formatted UTC time in the desired format
+    return utc_time.strftime('%Y%m%d_%H%M%S')
 
 def get_daily_gamepks(date: str = None) -> List[int]:
     """
