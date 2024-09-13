@@ -6,6 +6,7 @@ import time
 from typing import Union, List
 import json
 import threading
+import os
 import requests
 from flask import Flask, request, Response
 from src.scoreboard_data import ScoreboardData
@@ -68,6 +69,7 @@ class Server:
         self.app = Flask(__name__)
         self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
         self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
+        self.app.add_url_rule('/restart', 'restart', self.restart, methods=['GET'])
 
     def home(self):
         """
@@ -113,6 +115,18 @@ class Server:
         game = ScoreboardData(gamepk=gamepk, delay_seconds=self.scoreboard.delay_seconds)
         game = game.to_dict()
         return Response(json.dumps(game, indent=4), mimetype='text/plain')
+
+    def restart(self):
+        """
+        Restart the server by rebooting the Raspberry Pi.
+        Could not find a way to restart the server without rebooting.
+        """
+        print('sudo reboot')
+        os.system('sudo reboot')
+
+        # shouldnt return anything since the server is restarting
+        # but here just in case
+        return Response('Server not restarted', mimetype='text/plain')
 
     def run(self):
         """
