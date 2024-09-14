@@ -470,6 +470,11 @@ class RunExpectancy:
         strikes = game.liveData.linescore.strikes
         outs = game.liveData.linescore.outs
 
+        if outs == 3:
+            self.average_runs = 0
+            self.to_score = 0
+            return
+
         runners = Runners()
         runners.end_at_bat(at_bat)
         runners = int(runners)
@@ -487,6 +492,15 @@ class RunExpectancy:
 
         self.average_runs = re640[state]['average_runs'].iloc[0]
 
+        no_score = re640[state]['0 runs'].iloc[0]
+        count = re640[state]['count'].iloc[0]
+        self.to_score = 1 - (no_score / count)
+
+        if count == 0:
+            print('divide by 0')
+
+        return
+
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the RunExpectancy object
@@ -495,7 +509,8 @@ class RunExpectancy:
             dict: Dictionary representation of the RunExpectancy object
         """
         return {
-            'average_runs': self.average_runs
+            'average_runs': self.average_runs,
+            'to_score': self.to_score
         }
 
 class WinProbability:
