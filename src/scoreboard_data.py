@@ -462,6 +462,7 @@ class RunExpectancy:
         if game.liveData.plays.allPlays == []:
             # No plays yet
             self.average_runs = None
+            self.to_score = None
             return
 
         at_bat = game.liveData.plays.allPlays[-1]
