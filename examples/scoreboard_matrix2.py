@@ -4,6 +4,7 @@ This module will send data to the server for the scoreboard matrix.
 
 import time
 from typing import Union, List
+import sys
 import json
 import threading
 import os
@@ -66,6 +67,7 @@ class Server:
     def __init__(self, scorebaord: 'Scoreboard', gamecast: 'Gamecast'):
         self.scoreboard = scorebaord
         self.gamecast = gamecast
+        self.restart_given = False
         self.app = Flask(__name__)
         self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
         self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
@@ -87,7 +89,8 @@ class Server:
         details = {
             'delay_seconds': self.scoreboard.delay_seconds,
             'gamecast_id': self.gamecast.gamecast_id,
-            'max_gamecast_id': len(self.scoreboard.games) - 1
+            'max_gamecast_id': len(self.scoreboard.games) - 1,
+            'restart_given': self.restart_given
         }
 
         game_details = []
@@ -121,7 +124,12 @@ class Server:
         Restart the server by rebooting the Raspberry Pi.
         Could not find a way to restart the server without rebooting.
         """
+
+        self.restart_given = True
         print('sudo reboot')
+        # time.sleep(5)
+        
+        sys.stdout.flush()
         os.system('sudo reboot')
 
         # shouldnt return anything since the server is restarting
