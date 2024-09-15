@@ -401,6 +401,8 @@ class Umpire():
         elif pitch.details.code == 'B':
             balls = balls - 1
 
+        inning = min(inning, 10)
+
         state_runs = (
             (Umpire.red288['balls'] == balls) &
             (Umpire.red288['strikes'] == strikes) &
