@@ -42,10 +42,10 @@ def send_data(endpoint: str, data: dict):
     # Only show new data to limit the amount of data shown
     # but add endpoint so we know what data is being shown
     # if there is an error here its probably on the scoreboard side
-    new_data = response.json()['new_data']
-    new_data['endpoint'] = endpoint
+    # new_data = response.json()['new_data']
+    # new_data['endpoint'] = endpoint
 
-    print(json.dumps(new_data, indent=4))
+    # print(json.dumps(new_data, indent=4))
 
 def get_daily_gamepks() -> List[int]:
     """
