@@ -176,7 +176,7 @@ def loop(ip: str, i: int, game: ScoreboardData):
     if game is None:
         return
 
-    diff = game.get_updated_data_dict()
+    diff = game.update_return_difference()
 
     request_dict = get_request_dict(diff)
 

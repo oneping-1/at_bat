@@ -194,7 +194,7 @@ class Gamecast:
         # Update in case recent changed
         self.delay_seconds = self.scoreboard.delay_seconds
 
-        diff = self.game.get_updated_data_dict(delay_seconds=self.delay_seconds)
+        diff = self.game.update_return_difference(delay_seconds=self.delay_seconds)
 
         if diff:
             send_data('gamecast', diff)
@@ -267,7 +267,7 @@ class Scoreboard:
         if game is None:
             return
 
-        diff = game.get_updated_data_dict(delay_seconds=self.delay_seconds)
+        diff = game.update_return_difference(delay_seconds=self.delay_seconds)\
 
         if diff:
             send_data(index, diff)

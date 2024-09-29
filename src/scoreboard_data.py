@@ -8,9 +8,11 @@ Raises:
     ValueError: If isTopInning is not a boolean
 """
 
+import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
+
 from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_id
 from src.game import Game
 from src.runners import Runners
@@ -745,7 +747,7 @@ class ScoreboardData:
 
         return new_game
 
-    def get_updated_data_dict(self, delay_seconds: int = None) -> dict:
+    def update_return_difference(self, delay_seconds: int = None) -> dict:
         """Return the difference between the current ScoreboardData
         object as a dictionary
         Also updates itself with the new data
@@ -754,11 +756,10 @@ class ScoreboardData:
             dict: The difference between the current ScoreboardData object
         """
 
+        old_game = copy.deepcopy(self)
         new_game = self.update(delay_seconds=delay_seconds)
 
-        diff = dict_diff(self.to_dict(), new_game.to_dict())
-
-        self.__dict__.update(new_game.__dict__)
+        diff = dict_diff(old_game.to_dict(), new_game.to_dict())
 
         return diff
 

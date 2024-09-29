@@ -173,7 +173,7 @@ class GameFrame(tk.Frame):
         if self.gamepk is None:
             return
 
-        self.diff = self.data.get_updated_data_dict()
+        self.diff = self.data.update_return_difference()
 
     def update_data(self):
         """
