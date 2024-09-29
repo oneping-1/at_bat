@@ -106,3 +106,20 @@ def get_red288_dataframe() -> pd.DataFrame:
     csv_file_path = os.path.join(csv_path, 'red288.csv')
 
     return pd.read_csv(csv_file_path)
+
+def find_division_from_id() -> str:
+    """
+    Returns the division of a team given the team_id
+
+    Returns:
+        str: The division of a team given the team_id
+    """
+    d = {}
+
+    csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
+    teams = os.path.join(csv_path, 'teams.csv')
+
+    for team in teams:
+        d[team['team_id']] = team['division']
+
+    return d

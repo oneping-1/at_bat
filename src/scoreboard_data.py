@@ -8,12 +8,10 @@ Raises:
     ValueError: If isTopInning is not a boolean
 """
 
-import os
-import csv
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
-from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe
+from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_id
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
@@ -21,8 +19,8 @@ from src.standings import Standings
 
 re640 = get_re640_dataframe()
 wp780800 = get_wp780800_dataframe()
+division_from_id = find_division_from_id()
 
-csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
     """Return the difference between two dictionaries
@@ -322,19 +320,8 @@ class Team:
 
         self._get_standing_info()
 
-    def _get_division(self) -> str:
-        teams = os.path.join(csv_path, 'teams.csv')
-
-        with open(teams, encoding='utf-8') as file:
-            reader = csv.reader(file)
-            next(reader)
-
-            for _, abv, division in reader:
-                if self.abv == abv:
-                    return division
-
     def _get_standing_info(self):
-        division = self._get_division()
+        division = division_from_id[self.id]
 
         league = division[0]
         division = division[1]
