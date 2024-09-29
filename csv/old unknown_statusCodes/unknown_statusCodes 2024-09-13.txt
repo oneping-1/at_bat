@@ -1,0 +1,130 @@
+gamepk: 745944
+time: 2024-09-03T22:32:24.877702-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:30.443365-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:36.406187-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:42.236554-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:47.558642-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:52.033439-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:32:58.267173-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:33:09.385509-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:33:14.251201-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+
+gamepk: 745944
+time: 2024-09-03T22:33:23.032058-04:00
+away: STL
+home: MIL
+inningState: Bottom
+inning: 11
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Catch/drop in outfield
+codedGameState: N
+statusCode: ND
+

@@ -1,0 +1,416 @@
+gamepk: 746256
+time: 2024-09-20T22:48:55.136690-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:01.880169-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:07.515718-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:19.472481-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:25.370470-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:31.851682-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:37.355204-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:43.699806-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:49.467190-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:49:55.530725-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:02.615715-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:09.769324-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:16.880519-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:23.831888-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:29.934323-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:36.543028-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:43.140766-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:50.383727-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:50:56.526271-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:07.862702-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:14.795938-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:21.781803-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:29.106255-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:35.600291-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746256
+time: 2024-09-20T22:51:43.407920-04:00
+away: SF
+home: KC
+inningState: Bottom
+inning: 9
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746825
+time: 2024-09-22T18:56:39.524701-04:00
+away: WSH
+home: CHC
+inningState: Top
+inning: 8
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 745854
+time: 2024-09-25T21:16:38.028634-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+
+gamepk: 745854
+time: 2024-09-25T21:16:48.404657-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+
+gamepk: 745854
+time: 2024-09-25T21:16:59.122975-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+
+gamepk: 745854
+time: 2024-09-25T21:17:04.509749-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+
+gamepk: 745854
+time: 2024-09-25T21:17:09.652078-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+
+gamepk: 745854
+time: 2024-09-25T21:17:25.668897-04:00
+away: MIA
+home: MIN
+inningState: Bottom
+inning: 5
+outs: 3
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Timing play
+codedGameState: M
+statusCode: MM
+

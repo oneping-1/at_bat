@@ -35,10 +35,11 @@ MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
 # Update for new game states for custom game_state attribute
 KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
-                    'MA','MC','MD','ME','MF','MG','MH','MI','MN','MO'
-                    'MP','MS','MT','MU','MV','MQ','MW','MX','MY','NA',
-                    'NF','NJ','NI','NK','NN','NO','NH','NQ','TR','UR',
-                    'O','OO','OR','F','FG','FO','FR','DI','DC','DR')
+                    'MA','MC','MD','ME','MF','MG','MH','MI','MM','MN'
+                    'MO''MP','MS','MT','MU','MV','MQ','MW','MX','MY',
+                    'NA','NF','NJ','NI','NK','NN','NO','NH','NQ','TR',
+                    'UR','O','OO','OR','F','FG','FO','FR','DI','DC',
+                    'DR')
 
 class Game:
     """

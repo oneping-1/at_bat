@@ -1,0 +1,44 @@
+gamepk: 746958
+inning: 2
+inningState: Top
+outs: 0
+time: 2024-05-25T16:30:25.208330-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fan interference
+codedGameState: M
+statusCode: MN
+
+gamepk: 746958
+inning: 2
+inningState: Top
+outs: 0
+time: 2024-05-25T16:30:25.615342-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fan interference
+codedGameState: M
+statusCode: MN
+
+gamepk: 746958
+inning: 2
+inningState: Top
+outs: 0
+time: 2024-05-25T16:31:04.104838-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fan interference
+codedGameState: M
+statusCode: MN
+
+gamepk: 746958
+inning: 2
+inningState: Top
+outs: 0
+time: 2024-05-25T16:31:04.482627-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fan interference
+codedGameState: M
+statusCode: MN
+

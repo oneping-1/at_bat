@@ -1,0 +1,13 @@
+gamepk: 747008
+time: 2024-07-28T16:38:38.660300-04:00
+away: SD
+home: BAL
+inningState: Top
+inning: 9
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge
+codedGameState: M
+statusCode: MX
+

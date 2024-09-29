@@ -1,0 +1,110 @@
+gamepk: 745339
+inning: 8
+inningState: Top
+outs: 1
+time: 2024-05-18T18:19:36.864410-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Tag play
+codedGameState: N
+statusCode: NA
+
+gamepk: 745339
+inning: 8
+inningState: Top
+outs: 1
+time: 2024-05-18T18:19:37.310313-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Tag play
+codedGameState: N
+statusCode: NA
+
+gamepk: 745339
+inning: 8
+inningState: Top
+outs: 1
+time: 2024-05-18T18:19:57.730839-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Tag play
+codedGameState: N
+statusCode: NA
+
+gamepk: 745339
+inning: 8
+inningState: Top
+outs: 1
+time: 2024-05-18T18:19:58.229318-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Tag play
+codedGameState: N
+statusCode: NA
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:52:24.139529-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:52:24.639026-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:52:49.143847-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:52:49.648278-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:53:13.534554-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+
+gamepk: 745013
+inning: 6
+inningState: Bottom
+outs: 1
+time: 2024-05-18T20:53:13.965058-04:00
+astractGameState: Live
+abstractGameCode: L
+detailedState: 
+codedGameState: M
+statusCode: MW
+

@@ -1,0 +1,1690 @@
+gamepk: 745801
+time: 2024-06-29T18:52:58.711441-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 745801
+time: 2024-06-29T18:53:01.197754-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 745801
+time: 2024-06-29T18:53:01.341293-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 745801
+time: 2024-06-29T18:53:03.887910-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 745801
+time: 2024-06-29T18:53:08.328043-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 745801
+time: 2024-06-29T18:53:08.465611-04:00
+away: HOU
+home: NYM
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Rules check
+codedGameState: N
+statusCode: NQ
+
+gamepk: 746455
+time: 2024-07-08T20:01:47.751035-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:01:47.895682-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:01:50.730618-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:01:50.855810-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:01:53.222089-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:01:53.357451-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:00.895494-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:01.022184-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:03.596858-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:03.796109-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:06.303017-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:06.489098-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:14.340745-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:14.490852-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:17.728869-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:17.861814-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:25.936738-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:26.392963-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:28.911595-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:29.083503-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:31.667105-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:31.792752-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:34.536653-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:34.731171-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:37.419225-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:37.582857-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:40.280916-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746455
+time: 2024-07-08T20:02:40.437711-04:00
+away: CLE
+home: DET
+inningState: Bottom
+inning: 6
+outs: 1
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746690
+time: 2024-07-09T19:47:39.414987-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:39.528262-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:44.604292-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:44.721501-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:52.377915-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:52.490058-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:54.409471-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:54.521804-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:57.753607-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:47:57.866021-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:08.830472-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:08.955398-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:14.768566-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:14.831115-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:14.875027-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:14.933953-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:19.926681-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:20.032516-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:24.892942-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:24.960857-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:25.000872-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:25.063868-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:30.221682-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:30.330352-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:35.487103-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:35.707127-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:47.133334-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:47.294849-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746690
+time: 2024-07-09T19:48:53.146115-04:00
+away: COL
+home: CIN
+inningState: Bottom
+inning: 2
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Umpire review: Fair/foul in outfield
+codedGameState: N
+statusCode: NO
+
+gamepk: 746279
+time: 2024-07-24T22:45:45.080900-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:45:45.236458-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:45:55.519708-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:45:55.665982-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:45:59.882896-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:46:00.045367-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746279
+time: 2024-07-24T22:46:09.912113-04:00
+away: AZ
+home: KC
+inningState: Top
+inning: 9
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:08.277195-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:21.318852-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:21.451932-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:29.291051-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:29.599585-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:30.121521-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:30.703999-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:37.376503-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:37.522133-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:45.250465-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:45.390692-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:53.467787-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:53.622347-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:53.977302-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:05:54.638369-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:01.954244-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:02.102681-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:09.748665-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:09.910485-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:23.235383-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:23.436521-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:27.346175-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:28.058560-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:31.684636-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:32.000262-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:39.977110-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:40.115023-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:51.030712-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:51.825279-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:53.141237-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:06:53.300388-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:06.306136-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:06.444704-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:14.767673-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:14.915764-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:19.894897-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:20.424013-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:28.024887-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:28.224366-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:41.109383-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:41.367015-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:49.895646-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:50.061438-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:53.643834-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:54.221969-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:58.191172-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:07:58.329685-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:06.501004-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:06.642904-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:17.630842-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:18.171597-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:20.692694-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:20.823665-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:33.632947-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:33.802172-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:42.006107-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:42.700814-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:52.718538-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:08:52.849760-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 746200
+time: 2024-07-26T23:09:02.016660-04:00
+away: OAK
+home: LAA
+inningState: Top
+inning: 6
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+

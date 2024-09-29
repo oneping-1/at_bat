@@ -1,0 +1,208 @@
+gamepk: 745736
+time: 2024-06-09T19:21:23.815855-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:23.926579-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:34.924985-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:35.028688-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:45.927297-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:46.049209-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:56.728923-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:21:56.833794-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:07.836720-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:07.937601-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:18.730049-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:18.824986-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:29.633808-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:29.733303-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:40.467411-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
+gamepk: 745736
+time: 2024-06-09T19:22:40.563691-04:00
+away: LAD
+home: NYY
+inningState: Bottom
+inning: 1
+outs: 0
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Catch/drop in outfield
+codedGameState: M
+statusCode: MD
+
