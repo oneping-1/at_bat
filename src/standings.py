@@ -16,9 +16,12 @@ Example:
 import os
 from typing import List, Union
 import csv
+import statsapi
 
+current_dir = os.path.dirname(os.path.relpath(__file__))
+csv_path = os.path.join(current_dir, '..', 'csv')
 
-class Standing:
+class Standings:
     def __init__(self, standings):
         self.east = standings['records'][0]
         self.central = standings['records'][1]
@@ -31,6 +34,21 @@ class Standing:
         self.central = Records(self.central)
         self.west = Records(self.west)
 
+    @classmethod
+    def get_dict(cls, league: str) -> dict:
+        if league not in ('AL', 'NL'):
+            raise ValueError('Invalid league ID. Must be AL or NL')
+
+        if league == 'AL':
+            league_id = 103
+        else:
+            league_id = 104
+
+        return statsapi.get('standings', {'leagueId': league_id})
+
+    @classmethod
+    def get_standings(cls, league: str) -> 'Standings':
+        return cls(cls.get_dict(league))
 
 class Records:
     def __init__(self, records):
@@ -41,11 +59,11 @@ class Records:
         self.lastUpdated = records['lastUpdated']
 
         # list of teams in division
-        self.teamRecords = []
-        self.teamRecords: List[TeamRecords]
+        self.team_records = []
+        self.team_records: List[TeamRecords]
 
         for team in records['teamRecords']:
-            self.teamRecords.append(team)
+            self.team_records.append(team)
 
         self._children()
 
@@ -56,7 +74,7 @@ class Records:
         self.sport = self.sport['id']
 
         # list of teams in division
-        self.teamRecords = [TeamRecords(x) for x in self.teamRecords]
+        self.team_records = [TeamRecords(x) for x in self.team_records]
 
 
 class TeamRecords:
@@ -64,34 +82,34 @@ class TeamRecords:
         self.team = teamRecords['team']
         self.season = teamRecords['season']
         self.streak = teamRecords['streak']
-        self.divisionRank = teamRecords['divisionRank']
-        self.leagueRank = teamRecords['leagueRank']
-        self.sportRank = teamRecords['sportRank']
-        self.gamesPlayed = int(teamRecords['gamesPlayed'])
-        self.gamesBack = self._get_float(teamRecords['gamesBack'])
-        self.wildCardGamesBack = teamRecords['wildCardGamesBack']
-        self.leagueGamesBack = teamRecords['leagueGamesBack']
-        self.springLeagueGamesBack = teamRecords['springLeagueGamesBack']
-        self.sportGamesBack = teamRecords['sportGamesBack']
-        self.divisionGamesBack = teamRecords['divisionGamesBack']
-        self.conferenceGamesBack = teamRecords['conferenceGamesBack']
-        self.lastUpdated = teamRecords['lastUpdated']
+        self.division_rank = teamRecords['divisionRank']
+        self.league_rank = teamRecords['leagueRank']
+        self.sport_rank = teamRecords['sportRank']
+        self.games_played = int(teamRecords['gamesPlayed'])
+        self.games_back = self._get_float(teamRecords['gamesBack'])
+        self.wild_card_games_back = teamRecords['wildCardGamesBack']
+        self.league_games_back = teamRecords['leagueGamesBack']
+        self.spring_league_games_back = teamRecords['springLeagueGamesBack']
+        self.sport_games_back = teamRecords['sportGamesBack']
+        self.division_games_back = self._get_float(teamRecords['divisionGamesBack'])
+        self.conference_games_back = teamRecords['conferenceGamesBack']
+        self.last_updated = teamRecords['lastUpdated']
         self.records = teamRecords['records']
-        self.runsAllowed = int(teamRecords['runsAllowed'])
-        self.runsScored = int(teamRecords['runsScored'])
-        self.divisionChamp = bool(teamRecords['divisionChamp'])
-        self.divisionLeader = bool(teamRecords['divisionLeader'])
-        self.hasWildcard = bool(teamRecords['hasWildcard'])
+        self.runs_allowed = int(teamRecords['runsAllowed'])
+        self.runs_scored = int(teamRecords['runsScored'])
+        self.division_champ = bool(teamRecords['divisionChamp'])
+        self.division_leader = bool(teamRecords['divisionLeader'])
+        self.has_wildcard = bool(teamRecords['hasWildcard'])
         self.clinched = bool(teamRecords['clinched'])
 
-        self.magicNumber = teamRecords.get('magicNumber', None)
+        self.magic_number = teamRecords.get('magicNumber', None)
         self.wins = int(teamRecords['wins'])
         self.losses = int(teamRecords['losses'])
-        self.runDifferential = int(teamRecords['runDifferential'])
-        self.winningPercentage = float(teamRecords['winningPercentage'])
+        self.run_differential = int(teamRecords['runDifferential'])
+        self.winning_percentage = float(teamRecords['winningPercentage'])
 
-        self.eliminationNumber = self._get_int(teamRecords['eliminationNumber'])
-        self.wildCardEliminationNumber = self._get_int(teamRecords['wildCardEliminationNumber'])
+        self.elimination_number = self._get_int(teamRecords['eliminationNumber'])
+        self.wildcard_elimination_number = self._get_int(teamRecords['wildCardEliminationNumber'])
 
         self._children()
 
@@ -128,11 +146,9 @@ class Team:
 
     @classmethod
     def _abv_from_id(cls, code) -> Union[str, None]:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        csv_dir = os.path.join(current_dir, '..', 'csv')
-        csv_file_path = os.path.join(csv_dir, 'teams.csv')
+        file_path = os.path.join(csv_path, 'teams.csv')
 
-        with open(csv_file_path, encoding='utf-8') as file:
+        with open(file_path, encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
 
@@ -145,7 +161,9 @@ class Team:
 
     @classmethod
     def _div_from_id(cls, code) -> Union[str, None]:
-        with open('csv/teams.csv', encoding='utf-8') as file:
+        file_path = os.path.join(csv_path, 'teams.csv')
+
+        with open(file_path, encoding='utf-8') as file:
             reader = csv.reader(file)
             next(reader)
 
@@ -154,7 +172,6 @@ class Team:
                     return div
 
         return None
-
 
 
 class Streak:
@@ -176,7 +193,7 @@ class Records2:
     def _children(self):
         self.splitRecords = SplitRecords(self.splitRecords)
         self.divisionRecrds = DivisionRecords(self.divisionRecrds)
-        self.leagueRecords = LeagueRecords(self.leagueRecords)
+        self.leagueRecords = LeagueRecord(self.leagueRecords)
         self.expectedRecords = ExpectedRecords(self.expectedRecords)
 
 
@@ -202,7 +219,7 @@ class SplitRecordsDetails:
     def __init__(self, srd):
         self.wins = int(srd['wins'])
         self.losses = int(srd['losses'])
-        self.type = srd['type']
+        self.type = srd.get('type', None)
         self.pct = float(srd['pct'])
 
 class DivisionRecords:
@@ -228,7 +245,7 @@ class DivisionRecordsDetailed:
         self.name = drd['division']['name']
 
 
-class LeagueRecords:
+class LeagueRecord:
     def __init__(self, leagueRecords):
         self.american = leagueRecords[0]
         self.national = leagueRecords[1]

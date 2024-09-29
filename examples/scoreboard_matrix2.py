@@ -37,7 +37,7 @@ def send_data(endpoint: str, data: dict):
 
     headers = {'Content-Type': 'application/json'}
     url = f'{ip}/{endpoint}'
-    response = requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
+    requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
 
     # Only show new data to limit the amount of data shown
     # but add endpoint so we know what data is being shown
@@ -128,7 +128,7 @@ class Server:
         self.restart_given = True
         print('sudo reboot')
         # time.sleep(5)
-        
+
         sys.stdout.flush()
         os.system('sudo reboot')
 
@@ -290,7 +290,7 @@ class Scoreboard:
                     print('Timeout Error')
                     print(e)
 
-            if (time.time() - self.last_gamepk_check) > 600:
+            if (time.time() - self.last_gamepk_check) > 60:
                 self.last_gamepk_check = time.time()
                 self.check_for_new_games()
 

@@ -8,7 +8,7 @@ National League: 104
 """
 
 import statsapi # pylint: disable=E0401
-from src.standings import Standing
+from src.standings import Standings
 
 # leagueID:
 # 103 - American League
@@ -16,9 +16,9 @@ from src.standings import Standing
 
 if __name__ == '__main__':
     standings_data = statsapi.get('standings', {'leagueId':103})
-    s = Standing(standings_data)
+    s = Standings(standings_data)
 
-    for team in s.west.teamRecords:
+    for team in s.west.team_records:
         s = f'{team.team.abv:3s}'
         s += f' | {team.gamesBack:4.1f}'
         s += f' | {team.eliminationNumber:2d}'

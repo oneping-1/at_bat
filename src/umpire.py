@@ -26,7 +26,6 @@ import math
 import copy
 from src.game import Game, AllPlays, PlayEvents
 from src.runners import Runners
-from src.statsapi_plus import get_game_dict
 from src.statsapi_plus import get_red288_dataframe, get_wpd351360_dataframe
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
@@ -561,8 +560,7 @@ def sv_top_bot(gamePk: int):
     Args:
         gamePk (int): gamePk for the given game
     """
-    game = get_game_dict(gamePk)
-    game = Game(game)
+    game = Game.get_game_from_pk(gamePk)
 
     current_dir = os.path.dirname(os.path.realpath(__file__))
     csv_path = os.path.join(current_dir, '..', 'csv')

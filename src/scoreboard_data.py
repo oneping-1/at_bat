@@ -8,6 +8,8 @@ Raises:
     ValueError: If isTopInning is not a boolean
 """
 
+import os
+import csv
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
@@ -15,9 +17,12 @@ from src.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe
 from src.game import Game
 from src.runners import Runners
 from src.umpire import Umpire
+from src.standings import Standings
 
 re640 = get_re640_dataframe()
 wp780800 = get_wp780800_dataframe()
+
+csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
     """Return the difference between two dictionaries
@@ -308,6 +313,51 @@ class Team:
         self.abv = game.gameData._gameData['teams'][team]['abbreviation']
         self.location = game.gameData._gameData['teams'][team]['locationName']
         self.name = game.gameData._gameData['teams'][team]['teamName']
+        self.id = game.gameData._gameData['teams'][team]['id']
+
+        self.wins = None
+        self.losses = None
+        self.division_rank: int = None
+        self.games_back: str = None
+
+        self._get_standing_info()
+
+    def _get_division(self) -> str:
+        teams = os.path.join(csv_path, 'teams.csv')
+
+        with open(teams, encoding='utf-8') as file:
+            reader = csv.reader(file)
+            next(reader)
+
+            for _, abv, division in reader:
+                if self.abv == abv:
+                    return division
+
+    def _get_standing_info(self):
+        division = self._get_division()
+
+        league = division[0]
+        division = division[1]
+
+        if league == 'A':
+            standings = Standings.get_standings(league='AL')
+        else:
+            standings = Standings.get_standings(league='NL')
+
+        if division == 'E':
+            standings = standings.east
+        elif division == 'C':
+            standings = standings.central
+        elif division == 'W':
+            standings = standings.west
+
+        for team in standings.team_records:
+            if team.team.id == self.id:
+                self.wins = team.wins
+                self.losses = team.losses
+                self.division_rank = team.division_rank
+                self.games_back = team.games_back
+                self.streak = team.streak.streakCode
 
     def to_dict(self) -> dict:
         """
@@ -688,6 +738,26 @@ class ScoreboardData:
         runners.set_bases_from_offense(self.game.liveData.linescore.offense)
         self.runners = int(runners)
 
+    def update(self, delay_seconds: int = None) -> 'ScoreboardData':
+        """
+        Update the ScoreboardData object with the new data
+
+        Args:
+            delay_seconds (int, optional): The number of seconds to delay
+                the data retrieval. Defaults to None.
+        """
+        if delay_seconds is not None:
+            self.delay_seconds = delay_seconds
+
+        new_game = ScoreboardData(gamepk=self.gamepk,
+                                  delay_seconds=self.delay_seconds)
+
+        new_game.check_postponed()
+
+        self.__dict__.update(new_game.__dict__)
+
+        return new_game
+
     def get_updated_data_dict(self, delay_seconds: int = None) -> dict:
         """Return the difference between the current ScoreboardData
         object as a dictionary
@@ -697,13 +767,7 @@ class ScoreboardData:
             dict: The difference between the current ScoreboardData object
         """
 
-        if delay_seconds is not None:
-            self.delay_seconds = delay_seconds
-
-        new_game = ScoreboardData(gamepk=self.gamepk,
-                                  delay_seconds=self.delay_seconds)
-
-        new_game.check_postponed()
+        new_game = self.update(delay_seconds=delay_seconds)
 
         diff = dict_diff(self.to_dict(), new_game.to_dict())
 
