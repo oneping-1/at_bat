@@ -4,6 +4,7 @@ Eventually want to get rid of this module by moving these functions to
 more appropriate modules
 """
 
+import csv
 from typing import List
 import os
 import statsapi
@@ -119,7 +120,10 @@ def find_division_from_id() -> str:
     csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
     teams = os.path.join(csv_path, 'teams.csv')
 
-    for team in teams:
-        d[team['team_id']] = team['division']
+    with open(teams, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        next(reader)
+        for row in reader:
+            d[int(row[0])] = row[2]
 
     return d
