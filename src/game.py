@@ -73,7 +73,7 @@ class Game:
         csv_folder = os.path.join(current_dir, '..', 'csv')
         path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
 
-        time = datetime.datetime.now(get_localzone()).isoformat()
+        time = datetime.now(get_localzone()).isoformat()
 
         with open(path, 'a', encoding='utf-8') as file:
             file.write(f'gamepk: {self.gamepk}\n')
