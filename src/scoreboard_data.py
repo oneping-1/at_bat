@@ -219,7 +219,7 @@ class Matchup:
     def __init__(self, game: Game):
         self._game = game
 
-        if game.gameData.status.game_state in ('P', 'F'):
+        if game.gameData.status.game_state in ('P', 'F', 'C', 'U'):
             # game_state == 'F': batter is last batter to hit
             # but with 3 outs future checks will cause it to be the
             # wrong half inning

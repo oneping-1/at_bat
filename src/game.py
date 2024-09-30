@@ -39,7 +39,7 @@ KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
                     'MO''MP','MS','MT','MU','MV','MQ','MW','MX','MY',
                     'NA','NF','NJ','NI','NK','NN','NO','NH','NQ','TR',
                     'UR','O','OO','OR','F','FG','FO','FR','DI','DC',
-                    'DR')
+                    'DR','CR')
 
 class Game:
     """
@@ -257,6 +257,8 @@ class Status:
             self.game_state = 'L' # Live
         elif self.codedGameState in ('F','O'):
             self.game_state = 'F' # Final
+        elif self.codedGameState == 'C':
+            self.game_state = 'C' # Cancelled
         else:
             self.game_state = 'U' # Unknown
         # no children
