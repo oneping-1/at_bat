@@ -534,10 +534,11 @@ class RunExpectancy:
 
         no_score = re640[state]['0 runs'].iloc[0]
         count = re640[state]['count'].iloc[0]
-        self.to_score = 1 - (no_score / count)
 
-        if count == 0:
-            print('divide by 0')
+        if count > 0:
+            self.to_score = 1 - (no_score / count)
+        else:
+            self.to_score = -1 # No data
 
         return
 

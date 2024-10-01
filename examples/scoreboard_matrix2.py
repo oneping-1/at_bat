@@ -72,33 +72,18 @@ class Server:
         self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
         self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
         self.app.add_url_rule('/restart', 'restart', self.restart, methods=['GET'])
+        self.app.add_url_rule('/settings', 'settings', self.settings, methods=['GET'])
 
     def home(self):
         """
         Make sure the server is running.
         """
-        delay = request.args.get('delay')
-        gamecast_id = request.args.get('gamecast_id')
-
-        if delay is not None:
-            self.scoreboard.delay_seconds = int(delay)
-
-        if gamecast_id is not None:
-            self.gamecast.gamecast_id = int(gamecast_id)
-
-        details = {
-            'delay_seconds': self.scoreboard.delay_seconds,
-            'gamecast_id': self.gamecast.gamecast_id,
-            'max_gamecast_id': len(self.scoreboard.games) - 1,
-            'restart_given': self.restart_given
-        }
 
         game_details = []
         for game in self.scoreboard.games:
             game_details.append(game.to_dict())
 
         return_dict = {
-            'details': details,
             'games': game_details
         }
 
@@ -135,6 +120,29 @@ class Server:
         # shouldnt return anything since the server is restarting
         # but here just in case
         return Response('Server not restarted', mimetype='text/plain')
+
+    def settings(self):
+        """
+        Set the settings for the server. This will allow the user to set
+        the delay_seconds and gamecast_id.
+        """
+        delay = request.args.get('delay')
+        gamecast_id = request.args.get('gamecast_id')
+
+        if delay is not None:
+            self.scoreboard.delay_seconds = int(delay)
+
+        if gamecast_id is not None:
+            self.gamecast.gamecast_id = int(gamecast_id)
+
+        details = {
+            'delay_seconds': self.scoreboard.delay_seconds,
+            'gamecast_id': self.gamecast.gamecast_id,
+            'max_gamecast_id': len(self.scoreboard.games) - 1,
+            'restart_given: ': self.restart_given
+        }
+
+        return Response(json.dumps(details, indent=4), mimetype='text/plain')
 
     def run(self):
         """
