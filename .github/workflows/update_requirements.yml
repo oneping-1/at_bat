@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x' # Replace with your Python version
+        python-version: '3.9'
 
     - name: Install pipreqs
       run: |
@@ -30,7 +30,12 @@ jobs:
       run: |
         pipreqs . --force
 
+    - name: Check if requirements.txt has changed
+      run: |
+        git diff --exit-code requirements.txt || echo "Changes detected in requirements.txt"
+
     - name: Commit and push updated requirements.txt
+      if: ${{ success() && steps.checkout.outputs.diff != '' }}
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
