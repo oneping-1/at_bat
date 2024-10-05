@@ -1,7 +1,43 @@
 """
-This module will send data to the server for the scoreboard matrix.
+This module is used to send data to the server for the scoreboard matrix.
+If this module is being run on a Raspberry Pi, you will need to use
+Gunicorn to run the server instead of python/Flask. Gunicorn can easily
+be installed using pip install gunicorn.
+
+In the terminal, navigate to the directory where this file is located
+and run the following command:
+gunicorn -w 1 -b 0.0.0.0:8080 scoreboard_matrix2:app
+
+to run on lower port like 80 (linux only):
+sudo apt install nginx
+sudo nano /etc/nginx/sites-available/scoreboard_matrix2.py
+
+server {
+    listen 80;
+    server_name your_domain_or_IP; # add http://
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_redirect off;
+
+        # WebSocket support (if needed)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+sudo ln -s /etc/nginx/sites-available/scoreboard_matrix2 /etc/nginx/sites-enabled/
+sudo nginx -t # test config
+sudo systemctl restart nginx
+
+# if all that doesnt work try:
+sudo rm /etc/nginx/sites-enabled/default
 """
 
+import platform
 import time
 from typing import Union, List
 import sys
@@ -9,7 +45,7 @@ import json
 import threading
 import os
 import requests
-from flask import Flask, request, Response
+from flask import Flask, request, Response, Blueprint
 from src.scoreboard_data import ScoreboardData
 from src import statsapi_plus as sap
 
@@ -28,13 +64,8 @@ def get_ip() -> str:
 def send_data(endpoint: str, data: dict):
     """
     Sends dictionary data to the server.
-
-    Args:
-        game_index (int): game index to send data to
-        data (dict): data to send to the server
     """
     ip = get_ip()
-
     headers = {'Content-Type': 'application/json'}
     url = f'{ip}/{endpoint}'
     requests.post(url, headers=headers, data=json.dumps(data), timeout=10)
@@ -56,50 +87,39 @@ def get_daily_gamepks() -> List[int]:
     Returns:
         list: List of gamepks
     """
-    l =  sap.get_daily_gamepks()
-
+    l = sap.get_daily_gamepks('2024-05-29')
     return l
 
 class Server:
     """
     Server class to send data to the server.
     """
-    def __init__(self, scorebaord: 'Scoreboard', gamecast: 'Gamecast'):
-        self.scoreboard = scorebaord
+    def __init__(self, scoreboard: 'Scoreboard', gamecast: 'Gamecast'):
+        self.scoreboard = scoreboard
         self.gamecast = gamecast
         self.restart_given = False
-        self.app = Flask(__name__)
-        self.app.add_url_rule('/', 'home', self.home, methods=['GET'])
-        self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
-        self.app.add_url_rule('/restart', 'restart', self.restart, methods=['GET'])
-        self.app.add_url_rule('/settings', 'settings', self.settings, methods=['GET'])
+
+        self.blueprint = Blueprint('server', __name__)
+
+        self.blueprint.add_url_rule('/', 'home', self.home, methods=['GET'])
+        self.blueprint.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
+        self.blueprint.add_url_rule('/restart', 'restart', self.restart, methods=['GET'])
+        self.blueprint.add_url_rule('/settings', 'settings', self.settings, methods=['GET'])
 
     def home(self):
         """
         Make sure the server is running.
         """
-
-        game_details = []
-        for game in self.scoreboard.games:
-            game_details.append(game.to_dict())
-
-        return_dict = {
-            'games': game_details
-        }
-
+        game_details = [game.to_dict() for game in self.scoreboard.games]
+        return_dict = {'games': game_details}
         r = json.dumps(return_dict, indent=4)
         print(r)
-
         return Response(r, mimetype='text/plain')
 
     def gamepk(self, gamepk: int):
         """
         Get the game data for the given gamepk.
-
-        Args:
-            gamepk (int): gamepk of the game
         """
-        gamepk = request.view_args['gamepk']
         game = ScoreboardData(gamepk=gamepk, delay_seconds=self.scoreboard.delay_seconds)
         game = game.to_dict()
         return Response(json.dumps(game, indent=4), mimetype='text/plain')
@@ -109,22 +129,17 @@ class Server:
         Restart the server by rebooting the Raspberry Pi.
         Could not find a way to restart the server without rebooting.
         """
-
         self.restart_given = True
         print('sudo reboot')
         # time.sleep(5)
 
         sys.stdout.flush()
         os.system('sudo reboot')
-
-        # shouldnt return anything since the server is restarting
-        # but here just in case
         return Response('Server not restarted', mimetype='text/plain')
 
     def settings(self):
         """
-        Set the settings for the server. This will allow the user to set
-        the delay_seconds and gamecast_id.
+        Set the settings for the server.
         """
         delay = request.args.get('delay')
         gamecast_id = request.args.get('gamecast_id')
@@ -139,16 +154,10 @@ class Server:
             'delay_seconds': self.scoreboard.delay_seconds,
             'gamecast_id': self.gamecast.gamecast_id,
             'max_gamecast_id': len(self.scoreboard.games) - 1,
-            'restart_given: ': self.restart_given
+            'restart_given': self.restart_given
         }
 
         return Response(json.dumps(details, indent=4), mimetype='text/plain')
-
-    def run(self):
-        """
-        Run the server.
-        """
-        self.app.run(host='0.0.0.0', port=80)
 
 class Gamecast:
     """
@@ -158,34 +167,18 @@ class Gamecast:
     """
     def __init__(self, scoreboard: 'Scoreboard'):
         self.scoreboard = scoreboard
-
-        # gamepk of the game for the gamecast
         self.gamepk: int = None
-
-        # Id of the game on that day shown on scoreboard
         self._gamecast_id: int = None
-
         self.game: 'ScoreboardData' = None
-
-        # steals the delay_seconds from the scoreboard
         self.delay_seconds = self.scoreboard.delay_seconds
 
     @property
     def gamecast_id(self) -> int:
-        """
-        Getter for gamecast_id property. This will return the gamecast_id
-        property. If the gamecast_id is greater than the max value, it will
-        return None.
-
-        Returns:
-            int: gamecast_id
-        """
         return self._gamecast_id
 
     @gamecast_id.setter
     def gamecast_id(self, value):
         max_value = len(self.scoreboard.games) - 1
-
         if value > max_value:
             self._gamecast_id = None
             return
@@ -237,9 +230,6 @@ class Scoreboard:
     def start_games(self):
         """
         Starts the games and sends the initial data to the server.
-
-        Returns:
-            List[ScoreboardData]: List of ScoreboardData objects
         """
         self.reset_games()
         self.gamepks = get_daily_gamepks()
@@ -249,15 +239,11 @@ class Scoreboard:
             game = ScoreboardData(gamepk=gamepk, delay_seconds=self.delay_seconds)
             data = game.to_dict()
             send_data(i, data)
-
             self.games.append(game)
 
     def check_for_new_games(self):
         """
         Check for new games and send the new data to the server.
-
-        Returns:
-            List[int]: List of gamepks
         """
         new_gamepks = get_daily_gamepks()
 
@@ -268,15 +254,11 @@ class Scoreboard:
     def update_and_send_game(self, index: int, game: Union[ScoreboardData, None]):
         """
         Main loop to check for updated data and send it to the server.
-
-        Args:
-            index (int): index of the game
-            game (ScoreboardData): ScoreboardData object
         """
         if game is None:
             return
 
-        diff = game.update_return_difference(delay_seconds=self.delay_seconds)\
+        diff = game.update_return_difference(delay_seconds=self.delay_seconds)
 
         if diff:
             send_data(index, diff)
@@ -284,10 +266,6 @@ class Scoreboard:
     def run(self):
         """
         Main function to start the games and run the main loop.
-        The main loop will check for updated data and send it to the server.
-
-        This function also checks if the daily gamepks change and will
-        send the new data to the server.
         """
         self.start_games()
 
@@ -300,21 +278,39 @@ class Scoreboard:
                 self.last_gamepk_check = time.time()
                 self.check_for_new_games()
 
-def main():
+def create_app():
     """
-    Main function to run the server, scoreboard, and gamecast.
+    App factory function to create and configure the Flask app.
     """
+    app = Flask(__name__)
+
     scoreboard = Scoreboard()
     gamecast = Gamecast(scoreboard)
-    server = Server(scorebaord=scoreboard, gamecast=gamecast)
+    server = Server(scoreboard=scoreboard, gamecast=gamecast)
 
-    server_thread = threading.Thread(target=server.run)
-    scoreboard_thread = threading.Thread(target=scoreboard.run)
-    gamecast_thread = threading.Thread(target=gamecast.run)
+    app.register_blueprint(server.blueprint)
 
-    server_thread.start()
+    # Start threads for scoreboard and gamecast
+    scoreboard_thread = threading.Thread(target=scoreboard.run, daemon=True)
+    gamecast_thread = threading.Thread(target=gamecast.run, daemon=True)
+
     scoreboard_thread.start()
     gamecast_thread.start()
+
+    return app
+
+# Create the app at the module level so Gunicorn can find it
+app = create_app()
+
+def main():
+    """
+    Main function to run the server when executing the script directly.
+    """
+    if platform.system() == 'Windows':
+        app.run(host='0.0.0.0', port=8080)
+    else:
+        # On Raspberry Pi or other systems, use Gunicorn to run the app
+        pass
 
 if __name__ == '__main__':
     main()
