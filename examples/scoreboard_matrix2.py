@@ -213,6 +213,7 @@ class Gamecast:
         """
         while True:
             self._loop()
+            time.sleep(.1)
 
 class Scoreboard:
     """
@@ -264,7 +265,7 @@ class Scoreboard:
             self.gamepks = new_gamepks
             self.start_games()
 
-    def loop(self, index: int, game: Union[ScoreboardData, None]):
+    def update_and_send_game(self, index: int, game: Union[ScoreboardData, None]):
         """
         Main loop to check for updated data and send it to the server.
 
@@ -292,11 +293,8 @@ class Scoreboard:
 
         while True:
             for i, game in enumerate(self.games):
-                try:
-                    self.loop(i, game)
-                except TimeoutError as e:
-                    print('Timeout Error')
-                    print(e)
+                self.update_and_send_game(i, game)
+                time.sleep(5)
 
             if (time.time() - self.last_gamepk_check) > 60:
                 self.last_gamepk_check = time.time()
