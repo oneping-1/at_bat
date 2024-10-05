@@ -35,6 +35,9 @@ sudo systemctl restart nginx
 
 # if all that doesnt work try:
 sudo rm /etc/nginx/sites-enabled/default
+
+lastly in crontab -e add:
+@reboot sleep 10; source /home/ondeck/venv/bin/activate; cd /home/ondeck/MLB/examples; /home/ondeck/venv/bin/gunicorn -w 1 --bind 0.0.0.0:8080 scoreboard_matrix2:app >> /home/ondeck/scoreboard_matrix2.log 2>&1 &
 """
 
 import platform
@@ -87,7 +90,7 @@ def get_daily_gamepks() -> List[int]:
     Returns:
         list: List of gamepks
     """
-    l = sap.get_daily_gamepks('2024-05-29')
+    l = sap.get_daily_gamepks()
     return l
 
 class Server:
@@ -131,8 +134,6 @@ class Server:
         """
         self.restart_given = True
         print('sudo reboot')
-        # time.sleep(5)
-
         sys.stdout.flush()
         os.system('sudo reboot')
         return Response('Server not restarted', mimetype='text/plain')
