@@ -436,6 +436,7 @@ class Umpire():
         if isTopInning is True:
             return (home_favor, home_wpa)
         return (-1 * home_favor, -1 * home_wpa)
+        return (-1 * home_favor, home_wpa)
 
     @classmethod
     def _check_valid_pitch(cls, pitch):
@@ -593,3 +594,8 @@ def sv_top_bot(gamePk: int):
 
 if __name__ == '__main__':
     sv_top_bot(716997)
+    umpire = Umpire(gamepk=775325)
+    umpire.calculate_game(method='monte')
+    umpire.print_missed_calls()
+    print(umpire.home_favor)
+    print(umpire.home_wpa)

@@ -308,7 +308,7 @@ def main():
     Main function to run the server when executing the script directly.
     """
     if platform.system() == 'Windows':
-        app.run(host='0.0.0.0', port=8080)
+        app.run(host='0.0.0.0', port=80)
     else:
         # On Raspberry Pi or other systems, use Gunicorn to run the app
         pass

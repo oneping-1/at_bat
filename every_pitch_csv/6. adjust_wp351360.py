@@ -76,16 +76,24 @@ def create_wp780800(wp351360: dict) -> dict:
             # end of half inning
             if key[7] is True:
                 # middle of inning
-                equal_state = (0, 0, 0, False, False, False, inning, False, home_lead)
-                wp780800[key] = wp351360[equal_state]
+                if (inning == 9) and (home_lead > 0):
+                    wp780800[key] = {'away_win': 0, 'home_win': 1, 'tie': 0}
+                else:
+                    equal_state = (0, 0, 0, False, False, False, inning, False, home_lead)
+                    wp780800[key] = wp351360[equal_state]
             elif key[7] is False:
                 # end of inning
                 # extra innings. revert to 10th
-                if inning >= 9:
+                if (inning >= 9) and (home_lead < 0):
+                    wp780800[key] = {'away_win': 1, 'home_win': 0, 'tie': 0}
+                elif (inning >= 9) and (home_lead > 0):
+                    wp780800[key] = {'away_win': 0, 'home_win': 1, 'tie': 0}
+                elif inning >= 9:
                     equal_state = (0, 0, 0, False, False, False, 10, True, home_lead)
+                    wp780800[key] = wp351360[equal_state]
                 else:
                     equal_state = (0, 0, 0, False, False, False, inning + 1, True, home_lead)
-                wp780800[key] = wp351360[equal_state]
+                    wp780800[key] = wp351360[equal_state]
         elif strikes == 3:
             # strike 3
             equal_state = (0, 0, outs + 1, is_first_base, is_second_base, is_third_base, inning, is_top_inning, home_lead)
@@ -247,7 +255,7 @@ def create_wpd351360(wp351360: dict, wp780800: dict) -> dict:
 
         strike_wpa = sh + (st / 2)
 
-        wpd351360[key] = ball_wpa - strike_wpa
+        wpd351360[key] = strike_wpa - ball_wpa
 
     return wpd351360
 
