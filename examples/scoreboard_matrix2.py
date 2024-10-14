@@ -49,8 +49,8 @@ import threading
 import os
 import requests
 from flask import Flask, request, Response, Blueprint
-from src.scoreboard_data import ScoreboardData
-from src import statsapi_plus as sap
+from at_bat.scoreboard_data import ScoreboardData
+from at_bat import statsapi_plus as sap
 
 def get_ip() -> str:
     """

@@ -12,8 +12,8 @@ import argparse
 import tkinter as tk
 import threading
 from PIL import Image, ImageTk
-from src.statsapi_plus import get_daily_gamepks
-from src.scoreboard_data import ScoreboardData
+from at_bat.statsapi_plus import get_daily_gamepks
+from at_bat.scoreboard_data import ScoreboardData
 
 class GameFrame(tk.Frame):
     """.

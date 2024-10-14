@@ -29,7 +29,7 @@ import pytz
 import statsapi # pylint: disable=E0401
 from tqdm import tqdm
 from dateutil import tz
-from src.statsapi_plus import get_daily_gamepks
+from at_bat.statsapi_plus import get_daily_gamepks
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 

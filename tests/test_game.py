@@ -2,7 +2,7 @@
 
 import json
 import os
-from src.game import Game
+from at_bat.game import Game
 
 def open_748534():
     test_file_path = os.path.relpath(__file__)

@@ -9,8 +9,8 @@ from datetime import timedelta
 from typing import List
 import statsapi # pylint: disable=E0401
 from tqdm import tqdm
-from src.team import Team
-from src.schedule import Schedule
+from at_bat.team import Team
+from at_bat.schedule import Schedule
 
 
 def sos(days_ahead=15, print_results = False):

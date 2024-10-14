@@ -7,9 +7,9 @@ import time
 from typing import List
 from datetime import datetime, timezone, timedelta
 import requests
-from src.statsapi_plus import get_daily_gamepks
-from src.game import Game
-from src.scoreboard_data import ScoreboardData
+from at_bat.statsapi_plus import get_daily_gamepks
+from at_bat.game import Game
+from at_bat.scoreboard_data import ScoreboardData
 
 PORT = 8080 # Defined on the ESP32's side
 request_keys = ['game_state',

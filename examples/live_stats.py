@@ -18,11 +18,11 @@ Functions:
 import curses
 import argparse
 from typing import Tuple
-from src.game import Game, PlayEvents, AllPlays
-from src.statsapi_plus import get_game_dict, get_re640_dataframe
-from src.umpire import Umpire
-from src.runners import Runners
-from src.fifo import FIFO
+from at_bat.game import Game, PlayEvents, AllPlays
+from at_bat.statsapi_plus import get_game_dict, get_re640_dataframe
+from at_bat.umpire import Umpire
+from at_bat.runners import Runners
+from at_bat.fifo import FIFO
 
 re640 = get_re640_dataframe()
 

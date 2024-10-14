@@ -9,8 +9,8 @@ Can use --gamePk command line argument to skip input prompt
 """
 
 import argparse
-from src.umpire import Umpire
-from src.plotter import Plotter
+from at_bat.umpire import Umpire
+from at_bat.plotter import Plotter
 
 
 def main():

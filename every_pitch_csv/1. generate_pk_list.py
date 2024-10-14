@@ -2,7 +2,7 @@ import os
 from typing import List
 import csv
 import datetime
-from src.statsapi_plus import get_daily_gamepks
+from at_bat.statsapi_plus import get_daily_gamepks
 
 class Gamepk_finder:
     """Class to make a list of all gamepks from a given date range"""

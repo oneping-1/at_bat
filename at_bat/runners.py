@@ -22,7 +22,7 @@ Example:
 """
 
 from typing import List
-from src.game import AllPlays, Offense, RunnersMovement
+from at_bat.game import AllPlays, Offense, RunnersMovement
 
 
 class Runners:

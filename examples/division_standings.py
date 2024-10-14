@@ -8,7 +8,7 @@ National League: 104
 """
 
 import statsapi # pylint: disable=E0401
-from src.standings import Standings
+from at_bat.standings import Standings
 
 # leagueID:
 # 103 - American League

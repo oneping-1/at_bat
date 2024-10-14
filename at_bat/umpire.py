@@ -24,9 +24,9 @@ from typing import List, Tuple, Union
 import random
 import math
 import copy
-from src.game import Game, AllPlays, PlayEvents
-from src.runners import Runners
-from src.statsapi_plus import get_red288_dataframe, get_wpd351360_dataframe
+from at_bat.game import Game, AllPlays, PlayEvents
+from at_bat.runners import Runners
+from at_bat.statsapi_plus import get_red288_dataframe, get_wpd351360_dataframe
 
 # center of ball needs to be .6870488261 hawkeye margin of errors away
 # from the edge of the strike zone for the 90% rule to apply
@@ -435,7 +435,6 @@ class Umpire():
 
         if isTopInning is True:
             return (home_favor, home_wpa)
-        return (-1 * home_favor, -1 * home_wpa)
         return (-1 * home_favor, home_wpa)
 
     @classmethod
@@ -593,7 +592,6 @@ def sv_top_bot(gamePk: int):
                                     'zone': zone})
 
 if __name__ == '__main__':
-    sv_top_bot(716997)
     umpire = Umpire(gamepk=775325)
     umpire.calculate_game(method='monte')
     umpire.print_missed_calls()

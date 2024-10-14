@@ -2,8 +2,8 @@ import os
 from typing import List
 import csv
 import tqdm
-from src.game import Game
-from src.runners import Runners
+from at_bat.game import Game
+from at_bat.runners import Runners
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 gamepk_csv_file_path = os.path.join(current_dir, 'gamepks.csv')

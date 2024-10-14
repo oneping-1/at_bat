@@ -16,7 +16,7 @@ plotter.plot([GameEvents])
 from typing import List
 from matplotlib import pyplot as plt
 from matplotlib import patches
-from src.umpire import MissedCalls
+from at_bat.umpire import MissedCalls
 
 class Plotter:
     """
