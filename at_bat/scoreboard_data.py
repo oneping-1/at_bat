@@ -310,10 +310,20 @@ class Team:
     Contains the team data for the game as a sub-class to Score
     """
     def __init__(self, game: Game, team: str):
-        self.abv = game.gameData._gameData['teams'][team]['abbreviation']
-        self.location = game.gameData._gameData['teams'][team]['locationName']
-        self.name = game.gameData._gameData['teams'][team]['teamName']
-        self.id = game.gameData._gameData['teams'][team]['id']
+
+        gamedata = game.gameData.teams
+        gamedata = getattr(gamedata, team)
+        self.abv = gamedata.abbreviation
+        self.location = gamedata.location_name
+        self.name = gamedata.teamName
+        self.id = gamedata.id
+
+        livedata_teams = game.liveData.linescore.teams
+        livedata_teams = getattr(livedata_teams, team)
+        self.runs = livedata_teams.runs
+        self.hits = livedata_teams.hits
+        self.errors = livedata_teams.errors
+        self.left_on_base = livedata_teams.left_on_base
 
         self.wins = None
         self.losses = None
@@ -358,7 +368,15 @@ class Team:
         return {
             'abv': self.abv,
             'location': self.location,
-            'name': self.name
+            'name': self.name,
+            'runs': self.runs,
+            'hits': self.hits,
+            'errors': self.errors,
+            'left_on_base': self.left_on_base,
+            'wins': self.wins,
+            'losses': self.losses,
+            'division_rank': self.division_rank,
+            'games_back': self.games_back,
         }
 
 class PitchDetails:

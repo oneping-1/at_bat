@@ -289,6 +289,7 @@ class TeamGameData:
         self.id = team['id']
         self.abbreviation = team['abbreviation']
         self.teamName = team['teamName']
+        self.location_name = team['locationName']
         self.division = _get_division(self.abbreviation)
         # no children
 
@@ -983,6 +984,7 @@ class TeamLinescore:
         self.runs = team.get('runs', None)
         self.hits = team.get('hits', None)
         self.errors = team.get('errors', None)
+        self.left_on_base = team.get('leftOnBase', None)
         # no children
 
 
