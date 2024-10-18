@@ -7,7 +7,7 @@ along with favored runs (>0 = home favored/gained runs)
 from typing import List
 import argparse
 from tqdm import tqdm
-from at_bat.statsapi_plus import get_game_dict, get_daily_gamepks
+from at_bat.statsapi_plus import get_daily_gamepks
 from at_bat.game import Game
 from at_bat.umpire import Umpire
 
@@ -40,11 +40,11 @@ def daily_ump_scorecards(date: str,
     games: List[Umpire] = []
 
     for game_pk in tqdm(daily_games_pk):
-        game_dict = get_game_dict(game_pk)
-        game = Game(game_dict)
+        game = Game.get_game_from_pk(game_pk)
 
-        games.append(Umpire(game=game))
-        games[-1].calculate_game(method='monte')
+        umpire = Umpire(game=game, method='monte')
+        umpire.calculate_game()
+        games.append(umpire)
 
     if print_daily_stats is True:
         for game in games:

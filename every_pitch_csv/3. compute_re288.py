@@ -5,6 +5,7 @@ import itertools
 import pandas as pd
 import tqdm
 from tabulate import tabulate
+import copy
 
 def read_pitch_csv() -> pd.DataFrame:
     """
@@ -134,7 +135,7 @@ def main():
         'average_runs': None,
         'run_probability': run_probability.copy()
     }
-    run_expectancy = {states: r for states in run_expectancy_states}
+    run_expectancy = {states: copy.deepcopy(r) for states in run_expectancy_states}
 
     for _, row in tqdm.tqdm(df.iterrows()):
         balls = row['balls']

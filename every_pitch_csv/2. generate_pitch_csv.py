@@ -118,6 +118,12 @@ class GameCSVCreator:
         for at_bat in self.game.liveData.plays.allPlays:
             # half inning total runs
             self.inning = at_bat.about.inning
+
+            if self.inning >= 9:
+                # ignore potential walk off scenarios that lead
+                # to abbreviated innings
+                return
+
             self.is_top_inning = at_bat.about.isTopInning
 
             self.runners.new_at_bat(at_bat)
