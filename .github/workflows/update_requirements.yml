@@ -26,10 +26,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pipreqs
 
-    - name: Uninstall setuptools
-      run: |
-        pip uninstall -y setuptools
-
     - name: Generate requirements.txt
       run: |
         pipreqs . --force
@@ -39,6 +35,10 @@ jobs:
         if ! grep -q "MLB-StatsAPI" requirements.txt; then
           echo "MLB-StatsAPI" >> requirements.txt
         fi
+
+    - name: Remove setuptools from requirements.txt
+      run: |
+        sed -i '/setuptools/d' requirements.txt
 
     - name: Check if requirements.txt has changed
       id: check_diff
