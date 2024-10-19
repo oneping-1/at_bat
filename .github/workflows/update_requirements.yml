@@ -37,11 +37,16 @@ jobs:
         fi
 
     - name: Check if requirements.txt has changed
+      id: check_diff
       run: |
-        git diff --exit-code requirements.txt || echo "Changes detected in requirements.txt"
+        if git diff --exit-code requirements.txt; then
+          echo "::set-output name=changes::false"
+        else
+          echo "::set-output name=changes::true"
+        fi
 
     - name: Commit and push updated requirements.txt
-      if: ${{ success() && steps.checkout.outputs.diff != '' }}
+      if: steps.check_diff.outputs.changes == 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
