@@ -704,14 +704,6 @@ class ScoreboardData:
         self.game_state: str = self.game.gameData.status.game_state
         self.check_postponed()
 
-        self.away_score: int = self.game.liveData.linescore.teams.away.runs
-        self.home_score: int = self.game.liveData.linescore.teams.home.runs
-
-        if self.away_score is None:
-            self.away_score = 0
-        if self.home_score is None:
-            self.home_score = 0
-
         self.start_time: str = self.game.gameData.datetime.startTime
 
         self.inning: int = self.game.liveData.linescore.currentInning
