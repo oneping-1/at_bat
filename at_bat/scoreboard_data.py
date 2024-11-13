@@ -782,8 +782,6 @@ class ScoreboardData:
         """
         return {'gamepk': self.gamepk,
                 'game_state': self.game_state,
-                'away_score': self.away_score,
-                'home_score': self.home_score,
                 'start_time': self.start_time,
                 'inning': self.inning,
                 'inning_state': self.inning_state,
@@ -825,7 +823,7 @@ class ScoreboardData:
             self.game_state = 'S' # Suspended/Postponed
 
     def __repr__(self):
-        return f'{self.away.abv} {self.away_score} @ {self.home.abv} {self.home_score}'
+        return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
     x = ScoreboardData(gamepk=745455)

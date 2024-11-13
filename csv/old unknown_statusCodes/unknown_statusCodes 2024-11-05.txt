@@ -1,0 +1,403 @@
+gamepk: 775329
+time: 2024-10-09T19:46:55.156082-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:46:56.255176-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:17.067331-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:17.758421-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:18.466922-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:39.534302-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:40.545311-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:47:44.830362-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:48:01.813187-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:48:02.697837-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:48:12.159117-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:48:23.915072-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775329
+time: 2024-10-09T19:48:24.736893-04:00
+away: NYY
+home: KC
+inningState: Top
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Fair/foul in outfield
+codedGameState: M
+statusCode: MO
+
+gamepk: 775310
+time: 2024-10-17T19:54:01.319867-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:02.062249-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:03.204252-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:03.439475-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:03.876251-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:04.193963-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:05.220810-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:05.548563-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:05.847856-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:06.213324-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:07.211888-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:07.667306-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:07.668343-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:07.927617-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:09.284498-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:09.916456-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:14.848577-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
+gamepk: 775310
+time: 2024-10-17T19:54:29.542300-04:00
+away: NYY
+home: CLE
+inningState: Top
+inning: 8
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Manager challenge: Touching a base
+codedGameState: M
+statusCode: MB
+
