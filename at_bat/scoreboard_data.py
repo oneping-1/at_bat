@@ -486,31 +486,6 @@ class HitDetails:
             'distance': self.distance
         }
 
-class UmpireDetails:
-    """
-    Contains the umpire data for the game as a sub-class to ScoreboardData
-    """
-    def __init__(self, game: Game) -> None:
-        umpire = Umpire(game=game, method='monte')
-        umpire.calculate_game()
-
-        self.num_missed: int = umpire.num_missed_calls
-        self.home_favor: float = umpire.home_favor
-        self.home_wpa: float = umpire.home_wpa
-
-    def to_dict(self) -> dict:
-        """
-        Return a dictionary representation of the UmpireDetails object
-
-        Returns:
-            dict: Dictionary representation of the UmpireDetails object
-        """
-        return {
-            'num_missed': self.num_missed,
-            'home_favor': self.home_favor,
-            'home_wpa': self.home_wpa
-        }
-
 class RunExpectancy:
     """
     Contains the run expectancy data for the game as a sub-class to Scoreboard
@@ -727,11 +702,10 @@ class ScoreboardData:
         self.count = Count(game=self.game)
         self.away = Team(game=self.game, team='away')
         self.home = Team(game=self.game, team='home')
-        self.pitch_details = PitchDetails(game=self.game)
-        self.hit_details = HitDetails(game=self.game)
-        self.umpire = UmpireDetails(game=self.game)
-        self.run_expectancy = RunExpectancy(game=self.game)
-        self.win_probability = WinProbability(game=self.game)
+        # self.pitch_details = PitchDetails(game=self.game)
+        # self.hit_details = HitDetails(game=self.game)?
+        # self.run_expectancy = RunExpectancy(game=self.game)
+        # self.win_probability = WinProbability(game=self.game)
         self.flags = Flags(game=self.game)
 
         runners = Runners()
@@ -791,11 +765,10 @@ class ScoreboardData:
                 'decisions': self.decisions.to_dict(),
                 'matchup': self.matchup.to_dict(),
                 'count': self.count.to_dict(),
-                'pitch_details': self.pitch_details.to_dict(),
-                'hit_details': self.hit_details.to_dict(),
-                'umpire': self.umpire.to_dict(),
-                'run_expectancy': self.run_expectancy.to_dict(),
-                'win_probability': self.win_probability.to_dict(),
+                # 'pitch_details': self.pitch_details.to_dict(),
+                # 'hit_details': self.hit_details.to_dict(),
+                # 'run_expectancy': self.run_expectancy.to_dict(),
+                # 'win_probability': self.win_probability.to_dict(),
                 'flags': self.flags.to_dict(),
                 'runners': self.runners}
 
