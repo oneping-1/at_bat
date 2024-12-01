@@ -702,10 +702,10 @@ class ScoreboardData:
         self.count = Count(game=self.game)
         self.away = Team(game=self.game, team='away')
         self.home = Team(game=self.game, team='home')
-        # self.pitch_details = PitchDetails(game=self.game)
-        # self.hit_details = HitDetails(game=self.game)?
-        # self.run_expectancy = RunExpectancy(game=self.game)
-        # self.win_probability = WinProbability(game=self.game)
+        self.pitch_details = PitchDetails(game=self.game)
+        self.hit_details = HitDetails(game=self.game)
+        self.run_expectancy = RunExpectancy(game=self.game)
+        self.win_probability = WinProbability(game=self.game)
         self.flags = Flags(game=self.game)
 
         runners = Runners()
@@ -765,10 +765,10 @@ class ScoreboardData:
                 'decisions': self.decisions.to_dict(),
                 'matchup': self.matchup.to_dict(),
                 'count': self.count.to_dict(),
-                # 'pitch_details': self.pitch_details.to_dict(),
-                # 'hit_details': self.hit_details.to_dict(),
-                # 'run_expectancy': self.run_expectancy.to_dict(),
-                # 'win_probability': self.win_probability.to_dict(),
+                'pitch_details': self.pitch_details.to_dict(),
+                'hit_details': self.hit_details.to_dict(),
+                'run_expectancy': self.run_expectancy.to_dict(),
+                'win_probability': self.win_probability.to_dict(),
                 'flags': self.flags.to_dict(),
                 'runners': self.runners}
 
