@@ -131,6 +131,18 @@ def get_request_dict(game: dict) -> dict:
                 if count.get('outs', None) is not None:
                     d['outs'] = game['count']['outs']
 
+        if key == 'away_score':
+            if game.get('away', None) is not None:
+                score = game['away']
+                if score.get('runs', None) is not None:
+                    d['away_score'] = game['away']['runs']
+
+        if key == 'home_score':
+            if game.get('home', None) is not None:
+                score = game['home']
+                if score.get('runs', None) is not None:
+                    d['home_score'] = game['home']['runs']
+
     return d
 
 def start_games(ip: str, date: str, delay_seconds: int) -> List[ScoreboardData]:
@@ -193,10 +205,10 @@ def main():
     """Main function that runs the scoreboard matrix"""
     time.sleep(10) # Let Raspberry Pi connect to the network from boot
     ip = get_ip()
-    games = start_games(ip, date=None, delay_seconds=60)
+    games = start_games(ip, date='2024-05-29', delay_seconds=60)
 
     # Get new games for the day
-    current_gamepks = get_daily_gamepks()
+    current_gamepks = get_daily_gamepks('2024-05-29')
     last_gamepk_check = time.time()
 
     while True:
@@ -209,10 +221,10 @@ def main():
 
         if (time.time() - last_gamepk_check) > 600:
             last_gamepk_check = time.time()
-            new_gamepks = get_daily_gamepks()
+            new_gamepks = get_daily_gamepks('2024-05-29')
 
             if new_gamepks != current_gamepks:
-                games = start_games(ip, date=None, delay_seconds=60)
+                games = start_games(ip, date='2024-05-29', delay_seconds=60)
 
 if '__main__' == __name__:
     main()
