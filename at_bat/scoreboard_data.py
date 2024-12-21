@@ -677,6 +677,44 @@ class UmpireDetails:
             'home_wpa': self.home_wpa
         }
 
+        self.is_top_inning = game.liveData.linescore.isTopInning
+        self.at_bat_index: int = game.liveData.linescore.offense.batting_order
+        self.batting_order: List[dict] = []
+
+        if self.is_top_inning is True:
+            team = 'away'
+        elif self.is_top_inning is False:
+            team = 'home'
+        else:
+            raise ValueError('isTopInning is not a boolean')
+
+        team_box_score = game.liveData.boxscore.teams.__getattribute__(team)
+        batting_order: List[int] = team_box_score.batting_order
+        players = team_box_score.players
+
+        for i, batter in enumerate(batting_order):
+            order = i + 1
+            last_name = get_player_last_name(game, batter)
+            player_id = batter
+            avg = players[f'ID{player_id}']['seasonStats']['batting']['avg']
+            slg = players[f'ID{player_id}']['seasonStats']['batting']['slg']
+            ops = players[f'ID{player_id}']['seasonStats']['batting']['ops']
+
+            self.batting_order.append({
+                'order': order,
+                'last_name': last_name,
+                'id': player_id,
+                'avg': avg,
+                'slg': slg,
+                'ops': ops
+            })
+
+    def to_dict(self):
+        return {
+            'at_bat_index': self.at_bat_index,
+            'batting_order': self.batting_order,
+        }
+
 class ScoreboardData:
     """
     A simplified version of the Game object which holds information
@@ -729,6 +767,7 @@ class ScoreboardData:
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
         self.umpire = UmpireDetails(game=self.game)
+        self.batting_order = BattingOrder(game=self.game)
         self.flags = Flags(game=self.game)
 
         runners = Runners()
@@ -793,6 +832,7 @@ class ScoreboardData:
                 'run_expectancy': self.run_expectancy.to_dict(),
                 'win_probability': self.win_probability.to_dict(),
                 'umpire': self.umpire.to_dict(),
+                'batting_order': self.batting_order.to_dict(),
                 'flags': self.flags.to_dict(),
                 'runners': self.runners}
 

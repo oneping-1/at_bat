@@ -1029,6 +1029,8 @@ class Offense:
         self.third = offense.get('third', None)
         self.pitcher = offense.get('pitcher', None)
 
+        self.batting_order: int = offense.get('battingOrder', None)
+
         self.is_first = True if self.first is not None else False
         self.is_second = True if self.second is not None else False
         self.is_third = True if self.third is not None else False

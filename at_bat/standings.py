@@ -242,7 +242,7 @@ class DivisionRecordsDetailed:
         self.losses = int(drd['losses'])
         self.pct = float(drd['pct'])
         self.id = int(drd['division']['id'])
-        self.name = drd['division']['name']
+        # self.name = drd['division']['name']
 
 
 class LeagueRecord:
