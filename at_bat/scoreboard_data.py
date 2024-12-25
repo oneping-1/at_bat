@@ -677,6 +677,8 @@ class UmpireDetails:
             'home_wpa': self.home_wpa
         }
 
+class BattingOrder:
+    def __init__(self, game: Game):
         self.is_top_inning = game.liveData.linescore.isTopInning
         self.at_bat_index: int = game.liveData.linescore.offense.batting_order
         self.batting_order: List[dict] = []
@@ -699,6 +701,7 @@ class UmpireDetails:
             avg = players[f'ID{player_id}']['seasonStats']['batting']['avg']
             slg = players[f'ID{player_id}']['seasonStats']['batting']['slg']
             ops = players[f'ID{player_id}']['seasonStats']['batting']['ops']
+            position = players[f'ID{player_id}']['position']['abbreviation']
 
             self.batting_order.append({
                 'order': order,
@@ -706,7 +709,8 @@ class UmpireDetails:
                 'id': player_id,
                 'avg': avg,
                 'slg': slg,
-                'ops': ops
+                'ops': ops,
+                'position': position,
             })
 
     def to_dict(self):
