@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 import json
 from typing import List
 
-from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_id
+from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_abv
 from at_bat.game import Game
 from at_bat.runners import Runners
 from at_bat.umpire import Umpire
@@ -21,7 +21,7 @@ from at_bat.standings import Standings
 
 re640 = get_re640_dataframe()
 wp780800 = get_wp780800_dataframe()
-division_from_id = find_division_from_id()
+division_from_abv = find_division_from_abv()
 
 
 def dict_diff(dict1: dict, dict2: dict) -> dict:
@@ -60,6 +60,40 @@ def get_player_last_name(game: Game, player_id: int) -> str:
     """
     player = game.gameData.players[f'ID{player_id}']
     return player['lastName']
+
+class ScoreboardStandings:
+    """
+    Contains the standings data for any team based on their abbreviation.
+    Seperate from the ScoreboardData object so that i can be called
+    without the need for a gamepk.
+    """
+    def __init__(self, abv: str):
+        self.abv = abv
+
+        division = division_from_abv[abv]
+
+        league = division[0]
+        division = division[1]
+
+        if league == 'A':
+            standings = Standings.get_standings(league='AL')
+        else:
+            standings = Standings.get_standings(league='NL')
+
+        if division == 'E':
+            standings = standings.east
+        elif division == 'C':
+            standings = standings.central
+        elif division == 'W':
+            standings = standings.west
+
+        for team in standings.team_records:
+            if team.team.abv == abv:
+                self.wins = team.wins
+                self.losses = team.losses
+                self.division_rank = team.division_rank
+                self.games_back = team.games_back
+                self.streak = team.streak.streakCode
 
 class Flags:
     """
@@ -325,39 +359,6 @@ class Team:
         self.errors = livedata_teams.errors
         self.left_on_base = livedata_teams.left_on_base
 
-        self.wins = None
-        self.losses = None
-        self.division_rank: int = None
-        self.games_back: str = None
-
-        self._get_standing_info()
-
-    def _get_standing_info(self):
-        division = division_from_id[self.id]
-
-        league = division[0]
-        division = division[1]
-
-        if league == 'A':
-            standings = Standings.get_standings(league='AL')
-        else:
-            standings = Standings.get_standings(league='NL')
-
-        if division == 'E':
-            standings = standings.east
-        elif division == 'C':
-            standings = standings.central
-        elif division == 'W':
-            standings = standings.west
-
-        for team in standings.team_records:
-            if team.team.id == self.id:
-                self.wins = team.wins
-                self.losses = team.losses
-                self.division_rank = team.division_rank
-                self.games_back = team.games_back
-                self.streak = team.streak.streakCode
-
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the Team object
@@ -372,11 +373,7 @@ class Team:
             'runs': self.runs,
             'hits': self.hits,
             'errors': self.errors,
-            'left_on_base': self.left_on_base,
-            'wins': self.wins,
-            'losses': self.losses,
-            'division_rank': self.division_rank,
-            'games_back': self.games_back,
+            'left_on_base': self.left_on_base
         }
 
 class PitchDetails:
@@ -867,5 +864,8 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=745455)
-    print(json.dumps(x.to_dict(), indent=4))
+    # x = ScoreboardData(gamepk=745455)
+    # print(json.dumps(x.to_dict(), indent=4))
+
+    x = ScoreboardStandings('NYY')
+    print(x.__dict__)

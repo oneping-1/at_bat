@@ -10,6 +10,10 @@ import os
 import statsapi
 import pandas as pd
 
+def test():
+    """
+    """
+
 def get_daily_gamepks(date: str = None) -> List[int]:
     """
     Returns a list of gamePks for a given day in ISO 8601 format
@@ -108,7 +112,7 @@ def get_red288_dataframe() -> pd.DataFrame:
 
     return pd.read_csv(csv_file_path)
 
-def find_division_from_id() -> str:
+def find_division_from_id() -> dict:
     """
     Returns the division of a team given the team_id
 
@@ -125,5 +129,25 @@ def find_division_from_id() -> str:
         next(reader)
         for row in reader:
             d[int(row[0])] = row[2]
+
+    return d
+
+def find_division_from_abv() -> dict:
+    """
+    Returns the division of a team given the team abbreviation
+
+    Returns:
+        str: The division of a team given the team abbreviation
+    """
+    d = {}
+
+    csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
+    teams = os.path.join(csv_path, 'teams.csv')
+
+    with open(teams, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        next(reader)
+        for row in reader:
+            d[row[1]] = row[2]
 
     return d
