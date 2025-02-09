@@ -359,6 +359,13 @@ class Team:
         self.errors = livedata_teams.errors
         self.left_on_base = livedata_teams.left_on_base
 
+        standings = ScoreboardStandings(self.abv)
+        self.wins = standings.wins
+        self.losses = standings.losses
+        self.division_rank = standings.division_rank
+        self.games_back = standings.games_back
+        self.streak = standings.streak
+
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the Team object
@@ -373,7 +380,12 @@ class Team:
             'runs': self.runs,
             'hits': self.hits,
             'errors': self.errors,
-            'left_on_base': self.left_on_base
+            'left_on_base': self.left_on_base,
+            'wins': self.wins,
+            'losses': self.losses,
+            'division_rank': self.division_rank,
+            'games_back': self.games_back,
+            'streak': self.streak
         }
 
 class PitchDetails:
