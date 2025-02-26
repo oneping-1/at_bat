@@ -44,7 +44,7 @@ class Standings:
         else:
             league_id = 104
 
-        return statsapi.get('standings', {'leagueId': league_id})
+        return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
 
     @classmethod
     def get_standings(cls, league: str) -> 'Standings':
@@ -84,7 +84,7 @@ class TeamRecords:
         self.streak = teamRecords['streak']
         self.division_rank = teamRecords['divisionRank']
         self.league_rank = teamRecords['leagueRank']
-        self.sport_rank = teamRecords['sportRank']
+        self.sport_rank = teamRecords.get('sportRank', None)
         self.games_played = int(teamRecords['gamesPlayed'])
         self.games_back = self._get_float(teamRecords['gamesBack'])
         self.wild_card_games_back = teamRecords['wildCardGamesBack']
@@ -97,10 +97,10 @@ class TeamRecords:
         self.records = teamRecords['records']
         self.runs_allowed = int(teamRecords['runsAllowed'])
         self.runs_scored = int(teamRecords['runsScored'])
-        self.division_champ = bool(teamRecords['divisionChamp'])
-        self.division_leader = bool(teamRecords['divisionLeader'])
-        self.has_wildcard = bool(teamRecords['hasWildcard'])
-        self.clinched = bool(teamRecords['clinched'])
+        self.division_champ = bool(teamRecords.get('divisionChamp', None))
+        self.division_leader = bool(teamRecords.get('divisionLeader', None))
+        self.has_wildcard = bool(teamRecords.get('hasWildcard', None))
+        self.clinched = bool(teamRecords.get('clinched', None))
 
         self.magic_number = teamRecords.get('magicNumber', None)
         self.wins = int(teamRecords['wins'])
@@ -108,13 +108,15 @@ class TeamRecords:
         self.run_differential = int(teamRecords['runDifferential'])
         self.winning_percentage = float(teamRecords['winningPercentage'])
 
-        self.elimination_number = self._get_int(teamRecords['eliminationNumber'])
-        self.wildcard_elimination_number = self._get_int(teamRecords['wildCardEliminationNumber'])
+        self.elimination_number = self._get_int(teamRecords.get('eliminationNumber', None))
+        self.wildcard_elimination_number = self._get_int(teamRecords.get('wildCardEliminationNumber', None))
 
         self._children()
 
 
     def _get_int(self,string):
+        if string is None:
+            return None
         if string == '-':
             return 0
         if string == 'E':

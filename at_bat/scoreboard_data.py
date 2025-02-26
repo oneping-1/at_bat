@@ -77,15 +77,20 @@ class ScoreboardStandings:
 
         if league == 'A':
             standings = Standings.get_standings(league='AL')
+            if division == 'E':
+                standings = standings.central
+            elif division == 'C':
+                standings = standings.west
+            elif division == 'W':
+                standings = standings.east
         else:
             standings = Standings.get_standings(league='NL')
-
-        if division == 'E':
-            standings = standings.east
-        elif division == 'C':
-            standings = standings.central
-        elif division == 'W':
-            standings = standings.west
+            if division == 'E':
+                standings = standings.west
+            elif division == 'C':
+                standings = standings.east
+            elif division == 'W':
+                standings = standings.central
 
         for team in standings.team_records:
             if team.team.abv == abv:
