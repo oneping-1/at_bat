@@ -692,7 +692,12 @@ class UmpireDetails:
         }
 
 class BattingOrder:
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, state: str):
+        if state != 'L':
+            self.at_bat_index = None
+            self.batting_order = None
+            return
+
         self.is_top_inning = game.liveData.linescore.isTopInning
         self.at_bat_index: int = game.liveData.linescore.offense.batting_order
         self.batting_order: List[dict] = []
@@ -785,7 +790,7 @@ class ScoreboardData:
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
         self.umpire = UmpireDetails(game=self.game)
-        self.batting_order = BattingOrder(game=self.game)
+        self.batting_order = BattingOrder(game=self.game, state=self.game_state)
         self.flags = Flags(game=self.game)
 
         runners = Runners()
