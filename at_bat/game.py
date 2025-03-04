@@ -1063,6 +1063,12 @@ class Offense:
 
 class Player:
     def __init__(self, player):
+        if player is None:
+            self.id = None
+            self.fullName = None
+            self.link = None
+            return
+
         self.id = player.get('id', None)
         self.fullName = player.get('fullName', None)
         self.link = player.get('link', None)
@@ -1238,8 +1244,8 @@ class FieldingStats:
 
 class Decisions:
     def __init__(self, decision):
-        self.winner = decision['winner']
-        self.loser = decision['loser']
+        self.winner = decision.get('winner', None)
+        self.loser = decision.get('loser', None)
         self.save = decision.get('save', None)
         self._children()
 

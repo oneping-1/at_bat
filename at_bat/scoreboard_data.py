@@ -58,6 +58,9 @@ def get_player_last_name(game: Game, player_id: int) -> str:
     Returns:
         str: The last name of the player
     """
+    if player_id is None:
+        return None
+
     player = game.gameData.players[f'ID{player_id}']
     return player['lastName']
 
@@ -199,6 +202,11 @@ class PitcherDecisions:
 
         away_team = game._game_dict['liveData']['boxscore']['teams']['away']['players']
         home_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
+
+        if (win_id is None) or (loss_id is None):
+            self.win_summary = None
+            self.loss_summary = None
+            return None
 
         if away_score > home_score:
             w = away_team[f'ID{win_id}']['seasonStats']['pitching']['wins']

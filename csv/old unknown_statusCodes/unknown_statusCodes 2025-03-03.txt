@@ -1,0 +1,52 @@
+gamepk: 779128
+time: 2025-03-03T19:58:23.786055-05:00
+away: BOS
+home: BAL
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Final: Tied
+codedGameState: F
+statusCode: FT
+
+gamepk: 779128
+time: 2025-03-03T19:59:01.813918-05:00
+away: BOS
+home: BAL
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Final: Tied
+codedGameState: F
+statusCode: FT
+
+gamepk: 779128
+time: 2025-03-03T20:00:05.991097-05:00
+away: BOS
+home: BAL
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Final: Tied
+codedGameState: F
+statusCode: FT
+
+gamepk: 779128
+time: 2025-03-03T20:06:52.359603-05:00
+away: BOS
+home: BAL
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Final: Tied
+codedGameState: F
+statusCode: FT
+
