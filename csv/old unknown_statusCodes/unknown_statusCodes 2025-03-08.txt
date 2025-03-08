@@ -1,0 +1,13 @@
+gamepk: 779016
+time: 2025-03-07T21:35:55.851477-05:00
+away: LAD
+home: SEA
+inningState: Bottom
+inning: 3
+outs: 2
+astractGameState: Live
+abstractGameCode: L
+detailedState: Player challenge: Pitch Result
+codedGameState: M
+statusCode: MJ
+
