@@ -215,6 +215,7 @@ class PitcherDecisions:
         if (win_id is None) or (loss_id is None):
             self.win_summary = None
             self.loss_summary = None
+            self.save = None
             return None
 
         if away_score > home_score:
