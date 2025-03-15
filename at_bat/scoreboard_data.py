@@ -73,7 +73,16 @@ class ScoreboardStandings:
     def __init__(self, abv: str):
         self.abv = abv
 
-        division = division_from_abv[abv]
+        try:
+            division = division_from_abv[abv]
+        except KeyError:
+            print(f'KeyError for {abv}')
+            self.wins = None
+            self.losses = None
+            self.division_rank = None
+            self.games_back = None
+            self.streak = None
+            return None
 
         league = division[0]
         division = division[1]
