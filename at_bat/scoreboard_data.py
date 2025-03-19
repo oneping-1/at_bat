@@ -12,6 +12,8 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
+import time
+import requests
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_abv
 from at_bat.game import Game
@@ -816,8 +818,19 @@ class ScoreboardData:
         self.gamepk: int = gamepk
         self.delay_seconds: int = delay_seconds
 
-        self.game: Game = Game.get_game_from_pk(gamepk =self.gamepk,
-                                                delay_seconds=self.delay_seconds)
+        success = False
+        n = 1
+
+        while success is False:
+            try:
+                self.game = Game.get_game_from_pk(gamepk=self.gamepk,
+                    delay_seconds=self.delay_seconds)
+                success = True
+            except requests.exceptions.ReadTimeout:
+                time.sleep(2**n)
+                n += 1
+                if n > 5:
+                    raise Exception('multiple timeouts')
 
         self.abstractGameState: str = self.game.gameData.status.abstractGameState
         self.abstractGameCode: str = self.game.gameData.status.abstractGameCode
