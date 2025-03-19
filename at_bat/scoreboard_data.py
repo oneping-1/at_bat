@@ -291,6 +291,8 @@ class Matchup:
             self.pitcher_pitches = None
             self.pitcher_strikes = None
             self.pitcher_era = None
+            self.pitcher_walks = None
+            self.pitcher_strike_outs = None
             return None
 
         batter_id = game.liveData.linescore.offense.batter.id
@@ -314,6 +316,8 @@ class Matchup:
                 self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
+                self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -323,6 +327,8 @@ class Matchup:
                 self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
+                self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -337,6 +343,8 @@ class Matchup:
                 self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
+                self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -346,6 +354,8 @@ class Matchup:
                 self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
+                self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -371,9 +381,11 @@ class Matchup:
             },
             'pitcher': {
                 'name': self.pitcher,
-                'era': None,
+                'era': self.pitcher_era,
                 'pitches': self.pitcher_pitches,
                 'strikes': self.pitcher_strikes,
+                'walks': self.pitcher_walks,
+                'strike_outs': self.pitcher_strike_outs
             }
         }
 
