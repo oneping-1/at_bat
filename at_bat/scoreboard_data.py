@@ -282,9 +282,15 @@ class Matchup:
             # but with 3 outs future checks will cause it to be the
             # wrong half inning
             self.batter = None
+            self.batter_hits = None
+            self.batter_at_bats = None
+            self.batter_avg = None
+            self.batter_slg = None
+            self.batter_ops = None
             self.pitcher = None
-            self.batter_summary = None
-            self.pitcher_summary = None
+            self.pitcher_pitches = None
+            self.pitcher_strikes = None
+            self.pitcher_era = None
             return None
 
         batter_id = game.liveData.linescore.offense.batter.id
@@ -305,26 +311,46 @@ class Matchup:
 
         try:
             if isTopInning is True:
-                pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-                self.pitcher_summary = f'P:{pitches}'
-                self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+                self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
+                self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
+                self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
+                self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
+                self.batter_slg = away_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
+                self.batter_ops = away_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
             elif isTopInning is False:
-                pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-                self.pitcher_summary = f'P:{pitches}'
-                self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+                self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
+                self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
+                self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
+                self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
+                self.batter_slg = home_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
+                self.batter_ops = home_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
             else:
                 raise ValueError('isTopInning is not a boolean')
         except KeyError:
             # Sometimes mlb messes up and the inning state does not
             # match the batter and pitcher. This is a easy bodged fix
             if isTopInning is False:
-                pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-                self.pitcher_summary = f'P:{pitches}'
-                self.batter_summary = away_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+                self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
+                self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
+                self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
+                self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
+                self.batter_slg = away_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
+                self.batter_ops = away_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
             elif isTopInning is True:
-                pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
-                self.pitcher_summary = f'P:{pitches}'
-                self.batter_summary = home_team[f'ID{batter_id}']['stats']['batting']['summary'][:3]
+                self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
+                self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
+                self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
+                self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
+                self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
+                self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
+                self.batter_slg = home_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
+                self.batter_ops = home_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
 
         return None
 
@@ -335,10 +361,20 @@ class Matchup:
             dict: Dictionary representation of the Matchup object
         """
         return {
-            'batter': self.batter,
-            'pitcher': self.pitcher,
-            'batter_summary': self.batter_summary,
-            'pitcher_summary': self.pitcher_summary
+            'batter': {
+                'name': self.batter,
+                'hits': self.batter_hits,
+                'at_bats': self.batter_at_bats,
+                'avg': self.batter_avg,
+                'slg': self.batter_slg,
+                'ops': self.batter_ops
+            },
+            'pitcher': {
+                'name': self.pitcher,
+                'era': None,
+                'pitches': self.pitcher_pitches,
+                'strikes': self.pitcher_strikes,
+            }
         }
 
 class Count:
@@ -905,8 +941,8 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    # x = ScoreboardData(gamepk=745455)
-    # print(json.dumps(x.to_dict(), indent=4))
+    x = ScoreboardData(gamepk=745455)
+    print(json.dumps(x.to_dict(), indent=4))
 
-    x = ScoreboardStandings('NYY')
-    print(x.__dict__)
+    # x = ScoreboardStandings('NYY')
+    # print(x.__dict__)
