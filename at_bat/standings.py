@@ -17,6 +17,8 @@ import os
 from typing import List, Union
 import csv
 import statsapi
+import requests
+import time
 
 current_dir = os.path.dirname(os.path.relpath(__file__))
 csv_path = os.path.join(current_dir, '..', 'csv')
@@ -44,7 +46,14 @@ class Standings:
         else:
             league_id = 104
 
-        return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
+        max_retries = 10
+        for i in range(max_retries):
+            try:
+                return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
+            except requests.exceptions.ReadTimeout as e:
+                print(f'TimeOut: {e}')
+                time.sleep(2 ** i)
+        raise ConnectionError('Unable to connect to MLB')
 
     @classmethod
     def get_standings(cls, league: str) -> 'Standings':

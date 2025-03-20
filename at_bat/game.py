@@ -20,6 +20,7 @@ game_class = Game(game_dict)
 """
 # pylint: disable=C0103, C0111
 
+import requests
 import os
 from typing import List, Tuple, Union
 import math
@@ -153,14 +154,11 @@ class Game:
                     {'gamePk': gamepk, 'timecode': delay_time},
                     force=True)
                 return data
-            except ConnectionError as e:
+            except requests.exceptions.ReadTimeout as e:
                 print(f'ConnectionError: {e}')
                 print(f'Retrying... {i+1}/{max_retries}')
                 time.sleep(2 ** i) # Exponential backoff
         raise MaxRetriesError('Max retries reached')
-
-class MaxRetriesError(Exception):
-    pass
 
 class GameData:
     """

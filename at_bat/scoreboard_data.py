@@ -818,19 +818,22 @@ class ScoreboardData:
         self.gamepk: int = gamepk
         self.delay_seconds: int = delay_seconds
 
-        success = False
-        n = 1
+        self.game = Game.get_game_from_pk(gamepk=self.gamepk,
+            delay_seconds=delay_seconds)
 
-        while success is False:
-            try:
-                self.game = Game.get_game_from_pk(gamepk=self.gamepk,
-                    delay_seconds=self.delay_seconds)
-                success = True
-            except requests.exceptions.ReadTimeout:
-                time.sleep(2**n)
-                n += 1
-                if n > 5:
-                    raise Exception('multiple timeouts')
+        # success = False
+        # n = 1
+
+        # while success is False:
+        #     try:
+        #         self.game = Game.get_game_from_pk(gamepk=self.gamepk,
+        #             delay_seconds=self.delay_seconds)
+        #         success = True
+        #     except requests.exceptions.ReadTimeout:
+        #         time.sleep(2**n)
+        #         n += 1
+        #         if n > 5:
+        #             raise Exception('multiple timeouts')
 
         self.abstractGameState: str = self.game.gameData.status.abstractGameState
         self.abstractGameCode: str = self.game.gameData.status.abstractGameCode
