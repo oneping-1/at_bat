@@ -20,17 +20,18 @@ game_class = Game(game_dict)
 """
 # pylint: disable=C0103, C0111
 
-import requests
 import os
 from typing import List, Tuple, Union
 import math
 from datetime import datetime, timedelta, timezone
+import requests
 from tzlocal import get_localzone
 import pytz
 import statsapi # pylint: disable=E0401
 from tqdm import tqdm
 from dateutil import tz
 from at_bat.statsapi_plus import get_daily_gamepks
+import time
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
