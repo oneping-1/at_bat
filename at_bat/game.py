@@ -155,9 +155,11 @@ class Game:
                     {'gamePk': gamepk, 'timecode': delay_time},
                     force=True)
                 return data
-            except requests.exceptions.ReadTimeout as e:
-                print(f'ConnectionError: {e}')
-                print(f'Retrying... {i+1}/{max_retries}')
+            except requests.exceptions.ReadTimeout:
+                print(f'ReadTimeout ({i})')
+                sleep(2 ** i) # Exponential backoff
+            except requests.exceptions.HTTPError as e:
+                print(f'HTTPError ({i})')
                 sleep(2 ** i) # Exponential backoff
         raise MaxRetriesError('Max retries reached')
 

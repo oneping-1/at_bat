@@ -50,8 +50,11 @@ class Standings:
         for i in range(max_retries):
             try:
                 return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
-            except requests.exceptions.ReadTimeout as e:
-                print(f'TimeOut: {e}')
+            except requests.exceptions.ReadTimeout:
+                print(f'ReadTimeout ({i})')
+                time.sleep(2 ** i)
+            except requests.exceptions.HTTPError:
+                print(f'HTTPError: ({i})')
                 time.sleep(2 ** i)
         raise ConnectionError('Unable to connect to MLB')
 
