@@ -40,8 +40,8 @@ KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
                     'MA','MB','MC','MD','ME','MF','MG','MH','MI','MJ',
                     'MM','MN','MO','MP','MS','MT','MU','MV','MQ','MW',
                     'MX','MY','NA','NF','NJ','NI','NK','NN','NO','NH',
-                    'NQ','TR','UR','O','OO','OR','F','FG','FO','FR',
-                    'FT','DI','DC','DR','CR','CG','CI')
+                    'NQ','TR','UR','O','OO','OR','OT','F','FG','FO',
+                    'FR','FT','DI','DC','DR','CR','CG','CI')
 
 class Game:
     """

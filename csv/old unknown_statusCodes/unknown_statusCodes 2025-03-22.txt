@@ -1,0 +1,39 @@
+gamepk: 778976
+time: 2025-03-22T17:52:22.295871-04:00
+away: AZ
+home: SF
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Game Over: Tied
+codedGameState: O
+statusCode: OT
+
+gamepk: 778976
+time: 2025-03-22T17:52:57.722665-04:00
+away: AZ
+home: SF
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Game Over: Tied
+codedGameState: O
+statusCode: OT
+
+gamepk: 778976
+time: 2025-03-22T17:53:32.260650-04:00
+away: AZ
+home: SF
+inningState: Bottom
+inning: 9
+outs: 3
+astractGameState: Final
+abstractGameCode: F
+detailedState: Game Over: Tied
+codedGameState: O
+statusCode: OT
+
