@@ -50,9 +50,9 @@ class Standings:
         for i in range(max_retries):
             try:
                 return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
-            except requests.exceptions.RequestException as e:
-                print(f'ReadTimeout ({i})')
-                print(f'Error: {e}')
+            except requests.exceptions.RequestException:
+                print(f'RequestException ({i+1}/{max_retries})')
+                # print(f'Error: {e}')
                 time.sleep(min(2**i, 30))  # Exponential backoff
 
     @classmethod
