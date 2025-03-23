@@ -155,13 +155,10 @@ class Game:
                     {'gamePk': gamepk, 'timecode': delay_time},
                     force=True)
                 return data
-            except requests.exceptions.ReadTimeout:
-                print(f'ReadTimeout ({i})')
-                sleep(2 ** i) # Exponential backoff
-            except requests.exceptions.HTTPError as e:
-                print(f'HTTPError ({i})')
-                sleep(2 ** i) # Exponential backoff
-        raise MaxRetriesError('Max retries reached')
+            except requests.exceptions.RequestException as e:
+                print(f'ReadTimeout ({i+1}/{max_retries})')
+                print(f'Error: {e}')
+                sleep(min(2**i, 30))  # Exponential backoff
 
 class GameData:
     """
