@@ -49,7 +49,7 @@ class Standings:
         max_retries = 10
         for i in range(max_retries):
             try:
-                return statsapi.get('standings', {'leagueId': league_id, 'standingsTypes': 'springTraining'})
+                return statsapi.get('standings', {'leagueId': league_id, 'standingsType': 'regularSeason'})
             except requests.exceptions.RequestException:
                 print(f'RequestException ({i+1}/{max_retries})')
                 # print(f'Error: {e}')
@@ -90,7 +90,7 @@ class TeamRecords:
     def __init__(self, teamRecords):
         self.team = teamRecords['team']
         self.season = teamRecords['season']
-        self.streak = teamRecords['streak']
+        self.streak = teamRecords.get('streak', None)
         self.division_rank = teamRecords['divisionRank']
         self.league_rank = teamRecords['leagueRank']
         self.sport_rank = teamRecords.get('sportRank', None)
@@ -143,7 +143,10 @@ class TeamRecords:
 
     def _children(self):
         self.team = Team(self.team)
-        self.streak = Streak(self.streak)
+
+        if self.streak is not None:
+            self.streak = Streak(self.streak)
+
         self.records = Records2(self.records)
 
 
@@ -197,7 +200,7 @@ class Records2:
         self.splitRecords = record['splitRecords']
         self.divisionRecrds = record['divisionRecords']
         self.leagueRecords = record['leagueRecords']
-        self.expectedRecords = record['expectedRecords']
+        self.expectedRecords = record.get('expectedRecords', None)
         self._children()
 
 
@@ -205,7 +208,9 @@ class Records2:
         self.splitRecords = SplitRecords(self.splitRecords)
         self.divisionRecrds = DivisionRecords(self.divisionRecrds)
         self.leagueRecords = LeagueRecord(self.leagueRecords)
-        self.expectedRecords = ExpectedRecords(self.expectedRecords)
+
+        if self.expectedRecords is not None:
+            self.expectedRecords = ExpectedRecords(self.expectedRecords)
 
 
 class SplitRecords:

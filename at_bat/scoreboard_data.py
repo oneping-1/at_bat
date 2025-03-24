@@ -79,32 +79,41 @@ class ScoreboardStandings:
             division = division_from_abv[abv]
         except KeyError:
             print(f'KeyError for {abv}')
-            self.wins = None
-            self.losses = None
-            self.division_rank = None
-            self.games_back = None
-            self.streak = None
+            self.wins = 0
+            self.losses = 0
+            self.division_rank = 0
+            self.games_back = 0
+            self.streak = 'W0'
             return None
 
         league = division[0]
         division = division[1]
 
-        if league == 'A':
-            standings = Standings.get_standings(league='AL')
-            if division == 'E':
-                standings = standings.central
-            elif division == 'C':
-                standings = standings.west
-            elif division == 'W':
-                standings = standings.east
-        else:
-            standings = Standings.get_standings(league='NL')
-            if division == 'E':
-                standings = standings.west
-            elif division == 'C':
-                standings = standings.east
-            elif division == 'W':
-                standings = standings.central
+        # Spring Training
+        # if league == 'A':
+        #     standings = Standings.get_standings(league='AL')
+        #     if division == 'E':
+        #         standings = standings.central
+        #     elif division == 'C':
+        #         standings = standings.west
+        #     elif division == 'W':
+        #         standings = standings.east
+        # else:
+        #     standings = Standings.get_standings(league='NL')
+        #     if division == 'E':
+        #         standings = standings.west
+        #     elif division == 'C':
+        #         standings = standings.east
+        #     elif division == 'W':
+        #         standings = standings.central
+
+        standings = Standings.get_standings(league=f'{league}L')
+        if division == 'E':
+            standings = standings.east
+        elif division == 'C':
+            standings = standings.central
+        elif division == 'W':
+            standings = standings.west
 
         for team in standings.team_records:
             if team.team.abv == abv:
@@ -112,7 +121,11 @@ class ScoreboardStandings:
                 self.losses = team.losses
                 self.division_rank = team.division_rank
                 self.games_back = team.games_back
-                self.streak = team.streak.streakCode
+
+                if team.streak is not None:
+                    self.streak = team.streak.streakCode
+                else:
+                    self.streak = 'W0'
 
 class Flags:
     """
