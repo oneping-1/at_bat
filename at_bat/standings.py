@@ -49,7 +49,8 @@ class Standings:
         max_retries = 10
         for i in range(max_retries):
             try:
-                return statsapi.get('standings', {'leagueId': league_id, 'standingsType': 'regularSeason'})
+                return statsapi.get('standings', {'leagueId': league_id,
+                    'standingsType': 'regularSeason'}, request_kwargs={'timeout': 10})
             except requests.exceptions.RequestException:
                 print(f'RequestException ({i+1}/{max_retries})')
                 # print(f'Error: {e}')
