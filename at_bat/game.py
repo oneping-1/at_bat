@@ -153,7 +153,7 @@ class Game:
             try:
                 data = statsapi.get('game',
                     {'gamePk': gamepk, 'timecode': delay_time},
-                    force=True)
+                    request_kwargs={'timeout': 10}, force=True)
                 return data
             except requests.exceptions.RequestException:
                 print(f'RequestException ({i+1}/{max_retries})')
