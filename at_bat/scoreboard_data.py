@@ -806,12 +806,10 @@ class BattingOrder:
         self.at_bat_index: int = game.liveData.linescore.offense.batting_order
         self.batting_order: List[dict] = []
 
-        if self.is_top_inning is True:
-            team = 'away'
-        elif self.is_top_inning is False:
-            team = 'home'
-        else:
-            raise ValueError('isTopInning is not a boolean')
+        outs = game.liveData.linescore.outs
+        third_out = True if outs == 3 else False
+
+        team = 'away' if self.is_top_inning ^ third_out else 'home'
 
         team_box_score = game.liveData.boxscore.teams.__getattribute__(team)
         batting_order: List[int] = team_box_score.batting_order
