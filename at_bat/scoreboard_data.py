@@ -413,6 +413,15 @@ class Count:
         self.strikes = game.liveData.linescore.strikes
         self.outs = game.liveData.linescore.outs
 
+        if self.balls is None:
+            self.balls = 0
+
+        if self.strikes is None:
+            self.strikes = 0
+
+        if self.outs is None:
+            self.outs = 0
+
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the Count object
@@ -452,6 +461,19 @@ class Team:
         self.division_rank = standings.division_rank
         self.games_back = standings.games_back
         self.streak = standings.streak
+
+        # maybe i shouldnt do this but its to catch pregame suspensions
+        if self.runs is None:
+            self.runs = 0
+
+        if self.hits is None:
+            self.hits = 0
+
+        if self.errors is None:
+            self.errors = 0
+
+        if self.left_on_base is None:
+            self.left_on_base = 0
 
     def to_dict(self) -> dict:
         """
@@ -982,7 +1004,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=745455)
+    x = ScoreboardData(gamepk=778443)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
