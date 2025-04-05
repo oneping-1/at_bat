@@ -33,7 +33,7 @@ jobs:
     - name: Ensure MLB-StatsAPI is in requirements.txt
       run: |
         if ! grep -q "MLB-StatsAPI" requirements.txt; then
-          echo "MLB-StatsAPI" >> requirements.txt
+          echo "MLB-StatsAPI>=1.9.0" >> requirements.txt
         fi
 
     - name: Remove setuptools from requirements.txt
