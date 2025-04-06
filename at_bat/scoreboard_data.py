@@ -557,9 +557,14 @@ class PitchDetails:
         self.speed = pitch.pitchData.startSpeed
         self.zone = pitch.pitchData.zone
 
-        self.break_horizontal = pitch.pitchData.breaks.breakHorizontal
-        self.break_vertical = pitch.pitchData.breaks.breakVertical
-        self.break_vertical_induced = pitch.pitchData.breaks.breakVerticalInduced
+        if pitch.pitchData.breaks is None:
+            self.break_horizontal = None
+            self.break_vertical = None
+            self.break_vertical_induced = None
+        else:
+            self.break_horizontal = pitch.pitchData.breaks.breakHorizontal
+            self.break_vertical = pitch.pitchData.breaks.breakVertical
+            self.break_vertical_induced = pitch.pitchData.breaks.breakVerticalInduced
 
         if pitch.details.type is not None:
             self.type = pitch.details.type.description
