@@ -308,6 +308,9 @@ class Matchup:
             self.pitcher_era = None
             self.pitcher_walks = None
             self.pitcher_strike_outs = None
+            self.pitcher_innings_pitched = None
+            self.pitcher_runs_allowed = None
+            self.pitcher_earned_runs_allowed = None
             return None
 
         batter_id = game.liveData.linescore.offense.batter.id
@@ -333,6 +336,9 @@ class Matchup:
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
+                self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
+                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -344,13 +350,14 @@ class Matchup:
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
+                self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
+                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
                 self.batter_slg = home_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
                 self.batter_ops = home_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
-            else:
-                raise ValueError('isTopInning is not a boolean')
         except KeyError:
             # Sometimes mlb messes up and the inning state does not
             # match the batter and pitcher. This is a easy bodged fix
@@ -360,6 +367,9 @@ class Matchup:
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
+                self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
+                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -371,6 +381,9 @@ class Matchup:
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
+                self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
+                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -400,7 +413,10 @@ class Matchup:
                 'pitches': self.pitcher_pitches,
                 'strikes': self.pitcher_strikes,
                 'walks': self.pitcher_walks,
-                'strike_outs': self.pitcher_strike_outs
+                'strike_outs': self.pitcher_strike_outs,
+                'innings_pitched': self.pitcher_innings_pitched,
+                'runs_allowed': self.pitcher_runs_allowed,
+                'earned_runs_allowed': self.pitcher_earned_runs_allowed
             }
         }
 
@@ -508,6 +524,9 @@ class PitchDetails:
             self.speed = None
             self.type = None
             self.zone = None
+            self.break_horizontal = None
+            self.break_vertical = None
+            self.break_vertical_induced = None
             # self.spin_rate = None
             return None
 
@@ -522,12 +541,19 @@ class PitchDetails:
             self.speed = None
             self.type = None
             self.zone = None
+            self.break_horizontal = None
+            self.break_vertical = None
+            self.break_vertical_induced = None
             # self.spin_rate = None
             return None
 
         self.description = pitch.details.description
         self.speed = pitch.pitchData.startSpeed
         self.zone = pitch.pitchData.zone
+
+        self.break_horizontal = pitch.pitchData.breaks.breakHorizontal
+        self.break_vertical = pitch.pitchData.breaks.breakVertical
+        self.break_vertical_induced = pitch.pitchData.breaks.breakVerticalInduced
 
         if pitch.details.type is not None:
             self.type = pitch.details.type.description
@@ -550,7 +576,10 @@ class PitchDetails:
             'description': self.description,
             'speed': self.speed,
             'type': self.type,
-            'zone': self.zone
+            'zone': self.zone,
+            'break_horizontal': self.break_horizontal,
+            'break_vertical': self.break_vertical,
+            'break_vertical_induced': self.break_vertical_induced,
             # 'spin_rate': self.spin_rate
         }
 
@@ -1002,7 +1031,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778443)
+    x = ScoreboardData(gamepk=778438)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
