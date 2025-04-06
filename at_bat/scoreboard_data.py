@@ -557,7 +557,7 @@ class PitchDetails:
         self.speed = pitch.pitchData.startSpeed
         self.zone = pitch.pitchData.zone
 
-        if pitch.pitchData.breaks is None:
+        if not pitch.pitchData.breaks:
             self.break_horizontal = None
             self.break_vertical = None
             self.break_vertical_induced = None
