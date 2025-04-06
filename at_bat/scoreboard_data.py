@@ -320,6 +320,12 @@ class Matchup:
         self.pitcher = get_player_last_name(game, pitcher_id)
 
         isTopInning = game.liveData.linescore.isTopInning
+        outs = game.liveData.linescore.outs
+        third_out = False
+        if outs == 3:
+            # If 3 outs in inning then the batter and pitcher are the
+            # next half inning's batter and pitcher
+            third_out = True
 
         if game.liveData.linescore.outs == 3:
             # If 3 outs in inning then the batter and pitcher are the
@@ -330,29 +336,29 @@ class Matchup:
         home_team = game._game_dict['liveData']['boxscore']['teams']['home']['players']
 
         try:
-            if isTopInning is True:
+            if (isTopInning ^ third_out) is True:
                 self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
-                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
-                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
+                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
+                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
                 self.batter_slg = away_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
                 self.batter_ops = away_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
-            elif isTopInning is False:
+            elif (isTopInning ^ third_out) is False:
                 self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
-                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
-                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
+                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
+                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
@@ -361,29 +367,29 @@ class Matchup:
         except KeyError:
             # Sometimes mlb messes up and the inning state does not
             # match the batter and pitcher. This is a easy bodged fix
-            if isTopInning is False:
+            if (isTopInning ^ third_out) is False:
                 self.pitcher_pitches = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = home_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
-                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
-                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
+                self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
+                self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = away_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = away_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
                 self.batter_slg = away_team[f'ID{batter_id}']['seasonStats']['batting']['slg']
                 self.batter_ops = away_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
-            elif isTopInning is True:
+            elif (isTopInning ^ third_out) is True:
                 self.pitcher_pitches = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["numberOfPitches"]
                 self.pitcher_strikes = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikes"]
                 self.pitcher_era = away_team[f"ID{pitcher_id}"]["seasonStats"]["pitching"]["era"]
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
-                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runsAllowed"]
-                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRunsAllowed"]
+                self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
+                self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
                 self.batter_at_bats = home_team[f'ID{batter_id}']['stats']['batting']['atBats']
                 self.batter_avg = home_team[f'ID{batter_id}']['seasonStats']['batting']['avg']
