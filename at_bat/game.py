@@ -536,9 +536,9 @@ class Count:
 class Matchup:
     def __init__(self, matchup):
         self.batter = matchup['batter']
-        self.batSide = matchup['batSide']
+        self.bat_side = matchup['batSide']
         self.pitcher = matchup['pitcher']
-        self.pitchHand = matchup['pitchHand']
+        self.pitch_hand = matchup['pitchHand']
         self.postOnFirst = matchup.get('postOnFirst', None)
         self.postOnSecond = matchup.get('postOnSecond', None)
         self.postOnThird = matchup.get('postOnThird', None)
@@ -548,9 +548,9 @@ class Matchup:
 
     def _children(self):
         self.batter = Player(self.batter)
-        self.batSide = Side(self.batSide)
+        self.bat_side = Side(self.bat_side)
         self.pitcher = Player(self.pitcher)
-        self.pitchHand = Side(self.pitchHand)
+        self.pitch_hand = Side(self.pitch_hand)
 
         if self.postOnFirst is not None:
             self.postOnFirst = Player(self.postOnFirst)
@@ -625,7 +625,7 @@ class RunnersDetails:
 
 class Side:
     def __init__(self, side):
-        self.code = side.get('L', None)
+        self.code = side.get('code', None)
         self.description = side['description']
 
 
