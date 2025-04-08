@@ -844,6 +844,10 @@ class BattingOrder:
 
         self.is_top_inning = game.liveData.linescore.isTopInning
         self.at_bat_index: int = game.liveData.linescore.offense.batting_order
+
+        # sometimes at_bat_index is 10 when going back to top of order
+        self.at_bat_index = 1 if self.at_bat_index == 10 else self.at_bat_index
+
         self.batting_order: List[dict] = []
 
         outs = game.liveData.linescore.outs
