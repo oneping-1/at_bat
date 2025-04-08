@@ -533,14 +533,16 @@ class PitchDetails:
             self.break_horizontal = None
             self.break_vertical = None
             self.break_vertical_induced = None
+            self.pitch_hand = None
             # self.spin_rate = None
             return None
 
         if game.liveData.plays.allPlays[-1].playEvents == []:
             # new batter but no pitch yet
-            pitch = game.liveData.plays.allPlays[-2].playEvents[-1]
+            at_bat = game.liveData.plays.allPlays[-2]
         else:
-            pitch =  game.liveData.plays.allPlays[-1].playEvents[-1]
+            at_bat = game.liveData.plays.allPlays[-1]
+        pitch =  at_bat.playEvents[-1]
 
         if pitch.isPitch is False:
             self.description = None
@@ -550,12 +552,14 @@ class PitchDetails:
             self.break_horizontal = None
             self.break_vertical = None
             self.break_vertical_induced = None
+            self.pitch_hand = None
             # self.spin_rate = None
             return None
 
         self.description = pitch.details.description
         self.speed = pitch.pitchData.startSpeed
         self.zone = pitch.pitchData.zone
+        self.pitch_hand = at_bat.matchup.pitch_hand.code
 
         if not pitch.pitchData.breaks:
             self.break_horizontal = None
@@ -591,6 +595,7 @@ class PitchDetails:
             'break_horizontal': self.break_horizontal,
             'break_vertical': self.break_vertical,
             'break_vertical_induced': self.break_vertical_induced,
+            'pitch_hand': self.pitch_hand
             # 'spin_rate': self.spin_rate
         }
 
