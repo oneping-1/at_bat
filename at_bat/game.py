@@ -24,6 +24,7 @@ import os
 from typing import List, Tuple, Union
 import math
 from datetime import datetime, timedelta, timezone
+from time import sleep
 import requests
 from tzlocal import get_localzone
 import pytz
@@ -31,7 +32,6 @@ import statsapi # pylint: disable=E0401
 from tqdm import tqdm
 from dateutil import tz
 from at_bat.statsapi_plus import get_daily_gamepks
-from time import sleep
 
 MARGIN_OF_ERROR = 0.25/12 # Margin of Error of hawkeye system (inches)
 
