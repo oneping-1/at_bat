@@ -33,8 +33,8 @@ from at_bat.statsapi_plus import get_red288_dataframe, get_wpd351360_dataframe
 # accoding to math
 
 # Margin of Error for Hawkeye pitch tracking system.
-# around 0.625"-0.700" based off tests
-HAWKEYE_MARGIN_OF_ERROR_INCH = 0.690
+# Set to match Umpire Scorecards
+HAWKEYE_MARGIN_OF_ERROR_INCH = 0.5
 HAWKEYE_MARGIN_OF_ERROR_FEET = HAWKEYE_MARGIN_OF_ERROR_INCH/12
 
 # max distance a ball can be from strike zone edge before umpire
@@ -526,17 +526,22 @@ class Umpire():
         pX = pitch.pitchData.coordinates.pX
         pZ = pitch.pitchData.coordinates.pZ
 
-        delta_radius = random.uniform(-cls.hmoe, cls.hmoe)
-        angle = random.uniform(0, 360)
-        angle = math.radians(angle)
+        # delta_radius = math.sqrt(random.uniform(0, cls.hmoe))
+        # angle = random.uniform(0, 360)
+        # angle = math.radians(angle)
 
-        dx = delta_radius * math.cos(angle)
-        dz = delta_radius * math.sin(angle)
+        # dx = delta_radius * math.cos(angle)
+        # dz = delta_radius * math.sin(angle)
 
-        rand_x = pX + dx
-        rand_z = pZ + dz
+        while True:
+            dx = random.uniform(-cls.hmoe, cls.hmoe)
+            dz = random.uniform(-cls.hmoe, cls.hmoe)
 
-        return (rand_x, rand_z)
+            if math.sqrt(dx**2 + dz**2) <= cls.hmoe:
+                rand_x = pX + dx
+                rand_z = pZ + dz
+
+                return (rand_x, rand_z)
 
     @classmethod
     def _check_class_methods(cls, runners: Union[Runners, None],
