@@ -534,6 +534,7 @@ class PitchDetails:
             self.break_vertical = None
             self.break_vertical_induced = None
             self.pitch_hand = None
+            self.umpire_missed_call = None
             # self.spin_rate = None
             return None
 
@@ -553,6 +554,7 @@ class PitchDetails:
             self.break_vertical = None
             self.break_vertical_induced = None
             self.pitch_hand = None
+            self.umpire_missed_call = None
             # self.spin_rate = None
             return None
 
@@ -560,6 +562,10 @@ class PitchDetails:
         self.speed = pitch.pitchData.startSpeed
         self.zone = pitch.pitchData.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
+
+        umpire_favor = Umpire.delta_favor_single_pitch(pitch, False, False,
+            False, False, 1, 0, "monte")
+        self.umpire_missed_call = not (umpire_favor == 0)
 
         if not pitch.pitchData.breaks:
             self.break_horizontal = None
@@ -595,7 +601,8 @@ class PitchDetails:
             'break_horizontal': self.break_horizontal,
             'break_vertical': self.break_vertical,
             'break_vertical_induced': self.break_vertical_induced,
-            'pitch_hand': self.pitch_hand
+            'pitch_hand': self.pitch_hand,
+            'umpire_missed_call': self.umpire_missed_call
             # 'spin_rate': self.spin_rate
         }
 
