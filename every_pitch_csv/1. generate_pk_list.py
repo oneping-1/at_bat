@@ -8,8 +8,8 @@ class Gamepk_finder:
     """Class to make a list of all gamepks from a given date range"""
     def __init__(self):
         self.gamepks: List = []
-        self.start_date = datetime.date(2023, 3, 30)
-        self.end_date = datetime.date(2023, 10, 1)
+        self.start_date = datetime.date(2024, 3, 28)
+        self.end_date = datetime.date(2024, 9, 29)
 
     def day_loop(self, date):
         """

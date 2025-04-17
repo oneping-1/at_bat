@@ -167,9 +167,9 @@ class GameCSVCreator:
 
             # atBat.matchup
             self.dict_at_bat['batter'] = at_bat.matchup.batter.fullName
-            self.dict_at_bat['bat_side'] = at_bat.matchup.batSide.description
+            self.dict_at_bat['bat_side'] = at_bat.matchup.bat_side.description
             self.dict_at_bat['pitcher'] = at_bat.matchup.pitcher.fullName
-            self.dict_at_bat['pitch_hand'] = at_bat.matchup.pitchHand.description
+            self.dict_at_bat['pitch_hand'] = at_bat.matchup.pitch_hand.description
 
             self.iterate_pitches(at_bat)
             self.runners.end_at_bat(at_bat)
