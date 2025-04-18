@@ -310,6 +310,7 @@ class Matchup:
             self.pitcher_walks = None
             self.pitcher_strike_outs = None
             self.pitcher_innings_pitched = None
+            self.pitcher_hits_allowed = None
             self.pitcher_runs_allowed = None
             self.pitcher_earned_runs_allowed = None
             return None
@@ -344,6 +345,7 @@ class Matchup:
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_hits_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["hits"]
                 self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
                 self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
@@ -358,6 +360,7 @@ class Matchup:
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_hits_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["hits"]
                 self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
                 self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
@@ -375,6 +378,7 @@ class Matchup:
                 self.pitcher_walks = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_hits_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["hits"]
                 self.pitcher_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
                 self.pitcher_earned_runs_allowed = home_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = away_team[f'ID{batter_id}']['stats']['batting']['hits']
@@ -389,6 +393,7 @@ class Matchup:
                 self.pitcher_walks = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["baseOnBalls"]
                 self.pitcher_strike_outs = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["strikeOuts"]
                 self.pitcher_innings_pitched = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["inningsPitched"]
+                self.pitcher_hits_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["hits"]
                 self.pitcher_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["runs"]
                 self.pitcher_earned_runs_allowed = away_team[f"ID{pitcher_id}"]["stats"]["pitching"]["earnedRuns"]
                 self.batter_hits = home_team[f'ID{batter_id}']['stats']['batting']['hits']
@@ -422,6 +427,7 @@ class Matchup:
                 'walks': self.pitcher_walks,
                 'strike_outs': self.pitcher_strike_outs,
                 'innings_pitched': self.pitcher_innings_pitched,
+                'hits_allowed': self.pitcher_hits_allowed,
                 'runs_allowed': self.pitcher_runs_allowed,
                 'earned_runs_allowed': self.pitcher_earned_runs_allowed
             }
@@ -699,7 +705,7 @@ class RunExpectancy:
         is_third_base = bool(runners & 4)
 
         state = ((re640['balls'] == balls) &
-               (re640['strikes'] == strikes) &
+                (re640['strikes'] == strikes) &
                 (re640['outs'] == outs) &
                 (re640['is_first_base'] == is_first_base) &
                 (re640['is_second_base'] == is_second_base) &
