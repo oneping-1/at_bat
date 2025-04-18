@@ -15,7 +15,7 @@ from typing import List
 import time
 import requests
 
-from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, find_division_from_abv
+from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
 from at_bat.game import Game
 from at_bat.runners import Runners
 from at_bat.umpire import Umpire
@@ -23,6 +23,7 @@ from at_bat.standings import Standings
 
 re640 = get_re640_dataframe()
 wp780800 = get_wp780800_dataframe()
+expected_values = get_expected_values_dataframe()
 division_from_abv = find_division_from_abv()
 
 
@@ -615,9 +616,7 @@ class HitDetails:
 
         if game.liveData.plays.allPlays == []:
             # Game has not started
-            self.exit_velo = None
-            self.launch_angle = None
-            self.distance = None
+            self._none()
             return None
 
         if game.liveData.plays.allPlays[-1].playEvents == []:
@@ -627,21 +626,32 @@ class HitDetails:
             pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
 
         if pitch.isPitch is False:
-            self.exit_velo = None
-            self.launch_angle = None
-            self.distance = None
+            self._none()
+            return None
 
         if pitch.hitData is None:
-            self.exit_velo = None
-            self.launch_angle = None
-            self.distance = None
+            self._none()
             return None
 
         self.exit_velo = pitch.hitData.launchSpeed
         self.launch_angle = pitch.hitData.launchAngle
         self.distance = pitch.hitData.totalDistance
+        state = (
+            (expected_values['exit_velocity'] == self.exit_velo) &
+            (expected_values['launch_angle'] == self.launch_angle)
+        )
+
+        self.xba = expected_values[state]['xba'].iloc[0]
+        self.xslg = expected_values[state]['xslg'].iloc[0]
 
         return None
+
+    def _none(self):
+        self.exit_velo = None
+        self.launch_angle = None
+        self.distance = None
+        self.xba = None
+        self.xslg = None
 
     def to_dict(self) -> dict:
         """
@@ -653,7 +663,9 @@ class HitDetails:
         return {
             'exit_velo': self.exit_velo,
             'launch_angle': self.launch_angle,
-            'distance': self.distance
+            'distance': self.distance,
+            'xba': self.xba,
+            'xslg': self.xslg,
         }
 
 class RunExpectancy:
@@ -1058,7 +1070,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778438)
+    x = ScoreboardData(gamepk=778281, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
