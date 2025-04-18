@@ -112,6 +112,19 @@ def get_red288_dataframe() -> pd.DataFrame:
 
     return pd.read_csv(csv_file_path)
 
+def get_expected_values_dataframe() -> pd.DataFrame:
+    """
+    Returns the expected_values.csv file as a pandas DataFrame
+
+    Returns:
+        pd.DataFrame: The expected_values.csv file as a pandas DataFrame
+    """
+    current_dir = os.path.dirname(os.path.relpath(__file__))
+    csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
+    csv_file_path = os.path.join(csv_path, 'expected_values.csv')
+
+    return pd.read_csv(csv_file_path)
+
 def find_division_from_id() -> dict:
     """
     Returns the division of a team given the team_id
