@@ -12,13 +12,12 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
-import time
-import requests
+import pandas as pd
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
 from at_bat.game import Game
+from at_bat.game_parser import GameParser
 from at_bat.runners import Runners
-from at_bat.umpire import Umpire
 from at_bat.standings import Standings
 
 re640 = get_re640_dataframe()
@@ -468,7 +467,8 @@ class Team:
     """
     Contains the team data for the game as a sub-class to Score
     """
-    def __init__(self, game: Game, team: str):
+    def __init__(self, game: Game, df, team: str):
+        is_top_inning: bool = True if 'team' == 'away' else False
 
         gamedata = game.gameData.teams
         gamedata = getattr(gamedata, team)
@@ -483,6 +483,8 @@ class Team:
         self.hits = livedata_teams.hits
         self.errors = livedata_teams.errors
         self.left_on_base = livedata_teams.left_on_base
+        self.xba = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xba'].mean()
+        self.xslg = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xslg'].mean()
 
         standings = ScoreboardStandings(self.abv)
         self.wins = standings.wins
@@ -519,6 +521,8 @@ class Team:
             'hits': self.hits,
             'errors': self.errors,
             'left_on_base': self.left_on_base,
+            'xba': self.xba,
+            'xslg': self.xslg,
             'wins': self.wins,
             'losses': self.losses,
             'division_rank': self.division_rank,
@@ -530,7 +534,7 @@ class PitchDetails:
     """
     Contains the pitch details data for the game as a sub-class to Scoreboard
     """
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, df: pd.DataFrame):
         if game.liveData.plays.allPlays == []:
             # new game but no pitches yet
             self.description = None
@@ -552,7 +556,7 @@ class PitchDetails:
             at_bat = game.liveData.plays.allPlays[-1]
         pitch =  at_bat.playEvents[-1]
 
-        if pitch.isPitch is False:
+        if pitch.is_pitch is False:
             self.description = None
             self.speed = None
             self.type = None
@@ -566,22 +570,22 @@ class PitchDetails:
             return None
 
         self.description = pitch.details.description
-        self.speed = pitch.pitchData.startSpeed
-        self.zone = pitch.pitchData.zone
+        self.speed = pitch.pitch_data.startSpeed
+        self.zone = pitch.pitch_data.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
-        umpire_favor = Umpire.delta_favor_single_pitch(pitch, False, False,
-            False, False, 1, 0, "monte")
-        self.umpire_missed_call = not (umpire_favor == 0)
+        run_favor = df.iloc[-1]['run_favor']
+        run_favor = abs(run_favor)
+        self.umpire_missed_call = True if run_favor > 0 else False
 
-        if not pitch.pitchData.breaks:
+        if not pitch.pitch_data.breaks:
             self.break_horizontal = None
             self.break_vertical = None
             self.break_vertical_induced = None
         else:
-            self.break_horizontal = pitch.pitchData.breaks.breakHorizontal
-            self.break_vertical = pitch.pitchData.breaks.breakVertical
-            self.break_vertical_induced = pitch.pitchData.breaks.breakVerticalInduced
+            self.break_horizontal = pitch.pitch_data.breaks.breakHorizontal
+            self.break_vertical = pitch.pitch_data.breaks.breakVertical
+            self.break_vertical_induced = pitch.pitch_data.breaks.breakVerticalInduced
 
         if pitch.details.type is not None:
             self.type = pitch.details.type.description
@@ -617,38 +621,17 @@ class HitDetails:
     """
     Contains the hit details data for the game as a sub-class
     """
-    def __init__(self, game: Game):
-        pitch = None
+    def __init__(self, df: pd.DataFrame):
+        pitch = df.iloc[-1]
 
-        if game.liveData.plays.allPlays == []:
-            # Game has not started
+        self.exit_velo = pitch['batted_ball_launch_speed']
+        self.launch_angle = pitch['batted_ball_launch_angle']
+        self.distance = pitch['batted_ball_total_distance']
+        self.xba = pitch['batted_ball_xba']
+        self.xslg = pitch['batted_ball_xslg']
+
+        if pd.notna(self.exit_velo):
             self._none()
-            return None
-
-        if game.liveData.plays.allPlays[-1].playEvents == []:
-            # No pitch in current at bat yet
-            pitch = game.liveData.plays.allPlays[-2].playEvents[-1]
-        else:
-            pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
-
-        if pitch.isPitch is False:
-            self._none()
-            return None
-
-        if pitch.hitData is None:
-            self._none()
-            return None
-
-        self.exit_velo = pitch.hitData.launchSpeed
-        self.launch_angle = pitch.hitData.launchAngle
-        self.distance = pitch.hitData.totalDistance
-        state = (
-            (expected_values['exit_velocity'] == self.exit_velo) &
-            (expected_values['launch_angle'] == self.launch_angle)
-        )
-
-        self.xba = expected_values[state]['xba'].iloc[0]
-        self.xslg = expected_values[state]['xslg'].iloc[0]
 
         return None
 
@@ -847,12 +830,14 @@ class UmpireDetails:
     """
     Contains the umpire data for the game as a sub-class to ScoreboardData
     """
-    def __init__(self, game: Game) -> None:
-        umpire = Umpire(game=game, method='monte')
-        umpire.calculate_game()
-        self.num_missed: int = umpire.num_missed_calls
-        self.home_favor: float = umpire.home_favor
-        self.home_wpa: float = umpire.home_wpa
+    def __init__(self, df: pd.DataFrame) -> None:
+        self.home_favor = df['run_favor'].sum()
+        self.home_wpa = df['wp_favor'].sum()
+        self.num_missed = len(df.loc[(
+            ~(pd.isna(df['run_favor'])) &
+            (df['run_favor'] != 0)
+        )])
+
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the UmpireDetails object
@@ -928,6 +913,9 @@ class ScoreboardData:
         self.game = Game.get_game_from_pk(gamepk=self.gamepk,
             delay_seconds=delay_seconds)
 
+        self.parser = GameParser(game=self.game)
+        self.dataframe = self.parser.dataframe
+
         # success = False
         # n = 1
 
@@ -973,13 +961,13 @@ class ScoreboardData:
         self.decisions = PitcherDecisions(game=self.game)
         self.matchup = Matchup(game=self.game)
         self.count = Count(game=self.game)
-        self.away = Team(game=self.game, team='away')
-        self.home = Team(game=self.game, team='home')
-        self.pitch_details = PitchDetails(game=self.game)
-        self.hit_details = HitDetails(game=self.game)
+        self.away = Team(game=self.game, df=self.dataframe, team='away')
+        self.home = Team(game=self.game, df=self.dataframe, team='home')
+        self.pitch_details = PitchDetails(game=self.game, df=self.dataframe)
+        self.hit_details = HitDetails(df=self.dataframe)
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
-        self.umpire = UmpireDetails(game=self.game)
+        self.umpire = UmpireDetails(df=self.dataframe)
         self.batting_order = BattingOrder(game=self.game, state=self.game_state)
         self.flags = Flags(game=self.game)
 
@@ -1076,7 +1064,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778281, delay_seconds=60)
+    x = ScoreboardData(gamepk=778253, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')

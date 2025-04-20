@@ -8,4 +8,9 @@ every_pitch_csv/pitch.csv
 examples/standing_data.json
 examples/game.json
 notes.txt
+<<<<<<< Updated upstream
 
+=======
+examples/game.json
+-DESKTOP-CT8EFC2.gitignore
+>>>>>>> Stashed changes
