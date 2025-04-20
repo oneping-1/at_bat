@@ -2,9 +2,18 @@ import csv
 
 from typing import List
 import pandas as pd
+import numpy as np
 
 from at_bat.game import Game
 from at_bat.runners import Runners
+from at_bat.statsapi_plus import get_expected_values_dataframe
+
+_NO_AT_BAT = ('walk', 'hit_by_pitch', 'catchers_interference')
+_OUT = ('strikeout')
+
+xdf = get_expected_values_dataframe()
+xdf.rename(columns={'exit_velocity': 'batted_ball_launch_speed', 'launch_angle': 'batted_ball_launch_angle', 'xba': 'batted_ball_xba', 'xslg': 'batted_ball_xslg'}, inplace=True)
+xdf.set_index(['batted_ball_launch_speed', 'batted_ball_launch_angle'], inplace=True)
 
 class GameParser:
     field_names = [
@@ -42,6 +51,7 @@ class GameParser:
             'at_bat_event_type',
             'at_bat_description',
             'at_bat_rbi',
+            'at_bat_last_pitch',
             'batted_ball_launch_speed',
             'batted_ball_launch_angle',
             'batted_ball_total_distance',
@@ -77,9 +87,9 @@ class GameParser:
             'spin_direction'
         ]
 
-    def __init__(self, gamepk: int):
+    def __init__(self, gamepk: int, delay_seconds: int = 0):
         self.gamepk = gamepk
-        self.game = Game.get_game_from_pk(gamepk)
+        self.game = Game.get_game_from_pk(gamepk, delay_seconds)
         self.runners: Runners = Runners()
         self.away_score = 0
         self.home_score = 0
@@ -269,6 +279,7 @@ class GameParser:
                     self.dict_pitch['at_bat_event_type'] = at_bat.result.eventType
                     self.dict_pitch['at_bat_description'] = at_bat.result.description
                     self.dict_pitch['at_bat_rbi'] = at_bat.result.rbi
+                    self.dict_pitch['at_bat_last_pitch'] = i == at_bat_last_pitch
 
                 if play_event.hitData is not None:
                     self.dict_pitch['batted_ball_launch_speed'] = play_event.hitData.launchSpeed
@@ -306,7 +317,35 @@ class GameParser:
             for row in self.game_data:
                 writer.writerow(row)
 
+def _batted_ball_expected_values_lookup(row):
+    # if not end of at bat
+    if pd.isna(row['at_bat_event_type']):
+        return pd.Series({'batted_ball_xba': np.nan, 'batted_ball_xslg': np.nan})
+    
+    if row['at_bat_event_type'] in _OUT:
+        return pd.Series({'batted_ball_xba': 0, 'batted_ball_xslg': 0})
+    
+    # sometimes hit data is unavailable
+    if pd.isna(row['batted_ball_launch_speed']):
+        return pd.Series({'batted_ball_xba': np.nan, 'batted_ball_xslg': np.nan})
+    
+    
+    if row['at_bat_event_type'] in _NO_AT_BAT:
+        return pd.Series({'batted_ball_xba': np.nan, 'batted_ball_xslg': np.nan}) # 1s are place holder
+    
+    key = (row['batted_ball_launch_speed'], row['batted_ball_launch_angle'])
+    return xdf.loc[key][['batted_ball_xba', 'batted_ball_xslg']]
+
+def batted_ball_expected_values(df: pd.DataFrame) -> pd.DataFrame:
+    df[['batted_ball_xba', 'batted_ball_xslg']] = df.apply(_batted_ball_expected_values_lookup, axis=1)
+    return df
+
 if __name__ == '__main__':
-    GAMEPK = 748549
+    GAMEPK = 778251
     g = GameParser(GAMEPK)
-    g.write_csv('748549.csv', True)
+    g = g.dataframe
+    g = batted_ball_expected_values(g)
+    print(f"{g.loc[(g['is_top_inning'] == True)]['batted_ball_xba'].mean():.3f}")
+    print(f"{g.loc[(g['is_top_inning'] == True)]['batted_ball_xslg'].mean():.3f}")
+    print(f"{g.loc[(g['is_top_inning'] == False)]['batted_ball_xba'].mean():.3f}")
+    print(f"{g.loc[(g['is_top_inning'] == False)]['batted_ball_xslg'].mean():.3f}")

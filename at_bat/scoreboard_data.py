@@ -12,11 +12,11 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
-import time
-import requests
+import pandas as pd
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
 from at_bat.game import Game
+from at_bat.game_parser import GameParser, batted_ball_expected_values
 from at_bat.runners import Runners
 from at_bat.umpire import Umpire
 from at_bat.standings import Standings
@@ -468,7 +468,8 @@ class Team:
     """
     Contains the team data for the game as a sub-class to Score
     """
-    def __init__(self, game: Game, team: str):
+    def __init__(self, game: Game, df, team: str):
+        is_top_inning: bool = True if 'team' == 'away' else False
 
         gamedata = game.gameData.teams
         gamedata = getattr(gamedata, team)
@@ -483,6 +484,8 @@ class Team:
         self.hits = livedata_teams.hits
         self.errors = livedata_teams.errors
         self.left_on_base = livedata_teams.left_on_base
+        self.xba = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xba'].mean()
+        self.xslg = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xslg'].mean()
 
         standings = ScoreboardStandings(self.abv)
         self.wins = standings.wins
@@ -519,6 +522,8 @@ class Team:
             'hits': self.hits,
             'errors': self.errors,
             'left_on_base': self.left_on_base,
+            'xba': self.xba,
+            'xslg': self.xslg,
             'wins': self.wins,
             'losses': self.losses,
             'division_rank': self.division_rank,
@@ -927,7 +932,9 @@ class ScoreboardData:
 
         self.game = Game.get_game_from_pk(gamepk=self.gamepk,
             delay_seconds=delay_seconds)
-
+        self.parser = GameParser(gamepk=gamepk, delay_seconds=delay_seconds)
+        self.dataframe = self.parser.dataframe
+        self.dataframe = batted_ball_expected_values(self.dataframe)
         # success = False
         # n = 1
 
@@ -973,8 +980,8 @@ class ScoreboardData:
         self.decisions = PitcherDecisions(game=self.game)
         self.matchup = Matchup(game=self.game)
         self.count = Count(game=self.game)
-        self.away = Team(game=self.game, team='away')
-        self.home = Team(game=self.game, team='home')
+        self.away = Team(game=self.game, df=self.dataframe, team='away')
+        self.home = Team(game=self.game, df=self.dataframe, team='home')
         self.pitch_details = PitchDetails(game=self.game)
         self.hit_details = HitDetails(game=self.game)
         self.run_expectancy = RunExpectancy(game=self.game)
@@ -1076,7 +1083,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778281, delay_seconds=60)
+    x = ScoreboardData(gamepk=778234, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
