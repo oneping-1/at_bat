@@ -210,19 +210,19 @@ def _get_umpire_details(game: Game) -> Tuple[str, str]:
     return (line_0, line_1)
 
 def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
-    if pitch.isPitch is True:
+    if pitch.is_pitch is True:
         desc = pitch.details.description
-        speed = pitch.pitchData.startSpeed
+        speed = pitch.pitch_data.startSpeed
         pitch_type = pitch.details.type.description
 
-        dx = pitch.pitchData.breaks.breakHorizontal
-        idy = pitch.pitchData.breaks.breakVerticalInduced
+        dx = pitch.pitch_data.breaks.breakHorizontal
+        idy = pitch.pitch_data.breaks.breakVerticalInduced
 
         line_0 = 'Pitch Details: '
         line_1 = f'{desc}'
         line_2 = f'{speed} {pitch_type}'
-        line_3 = f'Zone: {pitch.pitchData.zone}'
-        line_4 = f'{pitch.pitchData.breaks.spinRate} RPM'
+        line_3 = f'Zone: {pitch.pitch_data.zone}'
+        line_4 = f'{pitch.pitch_data.breaks.spinRate} RPM'
         line_5 = f'dx: {dx}'
         line_6 = f'idy: {idy}'
     else:
@@ -240,10 +240,10 @@ def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
 
 
 def _get_hit_details(pitch: PlayEvents) -> Tuple[str, str, str, str]:
-    if pitch.hitData is not None:
-        exit_velo = pitch.hitData.launchSpeed
-        launch_angle = pitch.hitData.launchAngle
-        distance = pitch.hitData.totalDistance
+    if pitch.hit_data is not None:
+        exit_velo = pitch.hit_data.launchSpeed
+        launch_angle = pitch.hit_data.launchAngle
+        distance = pitch.hit_data.totalDistance
 
         line_0 = 'Hit Details:'
         line_1 = f'Exit Velo: {exit_velo}'

@@ -63,15 +63,15 @@ class MissedCalls():
 
         self.code = pitch.details.code
 
-        self.zone = pitch.pitchData.zone
-        self.px = pitch.pitchData.coordinates.pX
-        self.pz = pitch.pitchData.coordinates.pZ
-        self.px_min = pitch.pitchData.coordinates.PX_MIN
-        self.px_max = pitch.pitchData.coordinates.PX_MAX
-        self.pz_min = pitch.pitchData.coordinates.pZ_min
-        self.pz_max = pitch.pitchData.coordinates.pZ_max
-        self.sz_top = pitch.pitchData.coordinates.sZ_top
-        self.sz_bot = pitch.pitchData.coordinates.sZ_bot
+        self.zone = pitch.pitch_data.zone
+        self.px = pitch.pitch_data.coordinates.pX
+        self.pz = pitch.pitch_data.coordinates.pZ
+        self.px_min = pitch.pitch_data.coordinates.PX_MIN
+        self.px_max = pitch.pitch_data.coordinates.PX_MAX
+        self.pz_min = pitch.pitch_data.coordinates.pZ_min
+        self.pz_max = pitch.pitch_data.coordinates.pZ_max
+        self.sz_top = pitch.pitch_data.coordinates.sZ_top
+        self.sz_bot = pitch.pitch_data.coordinates.sZ_bot
 
         self.runners = copy.deepcopy(runners)
         self.home_favor = home_favor
@@ -196,7 +196,7 @@ class Umpire():
                     # might not be accurate when running live?
                     self._runners.process_runner_movement(at_bat.runners, pitch.index)
 
-                if pitch.isPitch is True:
+                if pitch.is_pitch is True:
                     self._process_pitch(at_bat, pitch, isTopInning)
 
             self._runners.end_at_bat(at_bat)
@@ -289,16 +289,16 @@ class Umpire():
         elif pitch.details.code == 'B':
             to_print_str += f'{balls-1}-{strikes}, strike called ball\n'
 
-        to_print_str += f'Zone: {pitch.pitchData.zone}\n'
+        to_print_str += f'Zone: {pitch.pitch_data.zone}\n'
 
-        to_print_str += (f'pX = {pitch.pitchData.coordinates.pX:.5f} | '
-                        f'pZ = {pitch.pitchData.coordinates.pZ:.5f}\n')
+        to_print_str += (f'pX = {pitch.pitch_data.coordinates.pX:.5f} | '
+                        f'pZ = {pitch.pitch_data.coordinates.pZ:.5f}\n')
 
-        to_print_str += (f'left: {pitch.pitchData.coordinates.PX_MIN:.5f} | '
-                         f'right: {pitch.pitchData.coordinates.PX_MAX:.5f}\n')
+        to_print_str += (f'left: {pitch.pitch_data.coordinates.PX_MIN:.5f} | '
+                         f'right: {pitch.pitch_data.coordinates.PX_MAX:.5f}\n')
 
-        to_print_str += (f'bot = {pitch.pitchData.coordinates.pZ_bot:.5f} | '
-                        f'top = {pitch.pitchData.coordinates.pZ_top:.5f}\n')
+        to_print_str += (f'bot = {pitch.pitch_data.coordinates.pZ_bot:.5f} | '
+                        f'top = {pitch.pitch_data.coordinates.pZ_top:.5f}\n')
 
         to_print_str += f'Home Favor: {home_delta:4.2f}\n'
 
@@ -368,7 +368,7 @@ class Umpire():
         if isinstance(isTopInning, bool) is False:
             raise TypeError('isTopInning should be type bool')
 
-        if pitch.pitchData is None:
+        if pitch.pitch_data is None:
             return 0
 
         if method not in ('zone', 'monte', 'buffer'):
@@ -448,9 +448,9 @@ class Umpire():
     @classmethod
     def _is_correct_call_zone_num(cls, pitch: PlayEvents) -> bool:
         """Helper method to delta_favor_zone"""
-        if pitch.details.code == 'C' and pitch.pitchData.zone > 10:
+        if pitch.details.code == 'C' and pitch.pitch_data.zone > 10:
             return False
-        if pitch.details.code == 'B' and 1 <= pitch.pitchData.zone <= 9:
+        if pitch.details.code == 'B' and 1 <= pitch.pitch_data.zone <= 9:
             return False
         return True
 
@@ -462,10 +462,10 @@ class Umpire():
         strike = 0
         ball = 0
 
-        pX_left = pitch.pitchData.coordinates.PX_MIN
-        pX_right = pitch.pitchData.coordinates.PX_MAX
-        pZ_top = pitch.pitchData.coordinates.pZ_max
-        pZ_bot = pitch.pitchData.coordinates.pZ_min
+        pX_left = pitch.pitch_data.coordinates.PX_MIN
+        pX_right = pitch.pitch_data.coordinates.PX_MAX
+        pZ_top = pitch.pitch_data.coordinates.pZ_max
+        pZ_bot = pitch.pitch_data.coordinates.pZ_min
 
         for _ in range(1, 501):
             rand_x, rand_z = Umpire._generage_random_pitch_location(pitch)
@@ -487,14 +487,14 @@ class Umpire():
     def _is_correct_call_buffer_zone(cls, pitch: PlayEvents) -> bool:
         buf = BUFFER_FEET # buffer in feet but short
 
-        pX = pitch.pitchData.coordinates.pX
-        pZ = pitch.pitchData.coordinates.pZ
+        pX = pitch.pitch_data.coordinates.pX
+        pZ = pitch.pitch_data.coordinates.pZ
 
-        pZ_top = pitch.pitchData.coordinates.pZ_top
-        pZ_bot = pitch.pitchData.coordinates.pZ_bot
+        pZ_top = pitch.pitch_data.coordinates.pZ_top
+        pZ_bot = pitch.pitch_data.coordinates.pZ_bot
 
-        pX_left = pitch.pitchData.coordinates.PX_MIN
-        pX_right = pitch.pitchData.coordinates.PX_MAX
+        pX_left = pitch.pitch_data.coordinates.PX_MIN
+        pX_right = pitch.pitch_data.coordinates.PX_MAX
 
         # left zone
         if (((pX_left - buf) <= pX <= (pX_left + buf)) and
@@ -523,8 +523,8 @@ class Umpire():
                                         ) -> Tuple[float, float]:
         """Helper method to delta_favor_zone"""
 
-        pX = pitch.pitchData.coordinates.pX
-        pZ = pitch.pitchData.coordinates.pZ
+        pX = pitch.pitch_data.coordinates.pX
+        pZ = pitch.pitch_data.coordinates.pZ
 
         # delta_radius = math.sqrt(random.uniform(0, cls.hmoe))
         # angle = random.uniform(0, 360)
@@ -579,15 +579,15 @@ def sv_top_bot(gamePk: int):
 
         for at_bat in game.liveData.plays.allPlays:
             for pitch in at_bat.playEvents:
-                if pitch.isPitch is True:
-                    speed = pitch.pitchData.startSpeed
-                    zone = pitch.pitchData.zone
+                if pitch.is_pitch is True:
+                    speed = pitch.pitch_data.startSpeed
+                    zone = pitch.pitch_data.zone
 
-                    pX = f'{pitch.pitchData.coordinates.pX:.2f}'
-                    pZ = f'{pitch.pitchData.coordinates.pZ:.2f}'
+                    pX = f'{pitch.pitch_data.coordinates.pX:.2f}'
+                    pZ = f'{pitch.pitch_data.coordinates.pZ:.2f}'
 
-                    sZ_top = f'{pitch.pitchData.coordinates.sZ_top:.2f}'
-                    sZ_bot = f'{pitch.pitchData.coordinates.sZ_bot:.2f}'
+                    sZ_top = f'{pitch.pitch_data.coordinates.sZ_top:.2f}'
+                    sZ_bot = f'{pitch.pitch_data.coordinates.sZ_bot:.2f}'
 
                     writer.writerow({'speed': speed,
                                     'pX': pX,

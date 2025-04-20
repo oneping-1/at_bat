@@ -557,7 +557,7 @@ class PitchDetails:
             at_bat = game.liveData.plays.allPlays[-1]
         pitch =  at_bat.playEvents[-1]
 
-        if pitch.isPitch is False:
+        if pitch.is_pitch is False:
             self.description = None
             self.speed = None
             self.type = None
@@ -571,22 +571,22 @@ class PitchDetails:
             return None
 
         self.description = pitch.details.description
-        self.speed = pitch.pitchData.startSpeed
-        self.zone = pitch.pitchData.zone
+        self.speed = pitch.pitch_data.startSpeed
+        self.zone = pitch.pitch_data.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
         umpire_favor = Umpire.delta_favor_single_pitch(pitch, False, False,
             False, False, 1, 0, "monte")
         self.umpire_missed_call = not (umpire_favor == 0)
 
-        if not pitch.pitchData.breaks:
+        if not pitch.pitch_data.breaks:
             self.break_horizontal = None
             self.break_vertical = None
             self.break_vertical_induced = None
         else:
-            self.break_horizontal = pitch.pitchData.breaks.breakHorizontal
-            self.break_vertical = pitch.pitchData.breaks.breakVertical
-            self.break_vertical_induced = pitch.pitchData.breaks.breakVerticalInduced
+            self.break_horizontal = pitch.pitch_data.breaks.breakHorizontal
+            self.break_vertical = pitch.pitch_data.breaks.breakVertical
+            self.break_vertical_induced = pitch.pitch_data.breaks.breakVerticalInduced
 
         if pitch.details.type is not None:
             self.type = pitch.details.type.description
@@ -636,17 +636,17 @@ class HitDetails:
         else:
             pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
 
-        if pitch.isPitch is False:
+        if pitch.is_pitch is False:
             self._none()
             return None
 
-        if pitch.hitData is None:
+        if pitch.hit_data is None:
             self._none()
             return None
 
-        self.exit_velo = pitch.hitData.launchSpeed
-        self.launch_angle = pitch.hitData.launchAngle
-        self.distance = pitch.hitData.totalDistance
+        self.exit_velo = pitch.hit_data.launchSpeed
+        self.launch_angle = pitch.hit_data.launchAngle
+        self.distance = pitch.hit_data.totalDistance
         state = (
             (expected_values['exit_velocity'] == self.exit_velo) &
             (expected_values['launch_angle'] == self.launch_angle)

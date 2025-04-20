@@ -3,23 +3,32 @@ import csv
 from typing import List, Tuple
 import pandas as pd
 
-from at_bat.game import Game
+from at_bat.game import Game, AllPlays
 from at_bat.runners import Runners
 from at_bat.statsapi_plus import get_expected_values_dataframe
 
 xdf = get_expected_values_dataframe()
-def batted_ball_expected_values(exit_velo: float, launch_angle: int) -> Tuple[float, float]:
+def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch_angle: int) -> Tuple[float, float]:
     """
     Returns expected batting average and expected slugging percentage
     based on a batted balls exit velocity and launch angle
 
     Args:
+        at_bat_event_type (str): outcome of the at bat
         exit_velo (float): batted ball's exit velocity
         launch_angle (int): batted ball's launch angle
 
     Returns:
         Tuple[float, float]: xba, xslg
     """
+    if at_bat_event_type is None:
+        return (None, None)
+    if at_bat_event_type in ('strikeout'):
+        return (0, 0)
+    if at_bat_event_type in ('walk', 'hit_by_pitch', 'catchers_inferf'):
+        return (None, None)
+    if (exit_velo is None) or (launch_angle is None):
+        return (None, None)
     exit_velo = round(exit_velo, 1)
     launch_angle = round(launch_angle, 0)
     row = xdf.query('(exit_velocity == @exit_velo) & (launch_angle == @launch_angle)')
@@ -71,6 +80,8 @@ class GameParser:
             'batted_ball_location',
             'batted_ball_coordinates_x',
             'batted_ball_coordinates_y',
+            'batted_ball_xba',
+            'batted_ball_xslg',
             'is_first_base',
             'is_second_base',
             'is_third_base',
@@ -88,6 +99,10 @@ class GameParser:
             'extension',
             'px',
             'pz',
+            'sz_top',
+            'sz_bot',
+            'pz_min',
+            'pz_max',
             'breaks_angle',
             'breaks_length',
             'breaks_y',
@@ -200,7 +215,7 @@ class GameParser:
             self._away_score = at_bat.result.awayScore
             self._home_score = at_bat.result.homeScore
 
-    def _iterate_pitches(self, at_bat):
+    def _iterate_pitches(self, at_bat: AllPlays):
         balls = 0
         strikes = 0
 
@@ -219,7 +234,7 @@ class GameParser:
                 # handled by
                 self._runners.process_runner_movement(at_bat.runners, play_event.index)
 
-            if play_event.isPitch:
+            if play_event.is_pitch:
                 self._dict_pitch = {}
                 # playEvent.details
                 self._dict_pitch['pitch_result'] = play_event.details.description
@@ -244,30 +259,36 @@ class GameParser:
                 self._dict_pitch['pitch_index'] = play_event.index
 
                 # playEvent.pitchData
-                self._dict_pitch['pitch_start_speed'] = play_event.pitchData.startSpeed
-                self._dict_pitch['pitch_end_speed'] = play_event.pitchData.endSpeed
-                self._dict_pitch['strike_zone_top'] = play_event.pitchData.coordinates.sZ_top
-                self._dict_pitch['strike_zone_bottom'] = play_event.pitchData.coordinates.sZ_bot
+                self._dict_pitch['pitch_start_speed'] = play_event.pitch_data.startSpeed
+                self._dict_pitch['pitch_end_speed'] = play_event.pitch_data.endSpeed
+                self._dict_pitch['strike_zone_top'] = play_event.pitch_data.coordinates.sZ_top
+                self._dict_pitch['strike_zone_bottom'] = play_event.pitch_data.coordinates.sZ_bot
 
-                self._dict_pitch['zone'] = play_event.pitchData.zone
-                self._dict_pitch['type_confidence'] = play_event.pitchData.typeConfidence
-                self._dict_pitch['plate_time'] = play_event.pitchData.plateTime
-                self._dict_pitch['extension'] = play_event.pitchData.extension
+                self._dict_pitch['zone'] = play_event.pitch_data.zone
+                self._dict_pitch['type_confidence'] = play_event.pitch_data.typeConfidence
+                self._dict_pitch['plate_time'] = play_event.pitch_data.plateTime
+                self._dict_pitch['extension'] = play_event.pitch_data.extension
+
+                # playEvents.pitchData
+                self._dict_pitch['sz_top'] = play_event.pitch_data.coordinates.sZ_top
+                self._dict_pitch['sz_bot'] = play_event.pitch_data.coordinates.sZ_bot
+                self._dict_pitch['pz_min'] = play_event.pitch_data.coordinates.pZ_min
+                self._dict_pitch['pz_max'] = play_event.pitch_data.coordinates.pZ_max
 
                 # playEvent.pitchData.coordinates
-                self._dict_pitch['px'] = play_event.pitchData.coordinates.pX
-                self._dict_pitch['pz'] = play_event.pitchData.coordinates.pZ
+                self._dict_pitch['px'] = play_event.pitch_data.coordinates.pX
+                self._dict_pitch['pz'] = play_event.pitch_data.coordinates.pZ
 
                 # playEvent.pitchData.breaks
-                if play_event.pitchData.breaks:
-                    self._dict_pitch['breaks_angle'] = play_event.pitchData.breaks.breakAngle
-                    self._dict_pitch['breaks_length'] = play_event.pitchData.breaks.breakLength
-                    self._dict_pitch['breaks_y'] = play_event.pitchData.breaks.breakY
-                    self._dict_pitch['break_vertical'] = play_event.pitchData.breaks.breakVertical
-                    self._dict_pitch['break_vertical_induced'] = play_event.pitchData.breaks.breakVerticalInduced
-                    self._dict_pitch['break_horizontal'] = play_event.pitchData.breaks.breakHorizontal
-                    self._dict_pitch['spin_rate'] = play_event.pitchData.breaks.spinRate
-                    self._dict_pitch['spin_direction'] = play_event.pitchData.breaks.spinDirection
+                if play_event.pitch_data.breaks:
+                    self._dict_pitch['breaks_angle'] = play_event.pitch_data.breaks.breakAngle
+                    self._dict_pitch['breaks_length'] = play_event.pitch_data.breaks.breakLength
+                    self._dict_pitch['breaks_y'] = play_event.pitch_data.breaks.breakY
+                    self._dict_pitch['break_vertical'] = play_event.pitch_data.breaks.breakVertical
+                    self._dict_pitch['break_vertical_induced'] = play_event.pitch_data.breaks.breakVerticalInduced
+                    self._dict_pitch['break_horizontal'] = play_event.pitch_data.breaks.breakHorizontal
+                    self._dict_pitch['spin_rate'] = play_event.pitch_data.breaks.spinRate
+                    self._dict_pitch['spin_direction'] = play_event.pitch_data.breaks.spinDirection
                 else:
                     self._dict_pitch['breaks_angle'] = None
                     self._dict_pitch['breaks_length'] = None
@@ -278,34 +299,38 @@ class GameParser:
                     self._dict_pitch['spin_rate'] = None
                     self._dict_pitch['spin_direction'] = None
 
-                self._dict_game['pitch_time'] = play_event.startTime
+                self._dict_game['pitch_time'] = play_event.start_time
 
                 # runners
                 self._dict_pitch['is_first_base'] = bool(self._runners.runners[0])
                 self._dict_pitch['is_second_base'] = bool(self._runners.runners[1])
                 self._dict_pitch['is_third_base'] = bool(self._runners.runners[2])
 
+                at_bat_event_type = None
                 if play_event.index == at_bat_last_pitch:
                     self._dict_pitch['at_bat_event'] = at_bat.result.event
-                    self._dict_pitch['at_bat_event_type'] = at_bat.result.eventType
+                    at_bat_event_type = at_bat.result.eventType
+                    self._dict_pitch['at_bat_event_type'] = at_bat_event_type
                     self._dict_pitch['at_bat_description'] = at_bat.result.description
                     self._dict_pitch['at_bat_rbi'] = at_bat.result.rbi
 
-                if play_event.hitData is not None:
-                    ev = play_event.hitData.launchSpeed
-                    la = play_event.hitData.launchAngle
+                ev = None
+                la = None
+                if play_event.hit_data is not None:
+                    ev = play_event.hit_data.launchSpeed
+                    la = play_event.hit_data.launchAngle
                     self._dict_pitch['batted_ball_launch_speed'] = ev
                     self._dict_pitch['batted_ball_launch_angle'] = la
-                    self._dict_pitch['batted_ball_total_distance'] = play_event.hitData.totalDistance
-                    self._dict_pitch['batted_ball_trajectory'] = play_event.hitData.trajectory
-                    self._dict_pitch['batted_ball_hardness'] = play_event.hitData.hardness
-                    self._dict_pitch['batted_ball_location'] = play_event.hitData.location
-                    self._dict_pitch['batted_ball_coordinates_x'] = play_event.hitData.coordinates.coordX
-                    self._dict_pitch['batted_ball_coordinates_y'] = play_event.hitData.coordinates.coordY
+                    self._dict_pitch['batted_ball_total_distance'] = play_event.hit_data.totalDistance
+                    self._dict_pitch['batted_ball_trajectory'] = play_event.hit_data.trajectory
+                    self._dict_pitch['batted_ball_hardness'] = play_event.hit_data.hardness
+                    self._dict_pitch['batted_ball_location'] = play_event.hit_data.location
+                    self._dict_pitch['batted_ball_coordinates_x'] = play_event.hit_data.coordinates.coordX
+                    self._dict_pitch['batted_ball_coordinates_y'] = play_event.hit_data.coordinates.coordY
 
-                    xba, xslg = batted_ball_expected_values(ev, la)
-                    self._dict_pitch['batted_ball_xba'] = xba
-                    self._dict_pitch['batted_ball_xslg'] = xslg
+                xba, xslg = batted_ball_expected_values(at_bat_event_type, ev, la)
+                self._dict_pitch['batted_ball_xba'] = xba
+                self._dict_pitch['batted_ball_xslg'] = xslg
 
                 # Placed after so the count recorded is before the pitch
                 if play_event.details.isBall:
@@ -340,4 +365,4 @@ if __name__ == '__main__':
     GAMEPK = 748542
     g = GameParser(GAMEPK)
     g = g.dataframe
-    print(g)
+    print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])

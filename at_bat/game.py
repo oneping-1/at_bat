@@ -643,19 +643,19 @@ class PlayEvents:
         self._playEvents = playEvents
         self.details = playEvents.get('details', None)
         self.count = playEvents.get('count', None)
-        self.pitchData = playEvents.get('pitchData', None)
-        self.hitData = playEvents.get('hitData', None)
+        self.pitch_data = playEvents.get('pitchData', None)
+        self.hit_data = playEvents.get('hitData', None)
         self.index = playEvents.get('index', None)
         self.playId = playEvents.get('playId', None)
-        self.pitchNumber = playEvents.get('pitchNumber', None)
-        self.startTime = playEvents.get('startTime', None)
-        self.endTime = playEvents.get('endTime', None)
-        self.isPitch = bool(playEvents.get('isPitch', None))
-        self.isBaseRunningPlay = bool(playEvents.get('isBaseRunningPlay', None))
+        self.pitch_number = playEvents.get('pitchNumber', None)
+        self.start_time = playEvents.get('startTime', None)
+        self.end_time = playEvents.get('endTime', None)
+        self.is_pitch = bool(playEvents.get('isPitch', None))
+        self.is_base_running_play = bool(playEvents.get('isBaseRunningPlay', None))
         self.type = playEvents.get('type', None)
 
-        if self.pitchNumber is not None:
-            self.pitchNumber = int(self.pitchNumber)
+        if self.pitch_number is not None:
+            self.pitch_number = int(self.pitch_number)
 
         if self.index is not None:
             self.index = int(self.index)
@@ -669,11 +669,11 @@ class PlayEvents:
         if self.count is not None:
             self.count = Count(self.count)
 
-        if self.hitData is not None:
-            self.hitData = HitData(self.hitData)
+        if self.hit_data is not None:
+            self.hit_data = HitData(self.hit_data)
 
-        if self.pitchData is not None:
-            self.pitchData = PitchData(self.pitchData)
+        if self.pitch_data is not None:
+            self.pitch_data = PitchData(self.pitch_data)
 
     def __eq__(self, other):
         if other is None:
