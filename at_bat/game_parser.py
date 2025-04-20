@@ -1,6 +1,7 @@
 import csv
 
 from typing import List, Tuple
+import numpy as np
 import pandas as pd
 
 from at_bat.game import Game, AllPlays
@@ -116,9 +117,14 @@ class GameParser:
             'spin_direction'
         ]
 
-    def __init__(self, gamepk: int):
-        self.gamepk = gamepk
-        self.game = Game.get_game_from_pk(gamepk)
+    def __init__(self, game: Game = None, gamepk: int = None, delay_seconds: int = 60):
+        if game is not None:
+            self.game = game
+            self.gamepk = game.gamepk
+        elif gamepk is not None:
+            self.gamepk = gamepk
+            self.game = Game.get_game_from_pk(gamepk, delay_seconds)
+
         self._runners: Runners = Runners()
         self._away_score = 0
         self._home_score = 0
@@ -371,12 +377,11 @@ class GameParser:
         return self.dataframe.to_string()
 
 if __name__ == '__main__':
-    GAMEPK = 748542
-    g = GameParser(GAMEPK)
+    GAMEPK = 778253
+    g = GameParser(gamepk=GAMEPK)
     g = g.dataframe
     # print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])
     print(g.loc[
-        ((g['pitch_result_code'] == 'B') |
-        (g['pitch_result_code'] == 'C')) &
-        (g['run_favor'] > 0)
-    ][['run_favor', 'wp_favor']])
+        (g['run_favor'] > 0) |
+        (g['run_favor'] < 0)
+    ][['run_favor', 'wp_favor', 'batter', 'pitcher', 'inning']])

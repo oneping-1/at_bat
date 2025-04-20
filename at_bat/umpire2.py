@@ -94,11 +94,11 @@ class Umpire:
                 balls += 1
 
         total = balls + strikes
-        if (self.pitch_result_code == 'B') and ((balls/total) >= .9):
+        if (self.pitch_result_code == 'B') and ((balls/total) >= .1):
             self.run_favor = 0
             self.wp_favor = 0
             return (0, 0)
-        if (self.pitch_result_code == 'C') and ((strikes/total) >= .9):
+        if (self.pitch_result_code == 'C') and ((strikes/total) >= .1):
             self.run_favor = 0
             self.wp_favor = 0
             return (0, 0)
@@ -113,22 +113,22 @@ class Umpire:
 
         self.run_favor = _red288.loc[
             (_red288['balls'] == self.balls) &
-            # (_red288['strikes'] == self.strikes) &
-            # (_red288['outs'] == self.outs) &
-            # (_red288['is_first_base'] == (self.runners & 1)) &
-            # (_red288['is_second_base'] == (self.runners & 2)) &
-            (_red288['is_third_base'] == (self.runners & 4))
+            (_red288['strikes'] == self.strikes) &
+            (_red288['outs'] == self.outs) &
+            (_red288['is_first_base'] == bool(self.runners & 1)) &
+            (_red288['is_second_base'] == bool(self.runners & 2)) &
+            (_red288['is_third_base'] == bool(self.runners & 4))
         ]['run_value'].iloc[0]
 
         self.wp_favor = _wpd351360.loc[
             (_wpd351360['balls'] == self.balls) &
-            # (_wpd351360['strikes'] == self.strikes) &
-            # (_wpd351360['outs'] == self.outs) &
-            # (_wpd351360['is_first_base'] == (self.runners & 1)) &
-            # (_wpd351360['is_second_base'] == (self.runners & 2)) &
-            # (_wpd351360['is_third_base'] == (self.runners & 4)) &
-            # (_wpd351360['inning'] == self.inning) &
-            # (_wpd351360['is_top_inning'] == self.is_top_inning) &
+            (_wpd351360['strikes'] == self.strikes) &
+            (_wpd351360['outs'] == self.outs) &
+            (_wpd351360['is_first_base'] == bool(self.runners & 1)) &
+            (_wpd351360['is_second_base'] == bool(self.runners & 2)) &
+            (_wpd351360['is_third_base'] == bool(self.runners & 4)) &
+            (_wpd351360['inning'] == self.inning) &
+            (_wpd351360['is_top_inning'] == self.is_top_inning) &
             (_wpd351360['home_lead'] == self.home_lead)
         ]['wpa'].iloc[0]
 

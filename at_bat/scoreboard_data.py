@@ -16,9 +16,8 @@ import pandas as pd
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
 from at_bat.game import Game
-from at_bat.game_parser import GameParser, batted_ball_expected_values
+from at_bat.game_parser import GameParser
 from at_bat.runners import Runners
-from at_bat.umpire import Umpire
 from at_bat.standings import Standings
 
 re640 = get_re640_dataframe()
@@ -535,7 +534,7 @@ class PitchDetails:
     """
     Contains the pitch details data for the game as a sub-class to Scoreboard
     """
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, df: pd.DataFrame):
         if game.liveData.plays.allPlays == []:
             # new game but no pitches yet
             self.description = None
@@ -575,9 +574,9 @@ class PitchDetails:
         self.zone = pitch.pitch_data.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
-        umpire_favor = Umpire.delta_favor_single_pitch(pitch, False, False,
-            False, False, 1, 0, "monte")
-        self.umpire_missed_call = not (umpire_favor == 0)
+        run_favor = df.iloc[-1]['run_favor']
+        run_favor = abs(run_favor)
+        self.umpire_missed_call = True if run_favor > 0 else False
 
         if not pitch.pitch_data.breaks:
             self.break_horizontal = None
@@ -622,38 +621,17 @@ class HitDetails:
     """
     Contains the hit details data for the game as a sub-class
     """
-    def __init__(self, game: Game):
-        pitch = None
+    def __init__(self, df: pd.DataFrame):
+        pitch = df.iloc[-1]
 
-        if game.liveData.plays.allPlays == []:
-            # Game has not started
+        self.exit_velo = pitch['batted_ball_launch_speed']
+        self.launch_angle = pitch['batted_ball_launch_angle']
+        self.distance = pitch['batted_ball_total_distance']
+        self.xba = pitch['batted_ball_xba']
+        self.xslg = pitch['batted_ball_xslg']
+
+        if pd.notna(self.exit_velo):
             self._none()
-            return None
-
-        if game.liveData.plays.allPlays[-1].playEvents == []:
-            # No pitch in current at bat yet
-            pitch = game.liveData.plays.allPlays[-2].playEvents[-1]
-        else:
-            pitch = game.liveData.plays.allPlays[-1].playEvents[-1]
-
-        if pitch.is_pitch is False:
-            self._none()
-            return None
-
-        if pitch.hit_data is None:
-            self._none()
-            return None
-
-        self.exit_velo = pitch.hit_data.launchSpeed
-        self.launch_angle = pitch.hit_data.launchAngle
-        self.distance = pitch.hit_data.totalDistance
-        state = (
-            (expected_values['exit_velocity'] == self.exit_velo) &
-            (expected_values['launch_angle'] == self.launch_angle)
-        )
-
-        self.xba = expected_values[state]['xba'].iloc[0]
-        self.xslg = expected_values[state]['xslg'].iloc[0]
 
         return None
 
@@ -852,12 +830,14 @@ class UmpireDetails:
     """
     Contains the umpire data for the game as a sub-class to ScoreboardData
     """
-    def __init__(self, game: Game) -> None:
-        umpire = Umpire(game=game, method='monte')
-        umpire.calculate_game()
-        self.num_missed: int = umpire.num_missed_calls
-        self.home_favor: float = umpire.home_favor
-        self.home_wpa: float = umpire.home_wpa
+    def __init__(self, df: pd.DataFrame) -> None:
+        self.home_favor = df['run_favor'].sum()
+        self.home_wpa = df['wp_favor'].sum()
+        self.num_missed = len(df.loc[(
+            ~(pd.isna(df['run_favor'])) &
+            (df['run_favor'] != 0)
+        )])
+
     def to_dict(self) -> dict:
         """
         Return a dictionary representation of the UmpireDetails object
@@ -932,9 +912,10 @@ class ScoreboardData:
 
         self.game = Game.get_game_from_pk(gamepk=self.gamepk,
             delay_seconds=delay_seconds)
-        self.parser = GameParser(gamepk=gamepk, delay_seconds=delay_seconds)
+
+        self.parser = GameParser(game=self.game)
         self.dataframe = self.parser.dataframe
-        self.dataframe = batted_ball_expected_values(self.dataframe)
+
         # success = False
         # n = 1
 
@@ -982,11 +963,11 @@ class ScoreboardData:
         self.count = Count(game=self.game)
         self.away = Team(game=self.game, df=self.dataframe, team='away')
         self.home = Team(game=self.game, df=self.dataframe, team='home')
-        self.pitch_details = PitchDetails(game=self.game)
-        self.hit_details = HitDetails(game=self.game)
+        self.pitch_details = PitchDetails(game=self.game, df=self.dataframe)
+        self.hit_details = HitDetails(df=self.dataframe)
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
-        self.umpire = UmpireDetails(game=self.game)
+        self.umpire = UmpireDetails(df=self.dataframe)
         self.batting_order = BattingOrder(game=self.game, state=self.game_state)
         self.flags = Flags(game=self.game)
 
@@ -1083,7 +1064,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778234, delay_seconds=60)
+    x = ScoreboardData(gamepk=778253, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
