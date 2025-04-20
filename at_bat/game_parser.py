@@ -6,6 +6,9 @@ import pandas as pd
 from at_bat.game import Game, AllPlays
 from at_bat.runners import Runners
 from at_bat.statsapi_plus import get_expected_values_dataframe
+from at_bat.umpire2 import Umpire
+
+umpire = Umpire()
 
 xdf = get_expected_values_dataframe()
 def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch_angle: int) -> Tuple[float, float]:
@@ -328,6 +331,12 @@ class GameParser:
                     self._dict_pitch['batted_ball_coordinates_x'] = play_event.hit_data.coordinates.coordX
                     self._dict_pitch['batted_ball_coordinates_y'] = play_event.hit_data.coordinates.coordY
 
+                umpire.from_game_parser(self._dict_at_bat, self._dict_pitch, self._runners)
+                x = umpire.calculate_favors()
+                run_favor, wp_favor = x
+                self._dict_pitch['run_favor'] = run_favor
+                self._dict_pitch['wp_favor'] = wp_favor
+
                 xba, xslg = batted_ball_expected_values(at_bat_event_type, ev, la)
                 self._dict_pitch['batted_ball_xba'] = xba
                 self._dict_pitch['batted_ball_xslg'] = xslg
@@ -365,4 +374,9 @@ if __name__ == '__main__':
     GAMEPK = 748542
     g = GameParser(GAMEPK)
     g = g.dataframe
-    print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])
+    # print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])
+    print(g.loc[
+        ((g['pitch_result_code'] == 'B') |
+        (g['pitch_result_code'] == 'C')) &
+        (g['run_favor'] > 0)
+    ][['run_favor', 'wp_favor']])
