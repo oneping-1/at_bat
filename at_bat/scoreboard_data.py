@@ -468,7 +468,7 @@ class Team:
     Contains the team data for the game as a sub-class to Score
     """
     def __init__(self, game: Game, df, team: str):
-        is_top_inning: bool = True if 'team' == 'away' else False
+        is_top_inning: bool = True if team == 'away' else False
 
         gamedata = game.gameData.teams
         gamedata = getattr(gamedata, team)
