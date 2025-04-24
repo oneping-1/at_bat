@@ -866,13 +866,17 @@ class UmpireDetails:
 
 class BattingOrder:
     def __init__(self, game: Game, state: str):
-        if state != 'L':
-            self.at_bat_index = None
-            self.batting_order = None
-            return
+        # if state != 'L':
+        #     self.at_bat_index = None
+        #     self.batting_order = None
+        #     return
 
         self.is_top_inning = game.liveData.linescore.isTopInning
         self.at_bat_index: int = game.liveData.linescore.offense.batting_order
+
+        if (self.is_top_inning is None) or (self.at_bat_index is None):
+            self.batting_order = None
+            return
 
         # sometimes at_bat_index is 10 when going back to top of order
         self.at_bat_index = 1 if self.at_bat_index == 10 else self.at_bat_index
@@ -1078,7 +1082,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778253, delay_seconds=60)
+    x = ScoreboardData(gamepk=778192, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
