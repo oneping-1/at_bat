@@ -293,30 +293,15 @@ class Matchup:
     def __init__(self, game: Game):
         self._game = game
 
-        if game.gameData.status.game_state in ('P', 'F', 'C', 'U', 'S'):
-            # game_state == 'F': batter is last batter to hit
-            # but with 3 outs future checks will cause it to be the
-            # wrong half inning
-            self.batter = None
-            self.batter_hits = None
-            self.batter_at_bats = None
-            self.batter_avg = None
-            self.batter_slg = None
-            self.batter_ops = None
-            self.pitcher = None
-            self.pitcher_pitches = None
-            self.pitcher_strikes = None
-            self.pitcher_era = None
-            self.pitcher_walks = None
-            self.pitcher_strike_outs = None
-            self.pitcher_innings_pitched = None
-            self.pitcher_hits_allowed = None
-            self.pitcher_runs_allowed = None
-            self.pitcher_earned_runs_allowed = None
-            return None
+        batter = game.liveData.linescore.offense.batter
+        pitcher = game.liveData.linescore.defense.pitcher
 
-        batter_id = game.liveData.linescore.offense.batter.id
-        pitcher_id = game.liveData.linescore.defense.pitcher.id
+        if (batter is None) or (pitcher  is None):
+            self._none()
+            return
+
+        batter_id = batter.id
+        pitcher_id = pitcher.id
 
         self.batter = get_player_last_name(game, batter_id)
         self.pitcher = get_player_last_name(game, pitcher_id)
@@ -403,6 +388,24 @@ class Matchup:
                 self.batter_ops = home_team[f'ID{batter_id}']['seasonStats']['batting']['ops']
 
         return None
+
+    def _none(self):
+            self.batter = None
+            self.batter_hits = None
+            self.batter_at_bats = None
+            self.batter_avg = None
+            self.batter_slg = None
+            self.batter_ops = None
+            self.pitcher = None
+            self.pitcher_pitches = None
+            self.pitcher_strikes = None
+            self.pitcher_era = None
+            self.pitcher_walks = None
+            self.pitcher_strike_outs = None
+            self.pitcher_innings_pitched = None
+            self.pitcher_hits_allowed = None
+            self.pitcher_runs_allowed = None
+            self.pitcher_earned_runs_allowed = None
 
     def to_dict(self) -> dict:
         """Return a dictionary representation of the Matchup object
@@ -1088,7 +1091,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778197, delay_seconds=60)
+    x = ScoreboardData(gamepk=778182, delay_seconds=60)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
