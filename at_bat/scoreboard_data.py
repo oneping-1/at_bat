@@ -483,8 +483,13 @@ class Team:
         self.hits = livedata_teams.hits
         self.errors = livedata_teams.errors
         self.left_on_base = livedata_teams.left_on_base
-        self.xba = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xba'].mean()
-        self.xslg = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xslg'].mean()
+
+        if df.empty:
+            self.xba = 0
+            self.xslg = 0
+        else:
+            self.xba = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xba'].mean()
+            self.xslg = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xslg'].mean()
 
         standings = ScoreboardStandings(self.abv)
         self.wins = standings.wins
@@ -575,7 +580,7 @@ class PitchDetails:
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
         run_favor = df.iloc[-1]['run_favor']
-        run_favor = abs(run_favor)
+        run_favor = abs(run_favor) if run_favor is not None else None
         self.umpire_missed_call = True if run_favor > 0 else False
 
         if not pitch.pitch_data.breaks:
@@ -622,6 +627,9 @@ class HitDetails:
     Contains the hit details data for the game as a sub-class
     """
     def __init__(self, df: pd.DataFrame):
+        if df.empty:
+            self._none()
+            return None
         pitch = df.iloc[-1]
 
         self.exit_velo = pitch['batted_ball_launch_speed']
@@ -831,6 +839,12 @@ class UmpireDetails:
     Contains the umpire data for the game as a sub-class to ScoreboardData
     """
     def __init__(self, df: pd.DataFrame) -> None:
+        if df.empty:
+            self.home_favor = 0
+            self.home_wpa = 0
+            self.num_missed = 0
+            return
+
         self.home_favor = df['run_favor'].sum()
         self.home_wpa = df['wp_favor'].sum()
         self.num_missed = len(df.loc[(

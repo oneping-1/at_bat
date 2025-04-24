@@ -69,6 +69,9 @@ class Umpire:
         self.inning = at_bat['inning']
         self.is_top_inning = at_bat['is_top_inning']
 
+        self.run_favor = None
+        self.wp_favor = None
+
     def calculate_favors(self, method = None) -> Tuple[float, float]:
         if self.pitch_result_code not in ('B', 'C'):
             self.run_favor = None
@@ -81,6 +84,9 @@ class Umpire:
         return self._calculate_monte_carlo()
 
     def _calculate_monte_carlo(self):
+        if (self.px is None) or (self.pz) is None:
+            return (0, 0)
+
         balls = 0
         strikes = 0
 

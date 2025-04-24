@@ -9,8 +9,6 @@ from at_bat.runners import Runners
 from at_bat.statsapi_plus import get_expected_values_dataframe
 from at_bat.umpire2 import Umpire
 
-umpire = Umpire()
-
 xdf = get_expected_values_dataframe()
 def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch_angle: int) -> Tuple[float, float]:
     """
@@ -337,6 +335,7 @@ class GameParser:
                     self._dict_pitch['batted_ball_coordinates_x'] = play_event.hit_data.coordinates.coordX
                     self._dict_pitch['batted_ball_coordinates_y'] = play_event.hit_data.coordinates.coordY
 
+                umpire = Umpire()
                 umpire.from_game_parser(self._dict_at_bat, self._dict_pitch, self._runners)
                 x = umpire.calculate_favors()
                 run_favor, wp_favor = x
