@@ -12,6 +12,7 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
+import numpy as np
 import pandas as pd
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
@@ -491,6 +492,11 @@ class Team:
             self.xba = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xba'].mean()
             self.xslg = df.loc[(df['is_top_inning'] == is_top_inning)]['batted_ball_xslg'].mean()
 
+        if pd.isna(self.xba):
+            self.xba = 0
+        if pd.isna(self.xslg):
+            self.xslg = 0
+
         standings = ScoreboardStandings(self.abv)
         self.wins = standings.wins
         self.losses = standings.losses
@@ -581,7 +587,7 @@ class PitchDetails:
 
         run_favor = df.iloc[-1]['run_favor']
         run_favor = abs(run_favor) if run_favor is not None else None
-        self.umpire_missed_call = True if run_favor is not None else False
+        self.umpire_missed_call = True if run_favor is None else False
 
         if not pitch.pitch_data.breaks:
             self.break_horizontal = None
