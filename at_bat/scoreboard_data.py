@@ -644,7 +644,7 @@ class HitDetails:
         self.xba = pitch['batted_ball_xba']
         self.xslg = pitch['batted_ball_xslg']
 
-        if pd.notna(self.exit_velo):
+        if pd.isna(self.exit_velo):
             self._none()
 
         return None
