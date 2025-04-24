@@ -647,7 +647,7 @@ class HitDetails:
         self.xba = pitch['batted_ball_xba']
         self.xslg = pitch['batted_ball_xslg']
 
-        if pd.isna(self.exit_velo):
+        if pd.isna(self.xba):
             self._none()
 
         return None
@@ -1091,7 +1091,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778182, delay_seconds=60)
+    x = ScoreboardData(gamepk=778197, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')

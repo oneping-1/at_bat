@@ -1,7 +1,6 @@
 import csv
 
 from typing import List, Tuple
-import numpy as np
 import pandas as pd
 
 from at_bat.game import Game, AllPlays
@@ -23,6 +22,13 @@ def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch
     Returns:
         Tuple[float, float]: xba, xslg
     """
+    if (exit_velo is not None) and (launch_angle is not None):
+        exit_velo = round(exit_velo, 1)
+        launch_angle = round(launch_angle, 0)
+        row = xdf.query('(exit_velocity == @exit_velo) & (launch_angle == @launch_angle)')
+        xba = float(row['xba'].iloc[0])
+        xslg = float(row['xslg'].iloc[0])
+        return (xba, xslg)
     if at_bat_event_type is None:
         return (None, None)
     if at_bat_event_type in ('strikeout'):
@@ -31,12 +37,8 @@ def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch
         return (None, None)
     if (exit_velo is None) or (launch_angle is None):
         return (None, None)
-    exit_velo = round(exit_velo, 1)
-    launch_angle = round(launch_angle, 0)
-    row = xdf.query('(exit_velocity == @exit_velo) & (launch_angle == @launch_angle)')
-    xba = float(row['xba'].iloc[0])
-    xslg = float(row['xslg'].iloc[0])
-    return (xba, xslg)
+    return (None, None)
+
 
 class GameParser:
     field_names = [
