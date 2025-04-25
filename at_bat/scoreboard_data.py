@@ -590,7 +590,7 @@ class PitchDetails:
 
         run_favor = df.iloc[-1]['run_favor']
         run_favor = abs(run_favor) if run_favor is not None else None
-        self.umpire_missed_call = True if run_favor is None else False
+        self.umpire_missed_call = run_favor is not None
 
         if not pitch.pitch_data.breaks:
             self.break_horizontal = None
@@ -1091,7 +1091,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778197, delay_seconds=38)
+    x = ScoreboardData(gamepk=778192, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
