@@ -589,8 +589,11 @@ class PitchDetails:
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
         run_favor = df.iloc[-1]['run_favor']
-        run_favor = abs(run_favor) if run_favor is not None else None
-        self.umpire_missed_call = run_favor is not None
+        if (run_favor == 0) or (pd.isna(run_favor)):
+            self.umpire_missed_call = False
+        else:
+            run_favor = abs(run_favor)
+            self.umpire_missed_call = True
 
         if not pitch.pitch_data.breaks:
             self.break_horizontal = None
