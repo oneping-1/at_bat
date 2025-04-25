@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 from at_bat.game_parser import GameParser
 
 class Server:
@@ -8,15 +8,21 @@ class Server:
         self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
 
     def gamepk(self, gamepk: int):
-        settings = request.args.get('s', default=None)
+        settings = request.args.get('s', default='u')
 
         df = GameParser(gamepk=gamepk).dataframe
 
         if settings in ('u', 'ump', 'umpire'):
+            if len(df) == 0:
+                return Response('No missed calls', status=200, mimetype='text/plain')
+
             df = df.loc[
                 (df['run_favor'] != 0) &
                 ~(pd.isna(df['run_favor']))
             ]
+
+            if len(df) == 0:
+                return Response('No missed calls', status=200, mimetype='text/plain')
 
             new_row = {
                 'run_favor': df['run_favor'].mean(),
