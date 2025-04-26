@@ -644,9 +644,9 @@ class HitDetails:
             return None
         pitch = df.iloc[-1]
 
-        self.exit_velo = pitch['batted_ball_launch_speed']
-        self.launch_angle = pitch['batted_ball_launch_angle']
-        self.distance = pitch['batted_ball_total_distance']
+        self.exit_velo = pitch.get('batted_ball_launch_speed', None)
+        self.launch_angle = pitch.get('batted_ball_launch_angle', None)
+        self.distance = pitch.get('batted_ball_total_distance',  None)
         self.xba = pitch.get('batted_ball_xba', None)
         self.xslg = pitch.get('batted_ball_xslg', None)
 
