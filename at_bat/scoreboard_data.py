@@ -647,8 +647,8 @@ class HitDetails:
         self.exit_velo = pitch['batted_ball_launch_speed']
         self.launch_angle = pitch['batted_ball_launch_angle']
         self.distance = pitch['batted_ball_total_distance']
-        self.xba = pitch['batted_ball_xba']
-        self.xslg = pitch['batted_ball_xslg']
+        self.xba = pitch.get('batted_ball_xba', None)
+        self.xslg = pitch.get('batted_ball_xslg', None)
 
         if pd.isna(self.exit_velo):
             self._none()
