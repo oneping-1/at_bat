@@ -25,12 +25,13 @@ class Server:
                 return Response('No missed calls', status=200, mimetype='text/plain')
 
             new_row = {
-                'run_favor': df['run_favor'].mean(),
-                'wp_favor': df['wp_favor'].mean()
+                'run_favor': df['run_favor'].sum(),
+                'wp_favor': df['wp_favor'].sum()
             }
             df.loc[len(df)] = new_row
+            df.reset_index(inplace=True)
 
-            df = df[['inning', 'is_top_inning', 'batter', 'pitcher', 'balls', 'strikes', 'outs', 'pitch_result_code', 'run_favor', 'wp_favor']]
+            df = df[['inning', 'is_top_inning', 'pitcher', 'batter', 'balls', 'strikes', 'outs', 'pitch_result_code', 'run_favor', 'wp_favor']]
 
         if settings in ('bb', 'batted_ball'):
             df = df.loc[
