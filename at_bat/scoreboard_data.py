@@ -653,6 +653,9 @@ class HitDetails:
         if pd.isna(self.exit_velo):
             self._none()
 
+        self.xba = float(self.xba)
+        self.xslg = float(self.xslg)
+
         return None
 
     def _none(self):
@@ -723,6 +726,9 @@ class RunExpectancy:
             self.to_score = 1 - (no_score / count)
         else:
             self.to_score = -1 # No data
+
+        self.average_runs = float(self.average_runs)
+        self.to_score = float(self.average_runs)
 
         return
 
@@ -831,6 +837,10 @@ class WinProbability:
         self.win_probability_home = home_win / (away_win + home_win)
         self.extras = tie
 
+        self.win_probability_away = float(self.win_probability_away)
+        self.win_probability_home = float(self.win_probability_home)
+        self.extras = float(self.extras)
+
         return None
 
     def to_dict(self) -> dict:
@@ -863,6 +873,10 @@ class UmpireDetails:
             ~(pd.isna(df['run_favor'])) &
             (df['run_favor'] != 0)
         )])
+
+        self.home_favor = float(self.home_favor)
+        self.home_wpa = float(self.home_wpa)
+        self.num_missed = int(self.num_missed)
 
     def to_dict(self) -> dict:
         """
