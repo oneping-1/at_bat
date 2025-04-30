@@ -653,8 +653,8 @@ class HitDetails:
         if pd.isna(self.exit_velo):
             self._none()
 
-        self.xba = float(self.xba)
-        self.xslg = float(self.xslg)
+        self.xba = float(self.xba) if self.xba is not None else None
+        self.xslg = float(self.xslg) if self.xslg is not None else None
 
         return None
 
