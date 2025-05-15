@@ -728,7 +728,7 @@ class RunExpectancy:
             self.to_score = -1 # No data
 
         self.average_runs = float(self.average_runs)
-        self.to_score = float(self.average_runs)
+        self.to_score = float(self.to_score)
 
         return
 
