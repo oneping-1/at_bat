@@ -24,12 +24,12 @@ class Server:
             if len(df) == 0:
                 return Response('No missed calls', status=200, mimetype='text/plain')
 
-            new_row = {
+            new_row = pd.DataFrame([{
+                'inning': 0,
                 'run_favor': df['run_favor'].sum(),
                 'wp_favor': df['wp_favor'].sum()
-            }
-            df.loc[len(df)] = new_row
-            df.reset_index(inplace=True)
+            }])
+            df = pd.concat([new_row, df], ignore_index=True)
 
             df = df[['inning', 'is_top_inning', 'pitcher', 'batter', 'balls', 'strikes', 'outs', 'pitch_result_code', 'run_favor', 'wp_favor']]
 

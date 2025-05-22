@@ -54,7 +54,7 @@ def get_re288_dataframe() -> pd.DataFrame:
     Returns:
         pd.DataFrame: The re288.csv file as a pandas DataFrame
     """
-    current_dir = os.path.dirname(os.path.relpath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 're288.csv')
 
@@ -67,7 +67,7 @@ def get_re640_dataframe() -> pd.DataFrame:
     Returns:
         pd.DataFrame: The re640.csv file as a pandas DataFrame
     """
-    current_dir = os.path.dirname(os.path.relpath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 're640.csv')
 
@@ -80,7 +80,7 @@ def get_wp780800_dataframe() -> pd.DataFrame:
     Returns:
         pd.DataFrame: The wp780800.csv file as a pandas DataFrame
     """
-    current_dir = os.path.dirname(os.path.relpath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'wp780800.csv')
 
@@ -93,7 +93,7 @@ def get_wpd351360_dataframe() -> pd.DataFrame:
     Returns:
         pd.DataFrame: The wpd351360.csv file as a pandas DataFrame
     """
-    current_dir = os.path.dirname(os.path.relpath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'wpd351360.csv')
 
@@ -119,7 +119,7 @@ def get_expected_values_dataframe() -> pd.DataFrame:
     Returns:
         pd.DataFrame: The expected_values.csv file as a pandas DataFrame
     """
-    current_dir = os.path.dirname(os.path.relpath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(current_dir, '..', 'every_pitch_csv')
     csv_file_path = os.path.join(csv_path, 'expected_values.csv')
 
@@ -134,7 +134,7 @@ def find_division_from_id() -> dict:
     """
     d = {}
 
-    csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'csv')
     teams = os.path.join(csv_path, 'teams.csv')
 
     with open(teams, 'r', encoding='utf-8') as f:
@@ -154,7 +154,7 @@ def find_division_from_abv() -> dict:
     """
     d = {}
 
-    csv_path = os.path.join(os.path.dirname(os.path.relpath(__file__)), '..', 'csv')
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'csv')
     teams = os.path.join(csv_path, 'teams.csv')
 
     with open(teams, 'r', encoding='utf-8') as f:
