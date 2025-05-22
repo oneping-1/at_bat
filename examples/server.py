@@ -5,7 +5,11 @@ from at_bat.game_parser import GameParser
 class Server:
     def __init__(self):
         self.app = Flask(__name__)
+        self.app.add_url_rule('/', 'root', self.root, methods=['GET'])
         self.app.add_url_rule('/<int:gamepk>', 'gamepk', self.gamepk, methods=['GET'])
+
+    def root(self):
+        return Response('welcome', status=200, mimetype='text/plain')
 
     def gamepk(self, gamepk: int):
         settings = request.args.get('s', default='u')
