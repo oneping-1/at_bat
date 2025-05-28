@@ -12,14 +12,14 @@ class Plotter:
     def __init__(self, missed_calls: pd.DataFrame):
         self.missed_calls = missed_calls
 
-        _, self.axis = plt.subplots()
+        self.fig, self.axis = plt.subplots()
 
         self._create_plot()
 
         for i, row in self.missed_calls.iterrows():
             self._print_pitch(i, row)
 
-        plt.show()
+        # plt.show()
 
 
     def _create_plot(self):
