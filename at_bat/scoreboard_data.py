@@ -390,22 +390,22 @@ class Matchup:
         return None
 
     def _none(self):
-            self.batter = None
-            self.batter_hits = None
-            self.batter_at_bats = None
-            self.batter_avg = None
-            self.batter_slg = None
-            self.batter_ops = None
-            self.pitcher = None
-            self.pitcher_pitches = None
-            self.pitcher_strikes = None
-            self.pitcher_era = None
-            self.pitcher_walks = None
-            self.pitcher_strike_outs = None
-            self.pitcher_innings_pitched = None
-            self.pitcher_hits_allowed = None
-            self.pitcher_runs_allowed = None
-            self.pitcher_earned_runs_allowed = None
+        self.batter = None
+        self.batter_hits = None
+        self.batter_at_bats = None
+        self.batter_avg = None
+        self.batter_slg = None
+        self.batter_ops = None
+        self.pitcher = None
+        self.pitcher_pitches = None
+        self.pitcher_strikes = None
+        self.pitcher_era = None
+        self.pitcher_walks = None
+        self.pitcher_strike_outs = None
+        self.pitcher_innings_pitched = None
+        self.pitcher_hits_allowed = None
+        self.pitcher_runs_allowed = None
+        self.pitcher_earned_runs_allowed = None
 
     def to_dict(self) -> dict:
         """Return a dictionary representation of the Matchup object
