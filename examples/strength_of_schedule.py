@@ -13,7 +13,7 @@ from at_bat.team import Team
 from at_bat.schedule import Schedule
 
 
-def sos(days_ahead=15, print_results = False):
+def sos(days_ahead=30, print_results = False):
     """
     Prints average win percentage and number of opponents with a winning
     record for a given time period.
@@ -37,8 +37,8 @@ def sos(days_ahead=15, print_results = False):
         raise TypeError('days_ahead argument must be type int')
 
     today = datetime.now()
-    today = today.date() + timedelta(days=12)
-    ahead = today + timedelta(days=45)
+    today = today.date()
+    ahead = today + timedelta(days=days_ahead)
 
     today = f'{today.year:4d}-{today.month:02d}-{today.day:02d}'
     ahead = f'{ahead.year:4d}-{ahead.month:02d}-{ahead.day:02d}'
