@@ -766,7 +766,9 @@ class WinProbability:
 
         if game.liveData.plays.allPlays == []:
             # No plays yet
-            self.win_probability = None
+            self.win_probability_away = .5
+            self.win_probability_home = .5
+            self.extras = .1 # rough estimate for 2025
             return
 
         at_bat = game.liveData.plays.allPlays[-1]
@@ -1114,7 +1116,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=778192, delay_seconds=38)
+    x = ScoreboardData(gamepk=813054, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
