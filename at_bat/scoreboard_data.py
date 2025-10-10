@@ -12,7 +12,6 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 from typing import List
-import numpy as np
 import pandas as pd
 
 from at_bat.statsapi_plus import get_re640_dataframe, get_wp780800_dataframe, get_expected_values_dataframe,find_division_from_abv
@@ -865,6 +864,7 @@ class UmpireDetails:
             self.home_favor = 0
             self.home_wpa = 0
             self.num_missed = 0
+            self.total_calls = 0
             return
 
         self.home_favor = df['run_favor'].sum()
@@ -873,10 +873,15 @@ class UmpireDetails:
             ~(pd.isna(df['run_favor'])) &
             (df['run_favor'] != 0)
         )])
+        self.total_calls = len(df.loc[(
+            (df['pitch_result_code'] == 'B') |
+            (df['pitch_result_code'] == 'C')
+        )])
 
         self.home_favor = float(self.home_favor)
         self.home_wpa = float(self.home_wpa)
         self.num_missed = int(self.num_missed)
+        self.total_calls = int(self.total_calls)
 
     def to_dict(self) -> dict:
         """
@@ -887,7 +892,8 @@ class UmpireDetails:
         return {
             'num_missed': self.num_missed,
             'home_favor': self.home_favor,
-            'home_wpa': self.home_wpa
+            'home_wpa': self.home_wpa,
+            'total_calls': self.total_calls
         }
 
 class BattingOrder:
