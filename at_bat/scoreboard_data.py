@@ -760,6 +760,8 @@ class WinProbability:
         Args:
             game (Game): The Game object
         """
+        game_type = game.gameData.game['type']
+
         self.win_probability_away = None
         self.win_probability_home = None
         self.extras = None
@@ -786,7 +788,14 @@ class WinProbability:
         is_third_base = bool(runners & 4)
 
         inning = game.liveData.linescore.currentInning
-        inning = min(inning, 10) # extra innings, revert to 10th inning
+
+        if game_type == 'W':
+            inning = min(inning, 9) # no manfred runner in postseason
+        elif game_type == 'L':
+            inning = min(inning, 10) # extra innings, revert to 10th inning
+        else:
+            print(f'Unknown game_type | {game_type}')
+            inning = min(inning, 9)
 
         isTopInning = game.liveData.linescore.isTopInning
 
