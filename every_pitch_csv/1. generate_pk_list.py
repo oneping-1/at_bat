@@ -8,8 +8,8 @@ class Gamepk_finder:
     """Class to make a list of all gamepks from a given date range"""
     def __init__(self):
         self.gamepks: List = []
-        self.start_date = datetime.date(2024, 3, 28)
-        self.end_date = datetime.date(2024, 9, 29)
+        self.start_date = datetime.date(2025, 3, 27)
+        self.end_date = datetime.date(2025, 9, 28)
 
     def day_loop(self, date):
         """
@@ -42,7 +42,7 @@ class Gamepk_finder:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_file_path = os.path.join(current_dir, 'gamepks.csv')
 
-        with open(csv_file_path, 'w', newline='', encoding='UTF-8') as file:
+        with open(csv_file_path, 'a', newline='', encoding='UTF-8') as file:
             writer = csv.writer(file)
 
             for pk in self.gamepks:
