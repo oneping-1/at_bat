@@ -20,7 +20,7 @@ import statsapi
 import requests
 import time
 
-current_dir = os.path.dirname(os.path.relpath(__file__))
+current_dir = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(current_dir, '..', 'csv')
 
 class Standings:
