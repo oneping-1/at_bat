@@ -791,7 +791,7 @@ class WinProbability:
 
         if game_type == 'W':
             inning = min(inning, 9) # no manfred runner in postseason
-        elif game_type == 'L':
+        elif game_type == 'R':
             inning = min(inning, 10) # extra innings, revert to 10th inning
         else:
             print(f'Unknown game_type | {game_type}')
