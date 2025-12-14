@@ -53,7 +53,7 @@ def create_dict() -> dict:
     # 2024 Min LA: -90 deg
     # 2024 Max LA:  90 deg
 
-    ev_range = np.arange(5, 130, .1)
+    ev_range = np.arange(1, 130, .1)
     ev_range = ev_range.tolist()
     ev_range = [round(x,1) for x in ev_range]
     # ev_range = [str(x) for x in ev_range]
@@ -143,6 +143,7 @@ def main():
         states = find_acceptable_states(state)
         if at_bat_result in OUTS :
             for s in states:
+
                 lookup_table[s]['ab'] += 1
             continue
 
