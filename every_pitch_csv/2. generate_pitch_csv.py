@@ -35,12 +35,13 @@ def main():
     Main function that creates a GameCSVCreator object for each gamepk
     """
     gamepks = read_gamepk_csv()
-    # gamepks = [748542]
-    # gamepks = get_daily_gamepks('2024-05-01')
     start_csv()
     for gamepk in tqdm.tqdm(gamepks):
-        g = GameParser(gamepk)
-        g.write_csv(pitch_csv_file_path, False)
+        try:
+            g = GameParser(gamepk=gamepk)
+            g.write_csv(pitch_csv_file_path, False)
+        except ValueError:
+            print(f'ValueError {gamepk}')
 
 if __name__ == '__main__':
     main()

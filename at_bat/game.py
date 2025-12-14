@@ -41,7 +41,7 @@ KNOWN_GAMESTATES = ('S','P','PI','PL','PO','PR','PY','PW','I','IO','IR',
                     'MM','MN','MO','MP','MS','MT','MU','MV','MQ','MW',
                     'MX','MY','NA','NF','NJ','NI','NK','NN','NO','NH',
                     'NQ','TR','UR','O','OO','OR','OT','F','FG','FO',
-                    'FR','FT','DI','DC','DR','CR','CG','CI')
+                    'FR','FT','FW','DI','DC','DR','CR','CG','CI')
 
 class Game:
     """
@@ -71,7 +71,7 @@ class Game:
         codedGameState = self.gameData.status.codedGameState
         statusCode = self.gameData.status.statusCode
 
-        current_dir = os.path.dirname(os.path.relpath(__file__))
+        current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_folder = os.path.join(current_dir, '..', 'csv')
         path = os.path.join(csv_folder, 'unknown_statusCodes.txt')
 

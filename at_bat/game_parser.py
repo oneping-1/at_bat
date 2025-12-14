@@ -114,7 +114,9 @@ class GameParser:
             'break_vertical_induced',
             'break_horizontal',
             'spin_rate',
-            'spin_direction'
+            'spin_direction',
+            'wp_favor',
+            'run_favor'
         ]
 
     def __init__(self, game: Game = None, gamepk: int = None, delay_seconds: int = 60):
