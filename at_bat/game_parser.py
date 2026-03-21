@@ -71,7 +71,7 @@ class GameParser:
             'pitch_result_code',
             'pitch_type_code',
             'pitch_type_description',
-            'pitch_time',
+            'plate_time',
             'at_bat_event',
             'at_bat_event_type',
             'at_bat_description',
@@ -99,7 +99,8 @@ class GameParser:
             'strike_zone_bottom',
             'zone',
             'type_confidence',
-            'plate_time',
+            'pitch_start_time',
+            'pitch_end_time',
             'extension',
             'px',
             'pz',
@@ -119,13 +120,16 @@ class GameParser:
             'run_favor'
         ]
 
-    def __init__(self, game: Game = None, gamepk: int = None, delay_seconds: int = 60):
+    def __init__(self, game: Game = None, gamepk: int = None, iso_time: str = None, delay_seconds: int = 60):
         if game is not None:
             self.game = game
             self.gamepk = game.gamepk
         elif gamepk is not None:
             self.gamepk = gamepk
-            self.game = Game.get_game_from_pk(gamepk, delay_seconds)
+            if iso_time is not None:
+                self.game = Game.get_game_from_pk(gamepk, iso_time=iso_time)
+            elif delay_seconds is not None:
+                self.game = Game.get_game_from_pk(gamepk, delay_seconds=delay_seconds)
 
         self._runners: Runners = Runners()
         self._away_score = 0
@@ -258,11 +262,10 @@ class GameParser:
                     self._dict_pitch['pitch_type_code'] = None
                     self._dict_pitch['pitch_type_description'] = None
 
-                if balls == 4:
-                    print(f'4 balls. {at_bat.matchup.pitcher.fullName} to {at_bat.matchup.batter.fullName} in game {self.gamepk}')
-                if strikes == 3:
-                    print(f'3 strikes. {at_bat.about.pitcher.fullName} to {at_bat.about.batter.fullName} in game {self.gamepk}')
-
+                if (balls == 4) or (strikes == 3):
+                    print()
+                    print(f'{balls}-{strikes} {at_bat.matchup.pitcher.fullName} to {at_bat.matchup.batter.fullName} {at_bat.about.halfInning} {at_bat.about.inning} in {self.gamepk}')
+                    
                 # playEvent.count
                 self._dict_pitch['balls'] = balls
                 self._dict_pitch['strikes'] = strikes
@@ -310,7 +313,8 @@ class GameParser:
                     self._dict_pitch['spin_rate'] = None
                     self._dict_pitch['spin_direction'] = None
 
-                self._dict_game['pitch_time'] = play_event.start_time
+                self._dict_game['pitch_start_time'] = play_event.start_time
+                self._dict_game['pitch_end_time'] = play_event.end_time
 
                 # runners
                 self._dict_pitch['is_first_base'] = bool(self._runners.runners[0])
@@ -380,7 +384,7 @@ class GameParser:
         return self.dataframe.to_string()
 
 if __name__ == '__main__':
-    GAMEPK = 778253
+    GAMEPK = 634642
     g = GameParser(gamepk=GAMEPK)
     g = g.dataframe
     # print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])

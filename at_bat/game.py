@@ -101,7 +101,7 @@ class Game:
         return False
 
     @classmethod
-    def get_game_from_pk(cls, gamepk: int, delay_seconds: int = 0) -> 'Game':
+    def get_game_from_pk(cls, gamepk: int, iso_time: str = None, delay_seconds: int = 0) -> 'Game':
         """
         Returns a game instance for the given game based of the gamePk
 
@@ -115,11 +115,15 @@ class Game:
         if gamepk is None:
             raise ValueError('gamePk not provided')
 
+        if iso_time is not None:
+            game_dict = cls.get_dict(gamepk=gamepk, iso_time=iso_time)
+            return Game(game_dict)
+
         game_dict = cls.get_dict(gamepk=gamepk, delay_seconds=delay_seconds)
         return Game(game_dict)
 
     @classmethod
-    def get_dict(cls, gamepk: int = None, time: Union[str, None] = None,
+    def get_dict(cls, gamepk: int = None, iso_time: Union[str, None] = None,
         delay_seconds: Union[int, None] = 0) -> dict:
         """
         Returns the game data for a given gamePk. If time is provided, the game
@@ -144,8 +148,8 @@ class Game:
         if gamepk is None:
             raise ValueError('gamePk not provided')
 
-        if time is not None:
-            delay_time = _get_utc_time_from_zulu(time)
+        if iso_time is not None:
+            delay_time = _get_utc_time_from_zulu(iso_time)
         else:
             delay_time = _get_utc_time(delay_seconds=delay_seconds)
 
@@ -1342,4 +1346,5 @@ def _get_utc_time_from_zulu(zulu_time_str):
 
 
 if __name__ == "__main__":
-    game = Game.get_game_from_pk(gamepk = 717200, delay_seconds = 0)
+    # game = Game.get_game_from_pk(gamepk = 717200, delay_seconds = 0)
+    data = Game.get_dict(748542, iso_time='2023-10-29T03:28:12Z')
