@@ -53,6 +53,7 @@ class Game:
     def __init__(self, data:dict):
         self.gameData = data['gameData']
         self.liveData = data['liveData']
+        self.metaData = data['metaData']
         self.gamepk = data.get('gamePk', None)
         self._game_dict = data
         self._children()
@@ -63,6 +64,7 @@ class Game:
     def _children(self):
         self.gameData = GameData(self.gameData)
         self.liveData = LiveData(self.liveData)
+        self.metaData = MetaData(self.metaData)
 
     def _unknown_statuscode(self):
         abstractGameState = self.gameData.status.abstractGameState
@@ -1103,7 +1105,6 @@ class TeamsBoxScore:
         self.home = TeamBoxScore(self.home)
 
 
-
 class TeamBoxScore:
     def __init__(self, team_box_score):
         self.team = team_box_score.get('team', None)
@@ -1260,6 +1261,15 @@ class Decisions:
 
         if self.save is not None:
             self.save = Player(self.save)
+
+
+class MetaData:
+    def __init__(self, metaData: dict):
+        self._metaData = metaData
+        self.wait = metaData.get('wait', None)
+        self.time_stamp = metaData.get('timeStamp', None)
+        self.game_events = metaData.get('gameEvents', None)
+        self.logical_events = metaData.get('logicalEvents', None)
 
 
 def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
