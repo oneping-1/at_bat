@@ -104,10 +104,10 @@ class GameParser:
             'extension',
             'px',
             'pz',
-            'sz_top',
-            'sz_bot',
-            'pz_min',
-            'pz_max',
+            'px_min', # location of the center of the pitch for ball/strike laterally
+            'px_max', # location of the center of the pitch for ball/strike laterally
+            'pz_min', # location of the center of the pitch for ball/strike vertically
+            'pz_max', # location of the center of the pitch for ball/strike vertically
             'breaks_angle',
             'breaks_length',
             'breaks_y',
@@ -116,8 +116,8 @@ class GameParser:
             'break_horizontal',
             'spin_rate',
             'spin_direction',
-            'wp_favor',
-            'run_favor'
+            'umpire_wp_favor',
+            'umpire_run_favor'
         ]
 
     def __init__(self, game: Game = None, gamepk: int = None, iso_time: str = None, delay_seconds: int = 60):
@@ -284,8 +284,8 @@ class GameParser:
                 self._dict_pitch['extension'] = play_event.pitch_data.extension
 
                 # playEvents.pitchData
-                self._dict_pitch['sz_top'] = play_event.pitch_data.coordinates.sZ_top
-                self._dict_pitch['sz_bot'] = play_event.pitch_data.coordinates.sZ_bot
+                self._dict_pitch['px_min'] = play_event.pitch_data.coordinates.pX_max
+                self._dict_pitch['px_max'] = play_event.pitch_data.coordinates.pX_min
                 self._dict_pitch['pz_min'] = play_event.pitch_data.coordinates.pZ_min
                 self._dict_pitch['pz_max'] = play_event.pitch_data.coordinates.pZ_max
 
@@ -347,8 +347,8 @@ class GameParser:
                 umpire.from_game_parser(self._dict_at_bat, self._dict_pitch, self._runners)
                 x = umpire.calculate_favors()
                 run_favor, wp_favor = x
-                self._dict_pitch['run_favor'] = run_favor
-                self._dict_pitch['wp_favor'] = wp_favor
+                self._dict_pitch['umpire_run_favor'] = run_favor
+                self._dict_pitch['umpire_wp_favor'] = wp_favor
 
                 xba, xslg = batted_ball_expected_values(at_bat_event_type, ev, la)
                 self._dict_pitch['batted_ball_xba'] = xba

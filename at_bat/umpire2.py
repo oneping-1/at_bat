@@ -55,8 +55,8 @@ class Umpire:
         self.px = pitch['px']
         self.pz = pitch['pz']
 
-        self.sz_top = pitch['sz_top']
-        self.sz_bot = pitch['sz_bot']
+        self.sz_top = pitch['strike_zone_top']
+        self.sz_bot = pitch['strike_zone_bottom']
         self.pz_top = pitch['pz_max']
         self.pz_bot = pitch['pz_min']
 
@@ -76,7 +76,7 @@ class Umpire:
         if self.pitch_result_code not in ('B', 'C'):
             self.run_favor = None
             self.wp_favor = None
-            return (None, None)
+            return (0, 0)
 
         if method is not None:
             self.method = method

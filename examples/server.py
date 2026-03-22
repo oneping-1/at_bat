@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from flask import Flask, request, render_template, Response
 from at_bat.game_parser import GameParser
-from at_bat.plotter2 import Plotter
+from at_bat.plotter import Plotter
 
 class Server:
     def __init__(self):

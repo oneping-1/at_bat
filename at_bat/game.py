@@ -776,6 +776,9 @@ class PitchCoordinates:
 
     def __init__(self, coor, sz_top, sz_bot):
 
+        self.pX_min = self.PX_MIN
+        self.pX_max = self.PX_MAX
+
         # Strike Zone top and bottom
         self.sZ_top = sz_top
         self.sZ_bot = sz_bot
