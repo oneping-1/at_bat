@@ -15,8 +15,6 @@ Example
 from src.statsapi_plus import get_game_dict
 from src.game import Game
 
-game_dict = get_game_dict(gamePk)
-game_class = Game(game_dict)
 """
 # pylint: disable=C0103, C0111
 
