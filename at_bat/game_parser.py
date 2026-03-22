@@ -383,6 +383,14 @@ class GameParser:
     def __str__(self):
         return self.dataframe.to_string()
 
+
+    @classmethod
+    def umpire_missed_calls(cls, df: pd.DataFrame):
+        return df.loc[
+            (df['umpire_wp_favor'] != 0) |
+            (df['umpire_run_favor'] != 0)
+        ].reset_index(drop=True)
+
 if __name__ == '__main__':
     GAMEPK = 634642
     g = GameParser(gamepk=GAMEPK)

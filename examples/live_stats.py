@@ -19,7 +19,8 @@ import curses
 import argparse
 from typing import Tuple
 from at_bat.game import Game, PlayEvents, AllPlays
-from at_bat.statsapi_plus import get_game_dict, get_re640_dataframe
+from at_bat.game_parser import GameParser
+from at_bat.statsapi_plus import get_re640_dataframe
 from at_bat.umpire import Umpire
 from at_bat.runners import Runners
 from at_bat.fifo import FIFO
@@ -63,7 +64,7 @@ def print_last_pitch(gamePk: int = None, delay_seconds: float = 0):
     fifo = FIFO(5)
 
     while True:
-        game = Game(get_game_dict(gamepk=gamePk, delay_seconds=delay_seconds))
+        game = Game.get_game_from_pk(gamepk=gamePk, delay_seconds=delay_seconds)
         at_bat = game.liveData.plays.allPlays[-1]
 
         if fifo.contains(at_bat) is False:
@@ -170,16 +171,16 @@ def _get_run_details(at_bat: AllPlays, pitch: PlayEvents
     runs = [0, 0, 0, 0] # 1+, 2+, 3+, 4+
 
     for i in range(0, 14):
-        runs = re640[state][f'{i} runs'].iloc[0]
+        run = re640[state][f'{i} runs'].iloc[0]
 
         if i >= 1:
-            runs[0] += runs
+            runs[0] += run
         if i >= 2:
-            runs[1] += runs
+            runs[1] += run
         if i >= 3:
-            runs[2] += runs
+            runs[2] += run
         if i >= 4:
-            runs[3] += runs
+            runs[3] += run
 
     line_0 = f'Expected Runs: {run_exp:.2f}'
     line_1 = f'1+ Runs: {runs[0] / count:.2f}'
@@ -195,19 +196,27 @@ def _get_umpire_details(game: Game) -> Tuple[str, str]:
     away_team = game.gameData.teams.away.abbreviation
     home_team = game.gameData.teams.home.abbreviation
 
-    umpire = Umpire(game=game)
-    umpire.calculate_game('monte')
-    misses = umpire.num_missed_calls
-    favor = umpire.home_favor
+    # umpire = Umpire(game=game)
+    # umpire.calculate_game('monte')
+    # misses = umpire.num_missed_calls
+    # favor = umpire.home_favor
 
-    line_0 = f'Missed Calls: {misses}'
+    # line_0 = f'Missed Calls: {misses}'
 
-    if favor < 0:
-        line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
-    else:
-        line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
+    # if favor < 0:
+    #     line_1 = f'Ump Favor: {-favor:+5.2f} {away_team}'
+    # else:
+    #     line_1 = f'Ump Favor: {favor:+5.2f} {home_team}'
 
-    return (line_0, line_1)
+    # return (line_0, line_1)
+
+    parser = GameParser(game=game)
+    df = parser.dataframe
+    df = GameParser.umpire_missed_calls(df)
+
+    return (int(len(df)), float(df['umpire_run_favor'].sum()))
+
+
 
 def _get_pitch_details(pitch: PlayEvents) -> Tuple[str, str, str, str, str]:
     if pitch.is_pitch is True:
