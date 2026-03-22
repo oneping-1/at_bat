@@ -6,7 +6,7 @@ import pandas as pd
 from at_bat.game import Game, AllPlays
 from at_bat.runners import Runners
 from at_bat.statsapi_plus import get_expected_values_dataframe
-from at_bat.umpire2 import Umpire
+from at_bat.umpire import Umpire
 
 xdf = get_expected_values_dataframe()
 def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch_angle: int) -> Tuple[float, float]:
