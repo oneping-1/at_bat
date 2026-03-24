@@ -207,7 +207,7 @@ class GameData:
             self.primaryDatacaster = PrimaryDatacaster(self.primaryDatacaster)
 
     def __repr__(self):
-        date = self.datetime.officialDate
+        date = self.datetime.official_date
         away_team = self.teams.away.abbreviation
         home_team = self.teams.home.abbreviation
 
@@ -221,21 +221,20 @@ class GameData:
 
 class Datetime:
     def __init__(self, times):
-        self.dateTime = times.get('dateTime', None)
-        self.officialDate = times['officialDate']
+        self.date_time = times.get('dateTime', None)
+        self.official_date = times['officialDate']
 
-        self.startHour: int
-        self.startMinute: int
+        self.start_hour: int
+        self.start_minute: int
 
-        start_time = _convert_zulu_to_local(self.dateTime)
+        start_time = _convert_zulu_to_local(self.date_time)
         if start_time is None:
-            self.startHour = 0
-            self.startMinute = 0
+            self.start_hour = 0
+            self.start_minute = 0
         else:
-            self.startHour, self.startMinute = start_time
+            self.start_hour, self.start_minute = start_time
 
-        self.startTime = f'{self.startHour}:{self.startMinute:02d}'
-        self.startTime_sb = f'{self.startHour:2d} {self.startMinute:02d}'
+        self.start_time = f'{self.start_hour}:{self.start_minute:02d}'
         # no children
 
 
