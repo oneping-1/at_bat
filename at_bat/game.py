@@ -222,6 +222,7 @@ class GameData:
 class Datetime:
     def __init__(self, times):
         self.date_time = times.get('dateTime', None)
+        self.datetime = datetime.fromisoformat(self.date_time.replace('Z', '+00:00'))
         self.official_date = times['officialDate']
 
         self.start_hour: int
@@ -232,7 +233,7 @@ class Datetime:
             self.start_hour = 0
             self.start_minute = 0
         else:
-            self.start_hour, self.start_minute = start_time
+            self.start_hour, self.start_minute, self.meridiem = start_time
 
         self.start_time = f'{self.start_hour}:{self.start_minute:02d}'
         # no children
@@ -1269,7 +1270,7 @@ class MetaData:
         self.logical_events = metaData.get('logicalEvents', None)
 
 
-def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
+def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int, str]:
     if zulu_time_str is None:
         return None
 
@@ -1279,14 +1280,11 @@ def _convert_zulu_to_local(zulu_time_str) -> Tuple[int, int]:
     local_timezone = datetime.now(timezone.utc).astimezone().tzinfo
     local_time = zulu_time.astimezone(local_timezone)
 
-    t = local_time.strftime('%I:%M')
+    hour_12 = int(local_time.strftime('%I'))
+    minute = int(local_time.strftime('%M'))
+    ampm = local_time.strftime('%p')
 
-    if t[0] == str('0'):
-        t = f' {t[1:]}'
-
-    t = f'{t[0:2]} {t[3:]}'
-
-    return (int(t[0:2]), int(t[3:]))
+    return (hour_12, minute, ampm)
 
 
 def _get_division(code: str) -> Union[str, None]: # pylint: disable=R0911

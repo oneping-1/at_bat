@@ -587,11 +587,11 @@ class PitchDetails:
         self.zone = pitch.pitch_data.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
 
-        run_favor = df.iloc[-1]['run_favor']
-        if (run_favor == 0) or (pd.isna(run_favor)):
+        umpire_run_favor = df.iloc[-1]['umpire_run_favor']
+        if (umpire_run_favor == 0) or (pd.isna(umpire_run_favor)):
             self.umpire_missed_call = False
         else:
-            run_favor = abs(run_favor)
+            umpire_run_favor = abs(umpire_run_favor)
             self.umpire_missed_call = True
 
         if not pitch.pitch_data.breaks:
@@ -878,11 +878,11 @@ class UmpireDetails:
             self.total_calls = 0
             return
 
-        self.home_favor = df['run_favor'].sum()
-        self.home_wpa = df['wp_favor'].sum()
+        self.home_favor = df['umpire_run_favor'].sum()
+        self.home_wpa = df['umpire_wp_favor'].sum()
         self.num_missed = len(df.loc[(
-            ~(pd.isna(df['run_favor'])) &
-            (df['run_favor'] != 0)
+            ~(pd.isna(df['umpire_run_favor'])) &
+            (df['umpire_run_favor'] != 0)
         )])
         self.total_calls = len(df.loc[(
             (df['pitch_result_code'] == 'B') |
@@ -1001,7 +1001,7 @@ class ScoreboardData:
         self.game_state: str = self.game.gameData.status.game_state
         self.check_postponed()
 
-        self.start_time: str = self.game.gameData.datetime.startTime
+        self.start_time: str = self.game.gameData.datetime.start_time
 
         self.inning: int = self.game.liveData.linescore.currentInning
 
@@ -1107,7 +1107,7 @@ class ScoreboardData:
         the function returns true as the game is postponed.
         """
 
-        date = self.game.gameData.datetime.dateTime
+        date = self.game.gameData.datetime.date_time
         utc_offset = self.game.gameData.venue.timeZone.offset
 
         utc_offset = timedelta(hours=utc_offset)

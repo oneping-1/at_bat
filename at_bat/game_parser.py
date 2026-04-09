@@ -150,7 +150,7 @@ class GameParser:
         self._dict_game['gamepk'] = self.gamepk
 
         # game.gameData
-        self._dict_game['game_time'] = self.game.gameData.datetime.dateTime
+        self._dict_game['game_time'] = self.game.gameData.datetime.date_time
         self._dict_game['stadium'] = self.game.gameData.venue.name
         self._dict_game['time_zone'] = self.game.gameData.venue.timeZone.offset
         self._dict_game['field_type'] = self.game.gameData.venue.fieldInfo.turfType
@@ -265,7 +265,7 @@ class GameParser:
                 if (balls == 4) or (strikes == 3):
                     print()
                     print(f'{balls}-{strikes} {at_bat.matchup.pitcher.fullName} to {at_bat.matchup.batter.fullName} {at_bat.about.halfInning} {at_bat.about.inning} in {self.gamepk}')
-                    
+
                 # playEvent.count
                 self._dict_pitch['balls'] = balls
                 self._dict_pitch['strikes'] = strikes
@@ -346,8 +346,8 @@ class GameParser:
                 umpire = Umpire()
                 umpire.from_game_parser(self._dict_at_bat, self._dict_pitch, self._runners)
                 x = umpire.calculate_favors()
-                run_favor, wp_favor = x
-                self._dict_pitch['umpire_run_favor'] = run_favor
+                umpire_run_favor, wp_favor = x
+                self._dict_pitch['umpire_run_favor'] = umpire_run_favor
                 self._dict_pitch['umpire_wp_favor'] = wp_favor
 
                 xba, xslg = batted_ball_expected_values(at_bat_event_type, ev, la)
@@ -397,6 +397,6 @@ if __name__ == '__main__':
     g = g.dataframe
     # print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])
     print(g.loc[
-        (g['run_favor'] > 0) |
-        (g['run_favor'] < 0)
-    ][['run_favor', 'wp_favor', 'batter', 'pitcher', 'inning']])
+        (g['umpire_run_favor'] > 0) |
+        (g['umpire_run_favor'] < 0)
+    ][['umpire_run_favor', 'wp_favor', 'batter', 'pitcher', 'inning']])
