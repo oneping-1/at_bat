@@ -177,6 +177,8 @@ class GameData:
         self.teams = gameData['teams']
         self.players = gameData['players']
         self.venue = gameData['venue']
+        self.review = gameData.get('review', None)
+        self.abs_challenges = gameData.get('absChallenges', None)
         self.weather = gameData.get('weather', None)
         self.gameInfo = gameData.get('gameInfo', None)
         self.flags = gameData.get('flags', None)
@@ -190,6 +192,12 @@ class GameData:
         self.status = Status(self.status)
         self.teams = TeamsGameData(self.teams)
         self.venue = Venue(self.venue)
+        
+        if self.review is not None:
+            self.review = Review(self.review)
+            
+        if self.abs_challenges is not None:
+            self.abs_challenges = AbsChallenges(self.abs_challenges)
 
         if self.weather is not None:
             self.weather = Weather(self.weather)
@@ -321,6 +329,49 @@ class Venue:
 
         if self.fieldInfo is not None:
             self.fieldInfo = FieldInfo(self.fieldInfo)
+
+
+class Review:
+    def __init__(self, review):
+        self.has_challenges = review.get('hasChallenges', None)
+        self.away = review.get('away', None)
+        self.home = review.get('home', None)
+        self._children()
+        
+    def _children(self):
+        if self.away is not None:
+            self.away = TeamReview(self.away)
+
+        if self.home is not None:
+            self.home = TeamReview(self.home)
+
+
+class TeamReview:
+    def __init__(self, team_review):
+        self.used = team_review.get('used', None)
+        self.remaining = team_review.get('remaining', None)
+
+
+class AbsChallenges:
+    def __init__(self, abs_challenges):
+        self.has_challenges = abs_challenges.get('hasChallenges', None)
+        self.away = abs_challenges.get('away', None)
+        self.home = abs_challenges.get('home', None)
+        self._children()
+        
+    def _children(self):
+        if self.away is not None:
+            self.away = TeamAbsChallenges(self.away)
+
+        if self.home is not None:
+            self.home = TeamAbsChallenges(self.home)
+            
+            
+class TeamAbsChallenges:
+    def __init__(self, team_abs_challenges):
+        self.used_successful = team_abs_challenges.get('usedSuccessful', None)
+        self.used_failed = team_abs_challenges.get('usedFailed', None)
+        self.remaining = team_abs_challenges.get('remaining', None)
 
 
 class Location:
@@ -1355,4 +1406,5 @@ def _get_utc_time_from_zulu(zulu_time_str):
 
 if __name__ == "__main__":
     # game = Game.get_game_from_pk(gamepk = 717200, delay_seconds = 0)
-    data = Game.get_dict(748542, iso_time='2023-10-29T03:28:12Z')
+    data = Game.get_dict(823553, iso_time='2023-10-29T03:28:12Z')
+    game = Game(data)
