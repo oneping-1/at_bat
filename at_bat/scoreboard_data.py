@@ -505,6 +505,12 @@ class Team:
         self.division_rank = standings.division_rank
         self.games_back = standings.games_back
         self.streak = standings.streak
+        
+        review = getattr(game.gameData.review, team, None)
+        self.challenges = review.remaining if review is not None else None
+        
+        abs_review = getattr(game.gameData.abs_challenges, team, None)
+        self.abs_challenges = abs_review.remaining if abs_review is not None else None
 
         # maybe i shouldnt do this but its to catch pregame suspensions
         if self.runs is None:
@@ -540,7 +546,9 @@ class Team:
             'losses': self.losses,
             'division_rank': self.division_rank,
             'games_back': self.games_back,
-            'streak': self.streak
+            'streak': self.streak,
+            'challenges': self.challenges,
+            'abs_challenges': self.abs_challenges
         }
 
 class PitchDetails:
@@ -1125,7 +1133,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=813054, delay_seconds=38)
+    x = ScoreboardData(gamepk=823553, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
