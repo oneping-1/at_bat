@@ -619,6 +619,8 @@ class PitchDetails:
         # spin rate is incosinstently available
         # self.spin_rate = pitch.pitchData.spinRate
 
+        self.at_bat_pitch_count = len(game.liveData.plays.currentPlay.pitchIndex)
+
         return None
 
     def to_dict(self) -> dict:
@@ -637,7 +639,8 @@ class PitchDetails:
             'break_vertical': self.break_vertical,
             'break_vertical_induced': self.break_vertical_induced,
             'pitch_hand': self.pitch_hand,
-            'umpire_missed_call': self.umpire_missed_call
+            'umpire_missed_call': self.umpire_missed_call,
+            'at_bat_pitch_count': self.at_bat_pitch_count,
             # 'spin_rate': self.spin_rate
         }
 
