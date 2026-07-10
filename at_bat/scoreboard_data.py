@@ -567,6 +567,7 @@ class PitchDetails:
             self.break_vertical_induced = None
             self.pitch_hand = None
             self.umpire_missed_call = None
+            self.at_bat_pitch_count = None
             # self.spin_rate = None
             return None
 
@@ -587,6 +588,7 @@ class PitchDetails:
             self.break_vertical_induced = None
             self.pitch_hand = None
             self.umpire_missed_call = None
+            self.at_bat_pitch_count = None
             # self.spin_rate = None
             return None
 
@@ -971,6 +973,21 @@ class BattingOrder:
             'batting_order': self.batting_order,
         }
 
+class PitchCounts:
+    def __init__(self, game: Game, df: pd.DataFrame):
+        if df.empty:
+            self.pitch_counts = {}
+            return
+        
+        pitcher = game.liveData.linescore.defense.pitcher.fullName
+
+        pitcher_df = df.loc[df["pitcher"] == pitcher]
+
+        self.pitch_counts = (pitcher_df["pitch_type_description"].value_counts().to_dict())
+
+    def to_dict(self):
+        return self.pitch_counts
+
 class ScoreboardData:
     """
     A simplified version of the Game object which holds information
@@ -1041,6 +1058,7 @@ class ScoreboardData:
         self.win_probability = WinProbability(game=self.game)
         self.umpire = UmpireDetails(df=self.dataframe)
         self.batting_order = BattingOrder(game=self.game, state=self.game_state)
+        self.pitch_counts = PitchCounts(game=self.game, df=self.dataframe)
         self.flags = Flags(game=self.game)
 
         runners = Runners()
@@ -1106,6 +1124,7 @@ class ScoreboardData:
                 'win_probability': self.win_probability.to_dict(),
                 'umpire': self.umpire.to_dict(),
                 'batting_order': self.batting_order.to_dict(),
+                'pitch_counts': self.pitch_counts.to_dict(),
                 'flags': self.flags.to_dict(),
                 'runners': self.runners}
 
@@ -1136,7 +1155,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=823553, delay_seconds=38)
+    x = ScoreboardData(gamepk=822877, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
