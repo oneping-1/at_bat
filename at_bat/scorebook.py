@@ -54,12 +54,15 @@ def scorebook(text: str):
     
     text = text.split(' ')
     
-    for word in text:
+    
+    for i, word in enumerate(text):
         word = word.strip('.')
+        word = word.strip(',')
+        
         
         if word == 'singles':
             return '1B'
-        if word == 'doubles':
+        if word in ('double', 'doubles'): # Ground rule double
             return '2B'
         if word == 'triples':
             return '3B'
@@ -69,7 +72,7 @@ def scorebook(text: str):
         if word == 'walks':
             return 'BB'
         
-        if word in ('swinging', 'tip'):
+        if word in ('swinging', 'tip', 'foul'):
             return 'Ks'
         
         if word == 'called':
@@ -84,7 +87,31 @@ def scorebook(text: str):
         if word == 'pops':
             return f'P{air_out(text)}'
         
+        
         if word == 'hit':
             return 'HBP'
         
-    return ground_out(text)
+        try:
+            next_word = text[i+1]
+        except IndexError:
+            return None
+        next_word = next_word.strip('.')
+        next_word = next_word.strip(',')
+        
+        if word == 'error':
+            return f'E{air_out(text)}'
+        
+        if (word == 'sacrifice') and (next_word == 'fly'):
+            return f'SF{air_out(text)}'
+        
+        if (word == 'sacrifice') and (next_word == 'bunt'):
+            return 'SAC'           
+        
+        if (word == 'grounds') or (word == "fielder's" and next_word == 'choice'):
+            return ground_out(text)
+            
+    return None
+
+if __name__ == '__main__':
+    x = 'Nicky Lopez hits a sacrifice bunt. Evan Carter scores. Jake Burger to 2nd. Nicky Lopez to 1st.'
+    scorebook(x)
