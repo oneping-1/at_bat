@@ -560,6 +560,7 @@ class PitchDetails:
             # new game but no pitches yet
             self.description = None
             self.speed = None
+            self.is_strike = None
             self.type = None
             self.zone = None
             self.break_horizontal = None
@@ -568,6 +569,8 @@ class PitchDetails:
             self.pitch_hand = None
             self.umpire_missed_call = None
             self.at_bat_pitch_count = None
+            self.average_pitch_speed = None
+            self.at_bat_pitch_speeds = None
             # self.spin_rate = None
             return None
 
@@ -581,6 +584,7 @@ class PitchDetails:
         if pitch.is_pitch is False:
             self.description = None
             self.speed = None
+            self.is_strike = None
             self.type = None
             self.zone = None
             self.break_horizontal = None
@@ -589,6 +593,10 @@ class PitchDetails:
             self.pitch_hand = None
             self.umpire_missed_call = None
             self.at_bat_pitch_count = None
+            self.is_strike = None
+            self.at_bat_pitch_speeds = None
+            self.average_pitch_speed = None
+            self.at_bat_pitch_speeds = None
             # self.spin_rate = None
             return None
 
@@ -596,6 +604,20 @@ class PitchDetails:
         self.speed = pitch.pitch_data.startSpeed
         self.zone = pitch.pitch_data.zone
         self.pitch_hand = at_bat.matchup.pitch_hand.code
+
+        # Determine whether the last pitch qualifies as a strike.
+        # Use the pitch description and type (if present) as the heuristic.
+        desc = (getattr(pitch.details, 'description', '') or '').lower()
+        ptype = None
+        if pitch.details.type is not None:
+            # pitch.details.type can be a dict-like or object with description
+            try:
+                ptype = pitch.details.type.get('description')
+            except Exception:
+                ptype = getattr(pitch.details.type, 'description', None)
+        ptype = (ptype or '').lower() if ptype is not None else ''
+
+        self.is_strike = ('strike' in desc) or ('strike' in ptype)
 
         umpire_run_favor = df.iloc[-1]['umpire_run_favor']
         if (umpire_run_favor == 0) or (pd.isna(umpire_run_favor)):
@@ -623,6 +645,24 @@ class PitchDetails:
 
         self.at_bat_pitch_count = len(game.liveData.plays.currentPlay.pitchIndex)
 
+        # Collect speeds for all pitches in the current at-bat and compute average.
+        speeds = []
+        for ev in at_bat.playEvents:
+            try:
+                if getattr(ev, 'is_pitch', False):
+                    s = getattr(ev.pitch_data, 'startSpeed', None)
+                    if s is not None:
+                        speeds.append(float(s))
+            except Exception:
+                # be tolerant of missing fields
+                continue
+
+        self.at_bat_pitch_speeds = speeds if speeds else None
+        if speeds:
+            self.average_pitch_speed = float(sum(speeds) / len(speeds))
+        else:
+            self.average_pitch_speed = None
+
         return None
 
     def to_dict(self) -> dict:
@@ -635,6 +675,7 @@ class PitchDetails:
         return {
             'description': self.description,
             'speed': self.speed,
+            'is_strike': self.is_strike,
             'type': self.type,
             'zone': self.zone,
             'break_horizontal': self.break_horizontal,
@@ -643,6 +684,8 @@ class PitchDetails:
             'pitch_hand': self.pitch_hand,
             'umpire_missed_call': self.umpire_missed_call,
             'at_bat_pitch_count': self.at_bat_pitch_count,
+            'at_bat_pitch_speeds': self.at_bat_pitch_speeds,
+            'average_pitch_speed': self.average_pitch_speed,
             # 'spin_rate': self.spin_rate
         }
 
@@ -982,8 +1025,27 @@ class PitchCounts:
         pitcher = game.liveData.linescore.defense.pitcher.fullName
 
         pitcher_df = df.loc[df["pitcher"] == pitcher]
+        pitch_types = pitcher_df['pitch_type_description'].unique()
 
-        self.pitch_counts = (pitcher_df["pitch_type_description"].value_counts().to_dict())
+        # self.pitch_counts = (pitcher_df["pitch_type_description"].value_counts().to_dict())
+        
+        self.pitch_counts = {}
+        for pitch_type in pitch_types:
+            pitch_df = pitcher_df[pitcher_df['pitch_type_description'] == pitch_type]
+            total_pitches = len(pitch_df)
+            balls = len(pitch_df[
+                    (pitch_df['pitch_result_code'] == 'B') |
+                    (pitch_df['pitch_result_code'] == '*B') | # Ball in dirt
+                    (pitch_df['pitch_result_code'] == 'P') # Pitchout
+            ])
+            avg_speed = pitch_df['pitch_start_speed'].mean()
+            
+            self.pitch_counts[pitch_type] = {
+                'total': total_pitches,
+                'strikes': total_pitches - balls,
+                'avg_speed': avg_speed
+            }
+        
 
     def to_dict(self):
         return self.pitch_counts
