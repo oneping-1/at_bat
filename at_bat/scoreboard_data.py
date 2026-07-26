@@ -964,7 +964,7 @@ class UmpireDetails:
         }
 
 class BattingOrder:
-    def __init__(self, game: Game, state: str):
+    def __init__(self, game: Game, df: pd.DataFrame):
         # if state != 'L':
         #     self.at_bat_index = None
         #     self.batting_order = None
@@ -991,23 +991,32 @@ class BattingOrder:
         batting_order: List[int] = team_box_score.batting_order
         players = team_box_score.players
 
-        for i, batter in enumerate(batting_order):
+        for i, batter_id in enumerate(batting_order):
             order = i + 1
-            last_name = get_player_last_name(game, batter)
-            player_id = batter
-            avg = players[f'ID{player_id}']['seasonStats']['batting']['avg']
-            slg = players[f'ID{player_id}']['seasonStats']['batting']['slg']
-            ops = players[f'ID{player_id}']['seasonStats']['batting']['ops']
-            position = players[f'ID{player_id}']['position']['abbreviation']
+            last_name = get_player_last_name(game, batter_id)
+            avg = players[f'ID{batter_id}']['seasonStats']['batting']['avg']
+            slg = players[f'ID{batter_id}']['seasonStats']['batting']['slg']
+            ops = players[f'ID{batter_id}']['seasonStats']['batting']['ops']
+            position = players[f'ID{batter_id}']['position']['abbreviation']
+            
+            try:
+                x = df.loc[
+                    (df['inning'] == int(game.liveData.linescore.currentInning)) &
+                    (df['batter_id'] == batter_id) &
+                    (df['at_bat_scorebook_notation'].notna())
+                ]['at_bat_scorebook_notation'].iloc[-1]
+            except IndexError:
+                x = None
 
             self.batting_order.append({
                 'order': order,
                 'last_name': last_name,
-                'id': player_id,
+                'id': batter_id,
                 'avg': avg,
                 'slg': slg,
                 'ops': ops,
                 'position': position,
+                'scorebook': x
             })
 
     def to_dict(self):
@@ -1119,7 +1128,7 @@ class ScoreboardData:
         self.run_expectancy = RunExpectancy(game=self.game)
         self.win_probability = WinProbability(game=self.game)
         self.umpire = UmpireDetails(df=self.dataframe)
-        self.batting_order = BattingOrder(game=self.game, state=self.game_state)
+        self.batting_order = BattingOrder(game=self.game, df=self.dataframe)
         self.pitch_counts = PitchCounts(game=self.game, df=self.dataframe)
         self.flags = Flags(game=self.game)
 
@@ -1217,7 +1226,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=822877, delay_seconds=38)
+    x = ScoreboardData(gamepk=748542, delay_seconds=38)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')

@@ -65,8 +65,10 @@ class GameParser:
             'away_score',
             'home_score',
             'batter',
+            'batter_id',
             'bat_side',
             'pitcher',
+            'pitcher_id',
             'pitch_hand',
             'pitch_result',
             'pitch_result_code',
@@ -222,8 +224,10 @@ class GameParser:
 
             # atBat.matchup
             self._dict_at_bat['batter'] = at_bat.matchup.batter.fullName
+            self._dict_at_bat['batter_id'] = at_bat.matchup.batter.id
             self._dict_at_bat['bat_side'] = at_bat.matchup.bat_side.description
             self._dict_at_bat['pitcher'] = at_bat.matchup.pitcher.fullName
+            self._dict_at_bat['pitcher_id'] = at_bat.matchup.pitcher.id
             self._dict_at_bat['pitch_hand'] = at_bat.matchup.pitch_hand.description
 
             self._iterate_pitches(at_bat)
