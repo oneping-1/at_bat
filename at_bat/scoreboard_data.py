@@ -999,14 +999,17 @@ class BattingOrder:
             ops = players[f'ID{batter_id}']['seasonStats']['batting']['ops']
             position = players[f'ID{batter_id}']['position']['abbreviation']
             
-            try:
-                x = df.loc[
-                    (df['inning'] == int(game.liveData.linescore.currentInning)) &
-                    (df['batter_id'] == batter_id) &
-                    (df['at_bat_scorebook_notation'].notna())
-                ]['at_bat_scorebook_notation'].iloc[-1]
-            except IndexError:
+            if df.empty:
                 x = None
+            else:
+                try:
+                    x = df.loc[
+                        (df['inning'] == int(game.liveData.linescore.currentInning)) &
+                        (df['batter_id'] == batter_id) &
+                        (df['at_bat_scorebook_notation'].notna())
+                    ]['at_bat_scorebook_notation'].iloc[-1]
+                except IndexError:
+                    x = None
 
             self.batting_order.append({
                 'order': order,

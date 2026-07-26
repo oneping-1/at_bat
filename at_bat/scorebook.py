@@ -49,6 +49,9 @@ def ground_out(words: List[str]):
     return text[:-1]
 
 def scorebook(text: str):
+    if text is None:
+        return None
+    
     text = text.split(' ')
     
     for word in text:
