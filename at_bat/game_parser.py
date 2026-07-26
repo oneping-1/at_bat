@@ -7,6 +7,7 @@ from at_bat.game import Game, AllPlays
 from at_bat.runners import Runners
 from at_bat.statsapi_plus import get_expected_values_dataframe
 from at_bat.umpire import Umpire
+from at_bat.scorebook import scorebook
 
 xdf = get_expected_values_dataframe()
 def batted_ball_expected_values(at_bat_event_type: str, exit_velo: float, launch_angle: int) -> Tuple[float, float]:
@@ -75,6 +76,7 @@ class GameParser:
             'at_bat_event',
             'at_bat_event_type',
             'at_bat_description',
+            'at_bat_scorebook_notation',
             'at_bat_rbi',
             'batted_ball_launch_speed',
             'batted_ball_launch_angle',
@@ -327,6 +329,7 @@ class GameParser:
                     at_bat_event_type = at_bat.result.eventType
                     self._dict_pitch['at_bat_event_type'] = at_bat_event_type
                     self._dict_pitch['at_bat_description'] = at_bat.result.description
+                    self._dict_pitch['at_bat_scorebook_notation'] = scorebook(at_bat.result.description)
                     self._dict_pitch['at_bat_rbi'] = at_bat.result.rbi
 
                 ev = None
@@ -392,11 +395,7 @@ class GameParser:
         ].reset_index(drop=True)
 
 if __name__ == '__main__':
-    GAMEPK = 634642
+    GAMEPK = 748542
     g = GameParser(gamepk=GAMEPK)
     g = g.dataframe
     # print(g[~(pd.isna(g['at_bat_event_type']))][['at_bat_event_type' , 'batted_ball_xba']])
-    print(g.loc[
-        (g['umpire_run_favor'] > 0) |
-        (g['umpire_run_favor'] < 0)
-    ][['umpire_run_favor', 'wp_favor', 'batter', 'pitcher', 'inning']])
