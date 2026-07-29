@@ -1003,8 +1003,14 @@ class BattingOrder:
                 x = None
             else:
                 try:
+                    inning = game.liveData.linescore.currentInning
+                    outs = game.liveData.linescore.outs
+                    
+                    if (outs == 3) and (self.is_top_inning == True):
+                        inning = max(inning-1,1)
+                    
                     x = df.loc[
-                        (df['inning'] == int(game.liveData.linescore.currentInning)) &
+                        (df['inning'] == inning) &
                         (df['batter_id'] == batter_id) &
                         (df['at_bat_scorebook_notation'].notna())
                     ]['at_bat_scorebook_notation'].iloc[-1]
@@ -1229,7 +1235,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=748542, delay_seconds=38)
+    x = ScoreboardData(gamepk=822949, delay_seconds=80)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
