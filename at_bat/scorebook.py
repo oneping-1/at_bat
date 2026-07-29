@@ -12,7 +12,7 @@ def air_out(words: List[str]):
             return '4'
         if word == 'third':
             return '5'
-        if word == 'short':
+        if word in ('short', 'shortstop'):
             return '6'
         if word == 'left':
             return '7'
@@ -69,6 +69,9 @@ def scorebook(text: str):
         if word == 'homers':
             return 'HR'
         
+        if word == 'intentionally':
+            return 'iBB'
+        
         if word == 'walks':
             return 'BB'
         
@@ -113,5 +116,5 @@ def scorebook(text: str):
     return None
 
 if __name__ == '__main__':
-    x = 'Nicky Lopez hits a sacrifice bunt. Evan Carter scores. Jake Burger to 2nd. Nicky Lopez to 1st.'
-    scorebook(x)
+    x = 'Chandler Simpson grounds into a double play, pitcher Cal Quantrill to catcher Austin Wynns to first baseman Jake Burger. Jonathan Aranda out at home. Chandler Simpson out at 1st.'
+    print(scorebook(x))
