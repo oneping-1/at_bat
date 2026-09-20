@@ -124,7 +124,9 @@ class GameParser:
             'umpire_run_favor'
         ]
 
-    def __init__(self, game: Game = None, gamepk: int = None, iso_time: str = None, delay_seconds: int = 60):
+    def __init__(self, game: Game = None, gamepk: int = None, iso_time: str = None, delay_seconds: int = 60, include_all_events: bool = False):
+        self.include_all_events = include_all_events
+
         if game is not None:
             self.game = game
             self.gamepk = game.gamepk
@@ -255,7 +257,7 @@ class GameParser:
                 # handled by
                 self._runners.process_runner_movement(at_bat.runners, play_event.index)
 
-            if play_event.is_pitch:
+            if play_event.is_pitch or self.include_all_events:
                 self._dict_pitch = {}
                 # playEvent.details
                 self._dict_pitch['pitch_result'] = play_event.details.description
@@ -278,38 +280,63 @@ class GameParser:
                 self._dict_pitch['outs'] = play_event.count.outs
                 self._dict_pitch['pitch_index'] = play_event.index
 
-                # playEvent.pitchData
-                self._dict_pitch['pitch_start_speed'] = play_event.pitch_data.startSpeed
-                self._dict_pitch['pitch_end_speed'] = play_event.pitch_data.endSpeed
-                self._dict_pitch['strike_zone_top'] = play_event.pitch_data.coordinates.sZ_top
-                self._dict_pitch['strike_zone_bottom'] = play_event.pitch_data.coordinates.sZ_bot
+                if play_event.pitch_data:
 
-                self._dict_pitch['zone'] = play_event.pitch_data.zone
-                self._dict_pitch['type_confidence'] = play_event.pitch_data.typeConfidence
-                self._dict_pitch['plate_time'] = play_event.pitch_data.plateTime
-                self._dict_pitch['extension'] = play_event.pitch_data.extension
+                    # playEvent.pitchData
+                    self._dict_pitch['pitch_start_speed'] = play_event.pitch_data.startSpeed
+                    self._dict_pitch['pitch_end_speed'] = play_event.pitch_data.endSpeed
+                    self._dict_pitch['strike_zone_top'] = play_event.pitch_data.coordinates.sZ_top
+                    self._dict_pitch['strike_zone_bottom'] = play_event.pitch_data.coordinates.sZ_bot
 
-                # playEvents.pitchData
-                self._dict_pitch['px_min'] = play_event.pitch_data.coordinates.pX_max
-                self._dict_pitch['px_max'] = play_event.pitch_data.coordinates.pX_min
-                self._dict_pitch['pz_min'] = play_event.pitch_data.coordinates.pZ_min
-                self._dict_pitch['pz_max'] = play_event.pitch_data.coordinates.pZ_max
+                    self._dict_pitch['zone'] = play_event.pitch_data.zone
+                    self._dict_pitch['type_confidence'] = play_event.pitch_data.typeConfidence
+                    self._dict_pitch['plate_time'] = play_event.pitch_data.plateTime
+                    self._dict_pitch['extension'] = play_event.pitch_data.extension
 
-                # playEvent.pitchData.coordinates
-                self._dict_pitch['px'] = play_event.pitch_data.coordinates.pX
-                self._dict_pitch['pz'] = play_event.pitch_data.coordinates.pZ
+                    # playEvents.pitchData
+                    self._dict_pitch['px_min'] = play_event.pitch_data.coordinates.pX_max
+                    self._dict_pitch['px_max'] = play_event.pitch_data.coordinates.pX_min
+                    self._dict_pitch['pz_min'] = play_event.pitch_data.coordinates.pZ_min
+                    self._dict_pitch['pz_max'] = play_event.pitch_data.coordinates.pZ_max
 
-                # playEvent.pitchData.breaks
-                if play_event.pitch_data.breaks:
-                    self._dict_pitch['breaks_angle'] = play_event.pitch_data.breaks.breakAngle
-                    self._dict_pitch['breaks_length'] = play_event.pitch_data.breaks.breakLength
-                    self._dict_pitch['breaks_y'] = play_event.pitch_data.breaks.breakY
-                    self._dict_pitch['break_vertical'] = play_event.pitch_data.breaks.breakVertical
-                    self._dict_pitch['break_vertical_induced'] = play_event.pitch_data.breaks.breakVerticalInduced
-                    self._dict_pitch['break_horizontal'] = play_event.pitch_data.breaks.breakHorizontal
-                    self._dict_pitch['spin_rate'] = play_event.pitch_data.breaks.spinRate
-                    self._dict_pitch['spin_direction'] = play_event.pitch_data.breaks.spinDirection
+                    # playEvent.pitchData.coordinates
+                    self._dict_pitch['px'] = play_event.pitch_data.coordinates.pX
+                    self._dict_pitch['pz'] = play_event.pitch_data.coordinates.pZ
+
+                    # Theres probably a better way to do this without all the nesting if statements xd
+                    if play_event.pitch_data.breaks:
+                        self._dict_pitch['breaks_angle'] = play_event.pitch_data.breaks.breakAngle
+                        self._dict_pitch['breaks_length'] = play_event.pitch_data.breaks.breakLength
+                        self._dict_pitch['breaks_y'] = play_event.pitch_data.breaks.breakY
+                        self._dict_pitch['break_vertical'] = play_event.pitch_data.breaks.breakVertical
+                        self._dict_pitch['break_vertical_induced'] = play_event.pitch_data.breaks.breakVerticalInduced
+                        self._dict_pitch['break_horizontal'] = play_event.pitch_data.breaks.breakHorizontal
+                        self._dict_pitch['spin_rate'] = play_event.pitch_data.breaks.spinRate
+                        self._dict_pitch['spin_direction'] = play_event.pitch_data.breaks.spinDirection
+                    else:
+                        self._dict_pitch['breaks_angle'] = None
+                        self._dict_pitch['breaks_length'] = None
+                        self._dict_pitch['breaks_y'] = None
+                        self._dict_pitch['break_vertical'] = None
+                        self._dict_pitch['break_vertical_induced'] = None
+                        self._dict_pitch['break_horizontal'] = None
+                        self._dict_pitch['spin_rate'] = None
+                        self._dict_pitch['spin_direction'] = None
                 else:
+                    self._dict_pitch['pitch_start_speed'] = None
+                    self._dict_pitch['pitch_end_speed'] = None
+                    self._dict_pitch['strike_zone_top'] = None
+                    self._dict_pitch['strike_zone_bottom'] = None
+                    self._dict_pitch['zone'] = None
+                    self._dict_pitch['type_confidence'] = None
+                    self._dict_pitch['plate_time'] = None
+                    self._dict_pitch['extension'] = None
+                    self._dict_pitch['px_min'] = None
+                    self._dict_pitch['px_max'] = None
+                    self._dict_pitch['pz_min'] = None
+                    self._dict_pitch['pz_max'] = None
+                    self._dict_pitch['px'] = None
+                    self._dict_pitch['pz'] = None
                     self._dict_pitch['breaks_angle'] = None
                     self._dict_pitch['breaks_length'] = None
                     self._dict_pitch['breaks_y'] = None
@@ -318,6 +345,9 @@ class GameParser:
                     self._dict_pitch['break_horizontal'] = None
                     self._dict_pitch['spin_rate'] = None
                     self._dict_pitch['spin_direction'] = None
+
+
+
 
                 self._dict_game['pitch_start_time'] = play_event.start_time
                 self._dict_game['pitch_end_time'] = play_event.end_time
@@ -335,6 +365,12 @@ class GameParser:
                     self._dict_pitch['at_bat_description'] = at_bat.result.description
                     self._dict_pitch['at_bat_scorebook_notation'] = scorebook(at_bat.result.description)
                     self._dict_pitch['at_bat_rbi'] = at_bat.result.rbi
+                else:
+                    self._dict_pitch['at_bat_event'] = None
+                    self._dict_pitch['at_bat_event_type'] = None
+                    self._dict_pitch['at_bat_description'] = None
+                    self._dict_pitch['at_bat_scorebook_notation'] = None
+                    self._dict_pitch['at_bat_rbi'] = None
 
                 ev = None
                 la = None

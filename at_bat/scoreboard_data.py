@@ -505,10 +505,10 @@ class Team:
         self.division_rank = standings.division_rank
         self.games_back = standings.games_back
         self.streak = standings.streak
-        
+
         review = getattr(game.gameData.review, team, None)
         self.challenges = review.remaining if review is not None else None
-        
+
         abs_review = getattr(game.gameData.abs_challenges, team, None)
         self.abs_challenges = abs_review.remaining if abs_review is not None else None
 
@@ -998,17 +998,17 @@ class BattingOrder:
             slg = players[f'ID{batter_id}']['seasonStats']['batting']['slg']
             ops = players[f'ID{batter_id}']['seasonStats']['batting']['ops']
             position = players[f'ID{batter_id}']['position']['abbreviation']
-            
+
             if df.empty:
                 x = None
             else:
                 try:
                     inning = game.liveData.linescore.currentInning
                     outs = game.liveData.linescore.outs
-                    
+
                     if (outs == 3) and (self.is_top_inning == True):
                         inning = max(inning-1,1)
-                    
+
                     x = df.loc[
                         (df['inning'] == inning) &
                         (df['batter_id'] == batter_id) &
@@ -1039,14 +1039,14 @@ class PitchCounts:
         if df.empty:
             self.pitch_counts = {}
             return
-        
+
         pitcher = game.liveData.linescore.defense.pitcher.fullName
 
         pitcher_df = df.loc[df["pitcher"] == pitcher]
         pitch_types = pitcher_df['pitch_type_description'].unique()
 
         # self.pitch_counts = (pitcher_df["pitch_type_description"].value_counts().to_dict())
-        
+
         self.pitch_counts = {}
         for pitch_type in pitch_types:
             pitch_df = pitcher_df[pitcher_df['pitch_type_description'] == pitch_type]
@@ -1057,13 +1057,13 @@ class PitchCounts:
                     (pitch_df['pitch_result_code'] == 'P') # Pitchout
             ])
             avg_speed = pitch_df['pitch_start_speed'].mean()
-            
+
             self.pitch_counts[pitch_type] = {
                 'total': total_pitches,
                 'strikes': total_pitches - balls,
                 'avg_speed': avg_speed
             }
-        
+
 
     def to_dict(self):
         return self.pitch_counts
@@ -1082,7 +1082,7 @@ class ScoreboardData:
         self.game = Game.get_game_from_pk(gamepk=self.gamepk,
             delay_seconds=delay_seconds)
 
-        self.parser = GameParser(game=self.game)
+        self.parser = GameParser(game=self.game, include_all_events=True)
         self.dataframe = self.parser.dataframe
 
         # success = False
@@ -1235,7 +1235,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=822949, delay_seconds=80)
+    x = ScoreboardData(gamepk=822843, delay_seconds=80)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
