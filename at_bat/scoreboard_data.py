@@ -1043,7 +1043,8 @@ class PitchCounts:
         pitcher = game.liveData.linescore.defense.pitcher.fullName
 
         pitcher_df = df.loc[df["pitcher"] == pitcher]
-        pitch_types = pitcher_df['pitch_type_description'].unique()
+        pitch_types = pitcher_df['pitch_type_description'].dropna().unique()
+
 
         # self.pitch_counts = (pitcher_df["pitch_type_description"].value_counts().to_dict())
 
@@ -1235,7 +1236,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=822843, delay_seconds=80)
+    x = ScoreboardData(gamepk=824462, delay_seconds=80)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
