@@ -439,10 +439,25 @@ class Count:
     """
     Contains the count data for the game as a sub-class to ScoreboardData
     """
-    def __init__(self, game: Game):
-        self.balls = game.liveData.linescore.balls
-        self.strikes = game.liveData.linescore.strikes
-        self.outs = game.liveData.linescore.outs
+    def __init__(self, df: pd.DataFrame):
+        if df.empty:
+            self._none()
+            return None
+        pitch = df.iloc[-1]
+
+        pitch_result_code = str(pitch['pitch_result_code'])
+
+        self.balls = int(pitch['balls'])
+        self.strikes = int(pitch['strikes'])
+        self.outs = int(pitch['outs'])
+
+        if pitch_result_code in ('B', '*B'):
+            self.balls += 1
+        if pitch_result_code in ('C', 'S'):
+            self.strikes += 1
+        if pitch_result_code in ('F'):
+            self.strikes += 1
+            self.strikes = min(2, self.strikes)
 
         if self.balls is None:
             self.balls = 0
@@ -452,6 +467,11 @@ class Count:
 
         if self.outs is None:
             self.outs = 0
+
+    def _none(self):
+        self.balls = 0
+        self.strikes = 0
+        self.outs = 0
 
     def to_dict(self) -> dict:
         """
@@ -1130,7 +1150,7 @@ class ScoreboardData:
         self.probables = ProbablePitchers(game=self.game)
         self.decisions = PitcherDecisions(game=self.game)
         self.matchup = Matchup(game=self.game)
-        self.count = Count(game=self.game)
+        self.count = Count(df=self.dataframe)
         self.away = Team(game=self.game, df=self.dataframe, team='away')
         self.home = Team(game=self.game, df=self.dataframe, team='home')
         self.pitch_details = PitchDetails(game=self.game, df=self.dataframe)
@@ -1236,7 +1256,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=824462, delay_seconds=80)
+    x = ScoreboardData(gamepk=849832, delay_seconds=80)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
