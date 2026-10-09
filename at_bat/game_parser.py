@@ -80,6 +80,7 @@ class GameParser:
             'at_bat_description',
             'at_bat_scorebook_notation',
             'at_bat_rbi',
+            'at_bat_is_complete'
             'batted_ball_launch_speed',
             'batted_ball_launch_angle',
             'batted_ball_total_distance',
@@ -365,12 +366,14 @@ class GameParser:
                     self._dict_pitch['at_bat_description'] = at_bat.result.description
                     self._dict_pitch['at_bat_scorebook_notation'] = scorebook(at_bat.result.description)
                     self._dict_pitch['at_bat_rbi'] = at_bat.result.rbi
+                    self._dict_pitch['at_bat_is_complete'] = at_bat.about.is_complete
                 else:
                     self._dict_pitch['at_bat_event'] = None
                     self._dict_pitch['at_bat_event_type'] = None
                     self._dict_pitch['at_bat_description'] = None
                     self._dict_pitch['at_bat_scorebook_notation'] = None
                     self._dict_pitch['at_bat_rbi'] = None
+                    self._dict_pitch['at_bat_is_complete'] = None
 
                 ev = None
                 la = None

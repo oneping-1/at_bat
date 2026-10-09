@@ -192,10 +192,10 @@ class GameData:
         self.status = Status(self.status)
         self.teams = TeamsGameData(self.teams)
         self.venue = Venue(self.venue)
-        
+
         if self.review is not None:
             self.review = Review(self.review)
-            
+
         if self.abs_challenges is not None:
             self.abs_challenges = AbsChallenges(self.abs_challenges)
 
@@ -337,7 +337,7 @@ class Review:
         self.away = review.get('away', None)
         self.home = review.get('home', None)
         self._children()
-        
+
     def _children(self):
         if self.away is not None:
             self.away = TeamReview(self.away)
@@ -358,15 +358,15 @@ class AbsChallenges:
         self.away = abs_challenges.get('away', None)
         self.home = abs_challenges.get('home', None)
         self._children()
-        
+
     def _children(self):
         if self.away is not None:
             self.away = TeamAbsChallenges(self.away)
 
         if self.home is not None:
             self.home = TeamAbsChallenges(self.home)
-            
-            
+
+
 class TeamAbsChallenges:
     def __init__(self, team_abs_challenges):
         self.used_successful = team_abs_challenges.get('usedSuccessful', None)
@@ -569,7 +569,7 @@ class About:
         self.inning = int(about['inning'])
         self.startTime = about.get('startTime', None)
         self.endTime = about['endTime']
-        self.isComplete = about['isComplete']
+        self.is_complete = about['isComplete']
         self.isScoringPlay = about.get('isScoringPlay', None)
         self.hasReview = about.get('hasReview', None)
         self.hasOut = about.get('hasOut', None)
