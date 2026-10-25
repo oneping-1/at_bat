@@ -64,7 +64,7 @@ def get_player_last_name(game: Game, player_id: int) -> str:
         return None
 
     player = game.gameData.players[f'ID{player_id}']
-    return player['useLastName']
+    return player['useLastName'].strip('.')
 
 class ScoreboardStandings:
     """
