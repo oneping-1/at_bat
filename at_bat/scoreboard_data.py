@@ -64,7 +64,7 @@ def get_player_last_name(game: Game, player_id: int) -> str:
         return None
 
     player = game.gameData.players[f'ID{player_id}']
-    return player['lastName']
+    return player['useLastName']
 
 class ScoreboardStandings:
     """
@@ -1256,7 +1256,7 @@ class ScoreboardData:
         return f'{self.away.abv} {self.away.runs} @ {self.home.abv} {self.home.runs}'
 
 if __name__ == '__main__':
-    x = ScoreboardData(gamepk=849832, delay_seconds=80)
+    x = ScoreboardData(gamepk=849802, delay_seconds=80)
     print(json.dumps(x.to_dict(), indent=4))
 
     # x = ScoreboardStandings('NYY')
